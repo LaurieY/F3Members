@@ -1,0 +1,38 @@
+<script type="text/javascript">
+$(function () {
+    $("#list").jqGrid({
+        url: "/example",
+        datatype: "xml",
+        mtype: "GET",
+        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined"],//],
+        colModel: [
+           
+			{ name: "surname", width: 120 },
+             {name: "forename", width: 120, },
+			 { name: "membnum", width: 40 }, 
+			{ name: "phone", width: 80, align: "right" },
+            { name: "mobile", width: 80, align: "right" },
+            { name: "email", width: 190, align: "right" }, 
+			 { name: "membtype", width: 40, align: "right" },
+             { name: "location", width: 50, align: "right" },
+			  { name: "paidthisyear", width: 40, align: "right" },
+			  { name: "amtpaidthisyear", width: 60, align: "right" },
+			  		  { name: "datejoined", width: 100, align: "right" }, /**/
+			
+        ],
+        pager: "#pager",
+        rowNum: 10,
+        rowList: [10, 20, 30],
+        sortname: "membnum",
+        sortorder: "asc",
+        viewrecords: true,
+        gridview: true,
+        autoencode: true,
+        caption: "My first grid"
+    }); 
+}); 
+</script>
+ 
+
+    <table id="list"><tr><td></td></tr></table> 
+    <div id="pager"></div> 

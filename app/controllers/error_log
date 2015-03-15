@@ -1,0 +1,5 @@
+[14-Mar-2015 03:51:32 America/Chicago] PHP Fatal error:  Class 'User' not found in /home/lyatesco/crud/app/controllers/example.php on line 5
+[14-Mar-2015 03:51:55 America/Chicago] PHP Fatal error:  Class 'User' not found in /home/lyatesco/crud/app/controllers/example.php on line 5
+[14-Mar-2015 03:53:28 America/Chicago] PHP Fatal error:  Class 'User' not found in /home/lyatesco/crud/app/controllers/example.php on line 5
+[14-Mar-2015 03:53:35 America/Chicago] PHP Fatal error:  Class 'DB\SQL\Mapper' not found in /home/lyatesco/crud/app/models/User.php on line 3
+[14-Mar-2015 03:55:44 America/Chicago] PHP Fatal error:  Class 'DB\SQL\Mapper' not found in /home/lyatesco/crud/app/models/User.php on line 3
