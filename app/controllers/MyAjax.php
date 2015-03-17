@@ -73,6 +73,10 @@ $s .=  "<rows>";
 $s .= "<page>".$page."</page>";
 $s .= "<total>".$total_pages."</total>";
 $s .= "<records>".$count."</records>";
+
+$s .= '<userdata name="email">Total</userdata>';   # name = target column's name
+$s .= '<userdata name="amtpaidthisyear">1b2b3b</userdata>';
+   
  
 // be sure to put text data in CDATA
 /*
