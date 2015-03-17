@@ -8,8 +8,8 @@ class MemberController extends Controller {
 		$f3=$this->f3;
 		//print_r($f3);
 		//print_r($user);
-		echo "</br>";
-		print_r($f3->get('db_user'));
+		//echo "</br>";
+	//	print_r($f3->get('db_user'));
 		
 		
         $this->f3->set('members',$user->all());

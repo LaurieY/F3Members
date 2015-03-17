@@ -10,13 +10,13 @@ $(function () {
 			{ name: "surname", width: 120 },
              {name: "forename", width: 120, },
 			 { name: "membnum", width: 40 }, 
-			{ name: "phone", width: 80, align: "right" },
-            { name: "mobile", width: 80, align: "right" },
-            { name: "email", width: 190, align: "right" }, 
+			{ name: "phone", width: 85, align: "right" },
+            { name: "mobile", width: 85, align: "right" },
+            { name: "email", width: 210, align: "right" }, 
 			 { name: "membtype", width: 40, align: "right" },
-             { name: "location", width: 50, align: "right" },
+             { name: "location", width: 65, align: "right" },
 			  { name: "paidthisyear", width: 40, align: "right" },
-			  { name: "amtpaidthisyear", width: 60, align: "right" },
+			  { name: "amtpaidthisyear", width: 70, align: "right" },
 			  		  { name: "datejoined", width: 100, align: "right" }, /**/
 			
         ],
@@ -31,7 +31,10 @@ $(function () {
         caption: "My first auto grid",
 		 height:'auto'
     }); 
-}); 
+
+ $('#jqGrid').navGrid('#pager',
+                { edit: false, add: false, del: false, search: true, refresh: true, view: false, position: "left", cloneToTop: true });
+	}			); 
 </script>
  
 
