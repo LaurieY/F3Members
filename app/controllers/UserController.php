@@ -11,50 +11,7 @@ class UserController extends Controller {
         $this->f3->set('view','user/list.htm');
 
 	}
-		public function listn()	
-	{
-	        $user = new User($this->db);
-        $this->f3->set('users',$user->all());
-		        $this->f3->set('page_head','User List');
-        $this->f3->set('message', $this->f3->get('PARAMS.message'));
-		$this->f3->set('listn', $this->f3->get('PARAMS.mylist'));
-
-		
-	     $this->f3->set('listnn','user/list'.$this->f3->get('listn').'.htm');
-		 $this->f3->set('view','user/list'.$this->f3->get('listn').'.htm');
-		 
-	}
-/*	public function list2()	
-	{
-	        $user = new User($this->db);
-        $this->f3->set('users',$user->all());
-		        $this->f3->set('page_head','User List');
-        $this->f3->set('message', $this->f3->get('PARAMS.message'));
-	        $this->f3->set('view','user/list2.htm');
-	}
-	public function list3()	
-	{
-	        $user = new User($this->db);
-        $this->f3->set('users',$user->all());
-		        $this->f3->set('page_head','User List');
-     //   $this->f3->set('message', $this->f3->get('PARAMS.message'));
-	        $this->f3->set('view','user/list3.htm');
-	}
-		
-	public function list4()	
-	{
-	        $user = new User($this->db);
-        $this->f3->set('users',$user->all());
-		        $this->f3->set('page_head','User List');
-     //   $this->f3->set('message', $this->f3->get('PARAMS.message'));
-	        $this->f3->set('view','user/list4.htm');
-	}
-	*/
-	public function listget_json()
-	{
-	header("Content-type: text/xml;charset=utf-8"); 
-	echo ' id: "1", invdate: "2007-10-01", name: "test", note: "note", amount: "200.00", tax: "10.00", total: "210.00" }';
-	}
+	
 		
     public function create()
     {

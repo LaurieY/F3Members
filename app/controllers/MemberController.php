@@ -2,34 +2,21 @@
 
 class MemberController extends Controller {
 
-	public function index()
-    {
-        $user = new Member($this->db);
-		$f3=$this->f3;
-		//print_r($f3);
-		//print_r($user);
-		//echo "</br>";
-	//	print_r($f3->get('db_user'));
-		
-		
-        $this->f3->set('members',$user->all());
-        $this->f3->set('page_head','User List');
-        $this->f3->set('message', $this->f3->get('PARAMS.message'));
-        $this->f3->set('view','member/list.htm');
 
-	}
 
-		public function listn()	
+		public function index()	
 	{
-	        $user = new Member($this->db);
-        $this->f3->set('members',$user->all());
-		        $this->f3->set('page_head','User List');
+	        $member = new Member($this->db);
+        $this->f3->set('members',$member->all());
+		        $this->f3->set('page_head','Member List');
         $this->f3->set('message', $this->f3->get('PARAMS.message'));
 		$this->f3->set('listn', $this->f3->get('PARAMS.mylist'));
 
 		
-	     $this->f3->set('listnn','member/list'.$this->f3->get('listn').'.htm');
-		 $this->f3->set('view','member/list'.$this->f3->get('listn').'.htm');
+	//     $this->f3->set('listnn','member/list'.$this->f3->get('listn').'.htm');
+	//	 $this->f3->set('view','member/list'.$this->f3->get('listn').'.htm');
+	  $this->f3->set('listnn','member/list.htm');
+	$this->f3->set('view','member/list.htm');
 		 
 	}
 		
@@ -67,6 +54,23 @@ class MemberController extends Controller {
         }
 
     }
+		public function listn()	
+	{
+	        $user = new Member($this->db);
+        $this->f3->set('members',$user->all());
+		        $this->f3->set('page_head','User List');
+        $this->f3->set('message', $this->f3->get('PARAMS.message'));
+		$this->f3->set('listn', $this->f3->get('PARAMS.mylist'));
+
+		
+	     $this->f3->set('listnn','member/list'.$this->f3->get('listn').'.htm');
+		 $this->f3->set('view','member/list'.$this->f3->get('listn').'.htm');
+	//  $this->f3->set('listnn','member/list.htm');
+	//$this->f3->set('view','member/list.htm');
+		 
+	}
+		
+   
 
     public function delete()
     {

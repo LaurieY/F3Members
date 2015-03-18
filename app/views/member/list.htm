@@ -1,27 +1,45 @@
-<table width="600" cellpadding="5" class="table table-hover table-bordered">
-    <thead>
-    <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Email</th>
-        <th scope="col">Mobile</th>
-        <th scope="col">Forename</th>
-        <th scope="col">Action</th>
-    </tr>
-    </thead>
+<script type="text/javascript">
+$(function () {
+    $("#list").jqGrid({ 
+        url: "/membergrid",
+        datatype: "xml",
+        mtype: "GET",
+        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined"],//],
+        colModel: [
+           
+			{ name: "surname", width: 120 },
+             {name: "forename", width: 120, },
+			 { name: "membnum", width: 40 }, 
+			{ name: "phone", width: 85, align: "right" },
+            { name: "mobile", width: 85, align: "right" },
+            { name: "email", width: 210, align: "right" }, 
+			 { name: "membtype", width: 40, align: "right" },
+             { name: "location", width: 65, align: "right" },
+			  { name: "paidthisyear", width: 40, align: "right" },
+			  { name: "amtpaidthisyear", width: 70, align: "right" },
+			  		  { name: "datejoined", width: 100, align: "right" }, /**/
+			
+        ],
+        pager: "#pager",
+        rowNum: 10,
+        rowList: [10, 20, 30],
+        sortname: "membnum",
+        sortorder: "asc",
+        viewrecords: true,
+        gridview: true,
+        autoencode: true,
+        caption: "My first auto grid",
+		 height:'auto',
+		 altRows: true,
+		 footerrow : true,
+		 userDataOnFooter : true, 
+    }); 
 
-    <tbody>
-    <repeat group="{{ @members }}" value="{{ @member }}">
-        <tr>
-            <td>{{ trim(@member.surname) }}</td>
-            <td>{{ trim(@member.email) }}</td>
-            <td>{{ trim(@member.mobile) }}</td>
-            <td>{{ trim(@member.forename) }}</td>
-            <td><a href="{{ @BASE.'/user/update/'. @member.id }}" class="btn btn-primary"><i class="icon-edit icon-white"></i> Edit</a>
-                &nbsp; <a href="{{ @BASE.'/user/delete/'. @member.id }}" class="btn btn-danger"><i class="icon-remove icon-white"></i>
-                    Delete</a></td>
+ $('#jqGrid').navGrid('#pager',
+                { edit: false, add: false, del: false, search: true, refresh: true, view: false, position: "left", cloneToTop: true });
+	}			); 
+</script>
+ 
 
-        </tr>
-    </repeat>
-    </tbody>
-
-</table>
+    <table id="list"><tr><td></td></tr></table> 
+    <div id="pager"></div> 

@@ -3,10 +3,10 @@
         <ul class="nav">
 
 
-            <li <check if="{{ @page_head == 'User List' }}">class="active"</check>><a href="{{ @BASE.'/' }}"><i class="icon-th icon-black"></i> Read</a></li>
-            <li <check if="{{ @page_head == 'Create User' }}">class="active"</check>><a href="{{ @BASE.'/user/create' }}"><i class="icon-plus-sign icon-black"></i> Create</a></li>
+            <li <check if="{{ @page_head == 'Member List' }}">class="active"</check>><a href="{{ @BASE.'/' }}"><i class="icon-th icon-black"></i> View Members</a></li>
+            <li <check if="{{ @page_head == 'Admin' }}">class="active"</check>><a href="{{ @BASE.'/admin' }}"><i class="icon-plus-sign icon-black"></i> Admin</a></li>
 
-            <check if="{{ @page_head == 'Update User' }}">
+            <check if="{{ @page_head == 'Member Modify' }}">
             <li class="active"><a href="javascript:void(0);"><i class="icon-plus-sign icon-black"></i> Update</a></li>
             </check>
         </ul>
