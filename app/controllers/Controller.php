@@ -6,7 +6,9 @@ class Controller {
 	protected $db;
 
 	function beforeroute() {
-		$this->f3->set('message','');
+	$db=$this->db;
+	//	$this->f3->set('message','');
+	//	echo ($this->f3->get('message' ));
 	}
 
 	function afterroute() {
@@ -22,7 +24,9 @@ class Controller {
             $f3->get('db_user'),
             $f3->get('db_pass')
         );	
-
+		new DB\SQL\Session($db);
+		// Save frequently used variables
+		$this->db=$db;
 		$this->f3=$f3;
 		$this->db=$db;
 	}
