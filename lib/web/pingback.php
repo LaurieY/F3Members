@@ -1,16 +1,17 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace Web;
@@ -18,14 +19,14 @@ namespace Web;
 //! Pingback 1.0 protocol (client and server) implementation
 class Pingback extends \Prefab {
 
-	private
+	protected
 		//! Transaction history
 		$log;
 
 	/**
-		Return TRUE if URL points to a pingback-enabled resource
-		@return bool
-		@param $url
+	*	Return TRUE if URL points to a pingback-enabled resource
+	*	@return bool
+	*	@param $url
 	**/
 	protected function enabled($url) {
 		$web=\Web::instance();
@@ -49,10 +50,10 @@ class Pingback extends \Prefab {
 	}
 
 	/**
-		Load local page contents, parse HTML anchor tags, find permalinks,
-		and send XML-RPC calls to corresponding pingback servers
-		@return NULL
-		@param $source string
+	*	Load local page contents, parse HTML anchor tags, find permalinks,
+	*	and send XML-RPC calls to corresponding pingback servers
+	*	@return NULL
+	*	@param $source string
 	**/
 	function inspect($source) {
 		$fw=\Base::instance();
@@ -94,11 +95,11 @@ class Pingback extends \Prefab {
 	}
 
 	/**
-		Receive ping, check if local page is pingback-enabled, verify
-		source contents, and return XML-RPC response
-		@return string
-		@param $func callback
-		@param $path string
+	*	Receive ping, check if local page is pingback-enabled, verify
+	*	source contents, and return XML-RPC response
+	*	@return string
+	*	@param $func callback
+	*	@param $path string
 	**/
 	function listen($func,$path=NULL) {
 		$fw=\Base::instance();
@@ -151,16 +152,16 @@ class Pingback extends \Prefab {
 	}
 
 	/**
-		Return transaction history
-		@return string
+	*	Return transaction history
+	*	@return string
 	**/
 	function log() {
 		return $this->log;
 	}
 
 	/**
-		Instantiate class
-		@return object
+	*	Instantiate class
+	*	@return object
 	**/
 	function __construct() {
 		// Suppress errors caused by invalid HTML structures

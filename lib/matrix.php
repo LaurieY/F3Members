@@ -1,27 +1,28 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 //! Generic array utilities
 class Matrix extends Prefab {
 
 	/**
-		Retrieve values from a specified column of a multi-dimensional
-		array variable
-		@return array
-		@param $var array
-		@param $col mixed
+	*	Retrieve values from a specified column of a multi-dimensional
+	*	array variable
+	*	@return array
+	*	@param $var array
+	*	@param $col mixed
 	**/
 	function pick(array $var,$col) {
 		return array_map(
@@ -33,9 +34,9 @@ class Matrix extends Prefab {
 	}
 
 	/**
-		Rotate a two-dimensional array variable
-		@return NULL
-		@param $var array
+	*	Rotate a two-dimensional array variable
+	*	@return NULL
+	*	@param $var array
 	**/
 	function transpose(array &$var) {
 		$out=array();
@@ -46,11 +47,11 @@ class Matrix extends Prefab {
 	}
 
 	/**
-		Sort a multi-dimensional array variable on a specified column
-		@return bool
-		@param $var array
-		@param $col mixed
-		@param $order int
+	*	Sort a multi-dimensional array variable on a specified column
+	*	@return bool
+	*	@param $var array
+	*	@param $col mixed
+	*	@param $order int
 	**/
 	function sort(array &$var,$col,$order=SORT_ASC) {
 		uasort(
@@ -68,11 +69,11 @@ class Matrix extends Prefab {
 	}
 
 	/**
-		Change the key of a two-dimensional array element
-		@return NULL
-		@param $var array
-		@param $old string
-		@param $new string
+	*	Change the key of a two-dimensional array element
+	*	@return NULL
+	*	@param $var array
+	*	@param $old string
+	*	@param $new string
 	**/
 	function changekey(array &$var,$old,$new) {
 		$keys=array_keys($var);
@@ -82,11 +83,11 @@ class Matrix extends Prefab {
 	}
 
 	/**
-		Return month calendar of specified date, with optional setting for
-		first day of week (0 for Sunday)
-		@return array
-		@param $date string
-		@param $first int
+	*	Return month calendar of specified date, with optional setting for
+	*	first day of week (0 for Sunday)
+	*	@return array
+	*	@param $date string
+	*	@param $first int
 	**/
 	function calendar($date='now',$first=0) {
 		$parts=getdate(strtotime($date));

@@ -1,16 +1,17 @@
 <?php
 
 /*
-	Copyright (c) 2009-2012 F3::Factory/Bong Cosca, All rights reserved.
 
-	This file is part of the Fat-Free Framework (http://fatfree.sf.net).
+	Copyright (c) 2009-2015 F3::Factory/Bong Cosca, All rights reserved.
 
-	THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF
-	ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-	PURPOSE.
+	This file is part of the Fat-Free Framework (http://fatfreeframework.com).
 
-	Please see the license.txt file for more information.
+	This is free software: you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation, either version 3 of the License, or later.
+
+	Please see the LICENSE file for more information.
+
 */
 
 namespace Web;
@@ -19,9 +20,9 @@ namespace Web;
 class Geo extends \Prefab {
 
 	/**
-		Return information about specified Unix time zone
-		@return array
-		@param $zone string
+	*	Return information about specified Unix time zone
+	*	@return array
+	*	@param $zone string
 	**/
 	function tzinfo($zone) {
 		$ref=new \DateTimeZone($zone);
@@ -40,9 +41,9 @@ class Geo extends \Prefab {
 	}
 
 	/**
-		Return geolocation data based on specified/auto-detected IP address
-		@return array|FALSE
-		@param $ip string
+	*	Return geolocation data based on specified/auto-detected IP address
+	*	@return array|FALSE
+	*	@param $ip string
 	**/
 	function location($ip=NULL) {
 		$fw=\Base::instance();
@@ -76,10 +77,10 @@ class Geo extends \Prefab {
 	}
 
 	/**
-		Return weather data based on specified latitude/longitude
-		@return array|FALSE
-		@param $latitude float
-		@param $longitude float
+	*	Return weather data based on specified latitude/longitude
+	*	@return array|FALSE
+	*	@param $latitude float
+	*	@param $longitude float
 	**/
 	function weather($latitude,$longitude) {
 		$fw=\Base::instance();
