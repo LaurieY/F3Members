@@ -1,7 +1,8 @@
+<!-- user/list.htm  -->
 <script type="text/javascript">
 $(function () {
     $("#list").jqGrid({ 
-        url: "/membergrid",
+        url: "/usergrid",
         datatype: "xml",
         mtype: "GET",
         colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined"],//],
@@ -28,7 +29,7 @@ $(function () {
         viewrecords: true,
         gridview: true,
         autoencode: true,
-        caption: "Members auto grid",
+        caption: "My first auto grid",
 		 height:'auto',
 		 altRows: true,
 		 footerrow : true,

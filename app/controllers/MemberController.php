@@ -7,7 +7,7 @@ class MemberController extends Controller {
 	$auth_logger->write( 'Entering beforeroute URI= '.$f3->get('URI'  ) );
 	$auth_logger->write( "Session user_id = ".$f3->get('SESSION.user_id')); 
 	
-	if (!(($f3->get('URI')=='/login' )||($f3->get('URI')=='/logout' )||$f3->get('SESSION.user_id') )) 
+	if (!(($f3->get('URI')=='/login' )||($f3->get('URI')=='/logout' )||($f3->get('SESSION.user_id'))||( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600)>time())     ) ) 
 	// not login or logout and not a session user_id already then need to force a login
 	{ $this->f3->reroute('/login');
 		}
@@ -48,6 +48,7 @@ class MemberController extends Controller {
 				$f3->set('SESSION.crypt',$pwdcrypt);
 				$f3->set('SESSION.user_role',$thisuser->role);
 				$f3->set('SESSION.lastseen',time());
+			
 				
 				$auth_logger->write( 'Exiting checkpwd SESSION.user_id= '.$f3->get('SESSION.user_id'  ) );
 				$auth_logger->write( 'Exiting checkpwd SESSION.user_role= '.$f3->get('SESSION.user_role'  ) );
@@ -70,17 +71,18 @@ $this->f3->set('view','member/session.htm');
 	$auth_logger = new Log('auth.log');
 	$auth_logger->write( 'Entering index'  );	       
 		   $member = new Member($this->db);
-        $this->f3->set('members',$member->all());
-		        $this->f3->set('page_head','Member List');
-        $this->f3->set('message', $this->f3->get('PARAMS.message'));
-		$this->f3->set('listn', $this->f3->get('PARAMS.mylist'));
+        $f3->set('members',$member->all());
+		        $f3->set('page_head','Member List');
+				 $f3->set('page_role',$f3->get('SESSION.user_role'));
+        $f3->set('message', $f3->get('PARAMS.message'));
+		$f3->set('listn', $f3->get('PARAMS.mylist'));
 
 		
-	//     $this->f3->set('listnn','member/list'.$this->f3->get('listn').'.htm');
-	//	 $this->f3->set('view','member/list'.$this->f3->get('listn').'.htm');
-	  $this->f3->set('listnn','member/list.htm');
-	$this->f3->set('view','member/list.htm');
-		 
+	//     $f3->set('listnn','member/list'.$f3->get('listn').'.htm');
+	//	 $f3->set('view','member/list'.$f3->get('listn').'.htm');
+	  $f3->set('listnn','member/list.htm');
+	$f3->set('view','member/list.htm');
+		$f3->set('SESSION.lastseen',time()); 
 	}
 		
     public function create()

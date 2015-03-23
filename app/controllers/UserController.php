@@ -9,6 +9,8 @@ class UserController extends Controller {
         $f3->set('page_head','User List');
         $f3->set('message', $f3->get('PARAMS.message'));
         $f3->set('view','user/list.htm');
+		
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
 
 	}
 	

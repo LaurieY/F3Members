@@ -21,9 +21,16 @@
     </head>
 
     <body>
-
+<!-- contents of header.htm -->
         <div class="container">
-           <include href="member/nav.htm" />
+           <check if ="{{ @page_head == 'Admin' }}">
+		   <true>
+		   <include href="admin/nav.htm" />
+		   </true>
+		   <false>
+		   <include href="member/nav.htm" />
+		   </false>
+		   </check>
             <div class="jumbotron">
                 <h1>{{ @page_head }}</h1>
             </div>

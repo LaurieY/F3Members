@@ -1,0 +1,16 @@
+<div class="navbar">
+<!-- in user admin.htm --> 
+    <div class="navbar-inner">
+        <ul class="nav">
+
+
+			<li class="active"><a href="{{ @BASE.'/' }}"><i class="icon-plus-sign icon-black"></i> Members</a></li>
+            <check if="{{ @page_head == 'Admin' }}">
+			<li class="active"> <a href="{{ @BASE.'/users' }}"><i class="icon-th icon-black"></i>Users</a></li>
+            <li class="active"> <a href="{{ @BASE.'/admin/refs' }}"><i class="icon-plus-sign icon-black"></i> Reference Tables</a></li>
+
+           
+            </check>
+        </ul>
+    </div>
+</div>

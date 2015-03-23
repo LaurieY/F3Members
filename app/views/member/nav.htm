@@ -1,14 +1,17 @@
 <div class="navbar">
+<!-- in member nav.htm -->
     <div class="navbar-inner">
         <ul class="nav">
 
-
-            <li <check if="{{ @page_head == 'Member List' }}">class="active"</check>><a href="{{ @BASE.'/' }}"><i class="icon-th icon-black"></i> View Members</a></li>
-            <li <check if="{{ @page_head == 'Admin' }}">class="active"</check>><a href="{{ @BASE.'/admin' }}"><i class="icon-plus-sign icon-black"></i> Admin</a></li>
-
-            <check if="{{ @page_head == 'Member Modify' }}">
-            <li class="active"><a href="javascript:void(0);"><i class="icon-plus-sign icon-black"></i> Update</a></li>
+            <li <check if="{{ @page_head == 'Member List' }}">class="active"</check>><a href="{{ @BASE.'/' }}"><em class="icon-th icon-black"></em> View Members</a></li>
+      		
+			<check if="{{ @page_role == 'admin' }}">
+			<!-- page role is admin -->
+            <li class="active"><a href="{{ @BASE.'/admin' }}"<em class="icon-plus-sign icon-black"></em> Admin</a></li>
             </check>
+
+           
         </ul>
+		<!-- member nav after /ul-->
     </div>
 </div>

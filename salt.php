@@ -6,14 +6,14 @@ require('lib/bcrypt.php');
 $cry=new Bcrypt;
 echo( 'clas of $cry = '.get_class($cry)."\n");
 
-
-$salt = substr(strtr(base64_encode(openssl_random_pseudo_bytes(22)), '+', '.'), 0, 22);
-echo('Salt is '.$salt."\n");
+$salt = 'WzAaKjMNixk4J2Nw3qeUei';
+//$salt = substr(strtr(base64_encode(openssl_random_pseudo_bytes(22)), '+', '.'), 0, 22);
+//echo('Salt is '.$salt."\n");
 //echo( 'clas of $salt = '.get_class($salt)."\n");
 // 2y is the bcrypt algorithm selector, see http://php.net/crypt
 // 12 is the workload factor (around 300ms on my Core i7 machine), see http://php.net/crypt
 $hash = crypt('laurie12', '$2y$12$' . $salt);
-echo("hash ".$hash."\n");
+echo("laurie12 hash ".$hash."\n");
 $hashUpper = crypt('Laurie12', '$2y$12$' . $salt);
 echo("hashUpper ".$hashUpper."\n");
 // we can now use the generated hash as the argument to crypt(), since it too will contain $2y$12$... with a variation of the hash. No need to store the salt anymore, just the hash is enough!
