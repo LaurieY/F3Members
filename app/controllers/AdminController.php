@@ -15,15 +15,15 @@ class AdminController extends Controller {
 	{
 	$f3=$this->f3;
 	$admin_logger = new Log('admin.log');
-	$admin_logger->write('in admin index');
+	//$admin_logger->write('in admin index');
 	    $user = new User($this->db);
 			
         $this->f3->set('mem_users',$user->all());
 		
-		$admin_logger->write('mem_users are '.'');
+		//$admin_logger->write('mem_users are '.'');
         $this->f3->set('page_head','Admin');
         $this->f3->set('message', $this->f3->get('PARAMS.message'));
-		$admin_logger->write('in admin index PARAMS.message is '.$f3->get('PARAMS.message'));
+	//	$admin_logger->write('in admin index PARAMS.message is '.$f3->get('PARAMS.message'));
         $this->f3->set('view','admin/list.htm');
 
 	}

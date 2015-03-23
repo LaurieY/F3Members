@@ -9,6 +9,8 @@ $f3->config('config/config.ini');
 $f3->route('GET /membergrid [ajax]','MyAjax->members');
 //$f3->route('GET /membergrid','MyAjax->members');
 $f3->route('GET /usergrid [ajax]','MyAjax->users');
+$f3->route('POST /edituser [ajax]','MyAjax->edituser');
+$f3->route('GET /edituser ','MyAjax->edituser');
 $f3->route('GET /','MemberController->index');
 
 

@@ -3,41 +3,52 @@
 $(function () {
     $("#list").jqGrid({ 
         url: "/usergrid",
+			 editurl:"/edituser",
         datatype: "xml",
         mtype: "GET",
-        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined"],//],
+        colNames: ["Username", "Email", "Role"],//],
         colModel: [
            
-			{ name: "surname", width: 120 },
-             {name: "forename", width: 120, },
-			 { name: "membnum", width: 40 }, 
-			{ name: "phone", width: 85, align: "right" },
-            { name: "mobile", width: 85, align: "right" },
-            { name: "email", width: 210, align: "right" }, 
-			 { name: "membtype", width: 40, align: "right" },
-             { name: "location", width: 65, align: "right" },
-			  { name: "paidthisyear", width: 40, align: "right" },
-			  { name: "amtpaidthisyear", width: 70, align: "right" },
-			  		  { name: "datejoined", width: 100, align: "right" }, /**/
+			{ name: "username", width: 120 },
+             {name: "email", width: 120, editable: true, edittype:"text"},
+			 { name: "role", width: 80,align: "right",editable: true ,
+			  edittype: "select",
+                         editoptions: {
+                             value: "admin:admin;editor:editor;user:user"    }}, 
+			 /**/
 			
         ],
         pager: "#pager",
+		onSelectRow: editRow,
+		width :700,
         rowNum: 10,
         rowList: [10, 20, 30],
-        sortname: "membnum",
+        sortname: "username",
         sortorder: "asc",
         viewrecords: true,
         gridview: true,
         autoencode: true,
-        caption: "My first auto grid",
+        caption: "User auto grid",
 		 height:'auto',
 		 altRows: true,
 		 footerrow : true,
 		 userDataOnFooter : true, 
+	
     }); 
+	
+            var lastSelection;
+	        function editRow(id) {
+                if (id && id !== lastSelection) {
+                    var grid = $("#list");
+                    grid.jqGrid('restoreRow',lastSelection);
+                    grid.jqGrid('editRow',id, {keys:true, focusField: 4});
+                    lastSelection = id;
+                }
+            }
+
 
  $('#jqGrid').navGrid('#pager',
-                { edit: false, add: false, del: false, search: true, refresh: true, view: false, position: "left", cloneToTop: true });
+                { edit: true, add: true, del: true, search: true, refresh: true, view: false, position: "left", cloneToTop: true });
 	}			); 
 </script>
  
