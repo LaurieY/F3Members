@@ -223,4 +223,44 @@ public function edituser()
 }
 	// echo $f3->get('POST.oper');
 	}
+
+public function editmember()
+	 {
+	 $f3=$this->f3; 
+	 	$admin_logger = new Log('admin.log');
+	$admin_logger->write('in editmember');
+
+	$members =	new Member($this->db);
+ $f3->set('members',$members);
+	 switch ($f3->get('POST.oper')) {
+    case "add":
+        // do mysql insert statement here
+		$members->copyfrom('POST');
+			
+		$admin_logger->write('in addmember uname '.$members->surname);
+		$admin_logger->write('in addmember Forename '.$members->forename);
+
+		$members->save();
+    break;
+    case "edit":
+		  
+		  
+		 // $f3->get('members')->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+		  $members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+	$admin_logger->write('in editmember '.$f3->get('members')->surname);
+	  $members->copyfrom('POST');
+	
+	  $members->update();
+        // do mysql update statement here
+	//	/
+    break;
+    case "del":
+        // do mysql delete statement here
+		$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+		$members->erase();
+    break;
+}
+	// echo $f3->get('POST.oper');
+	}
+	
 } // end of class

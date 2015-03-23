@@ -10,9 +10,9 @@ $f3->route('GET /membergrid [ajax]','MyAjax->members');
 //$f3->route('GET /membergrid','MyAjax->members');
 $f3->route('GET /usergrid [ajax]','MyAjax->users');
 $f3->route('POST /edituser [ajax]','MyAjax->edituser');
-$f3->route('GET /edituser ','MyAjax->edituser');
-$f3->route('GET /','MemberController->index');
 
+$f3->route('GET /','MemberController->index');
+$f3->route('POST /editmember [ajax]','MyAjax->editmember');
 
 $f3->route('GET /login','MemberController->login');
 $f3->route('GET /logout','MemberController->logout');

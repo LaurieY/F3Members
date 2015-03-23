@@ -2,25 +2,27 @@
 $(function () {
     $("#list").jqGrid({ 
         url: "/membergrid",
+		editurl:"/editmember",
         datatype: "xml",
         mtype: "GET",
         colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined"],//],
         colModel: [
            
-			{ name: "surname", width: 120 },
-             {name: "forename", width: 120, },
+			{ name: "surname", width: 120,editable: true, edittype:"text"},
+             {name: "forename", width: 120,editable: true, edittype:"text"},
 			 { name: "membnum", width: 40 }, 
 			{ name: "phone", width: 85, align: "right" },
             { name: "mobile", width: 85, align: "right" },
             { name: "email", width: 210, align: "right" }, 
 			 { name: "membtype", width: 40, align: "right" },
              { name: "location", width: 65, align: "right" },
-			  { name: "paidthisyear", width: 40, align: "right" },
+			  { name: "paidthisyear", width: 40, align: "right" ,editable: true, edittype:"text"},
 			  { name: "amtpaidthisyear", width: 70, align: "right" },
 			  		  { name: "datejoined", width: 100, align: "right" }, /**/
 			
         ],
         pager: "#pager",
+		onSelectRow: editRow,
         rowNum: 10,
         rowList: [10, 20, 30],
         sortname: "membnum",
@@ -34,9 +36,20 @@ $(function () {
 		 footerrow : true,
 		 userDataOnFooter : true, 
     }); 
-
- $('#jqGrid').navGrid('#pager',
-                { edit: false, add: false, del: false, search: true, refresh: true, view: false, position: "left", cloneToTop: true });
+            var lastSelection;
+	        function editRow(id) {
+                if (id && id !== lastSelection) {
+                    var grid = $("#list");
+                    grid.jqGrid('restoreRow',lastSelection);
+                    grid.jqGrid('editRow',id, {keys:true, focusField: 4});
+                    lastSelection = id;
+                }
+            }
+ $('#list').navGrid('#pager',
+                { edit: true, add: true, del: true, search: true, refresh: false, view: false, position: "left", cloneToTop: true },
+				{
+                    closeAfterAdd: true,
+                    recreateForm: true,});
 	}			); 
 </script>
  
