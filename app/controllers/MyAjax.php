@@ -188,20 +188,32 @@ public function edituser()
 	// $f3->get('POST.oper');
 
 	  //$this->f3->set('mem_users',$user->all());
-	 echo (' POST.oper = '.$f3->get('POST.oper')); 
- 
+	// echo (' POST.oper = '.$f3->get('POST.oper'));
+	$mem_user =	new User($this->db);
+ $f3->set('mem_user',$mem_user);
 	 switch ($f3->get('POST.oper')) {
     case "add":
         // do mysql insert statement here
+		$mem_user->copyfrom('POST');
+		$salt=$f3->get('security_salt'); 
+		$encrypt_pwd =crypt($mem_user->password, '$2y$12$' . $salt); //generate the password
+		
+		$admin_logger->write('in edituser uname '.$mem_user->username);
+		$admin_logger->write('in edituser pwd '.$mem_user->password);
+		$mem_user->password = $encrypt_pwd ;
+		$admin_logger->write('in edituser pwd '.$mem_user->password);
+		$admin_logger->write('in edituser pwd'.$mem_user->password."##\n");
+		$mem_user->save();
     break;
     case "edit":
-		  $f3->set('mem_user', new User($this->db));
 		  
-		  $f3->get('mem_user')->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
-		//  $admin_logger->write('in edituser mem_user= '.var_dump($f3->get('mem_user')));
-	  $f3->get('mem_user')->copyfrom('POST');
+		  
+		 // $f3->get('mem_user')->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+		  $mem_user->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+	$admin_logger->write('in edituser '.$f3->get('mem_user')->username);
+	  $mem_user->copyfrom('POST');
 	
-	  $f3->get('mem_user')->update();
+	  $mem_user->update();
         // do mysql update statement here
 	//	/
     break;

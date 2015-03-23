@@ -197,6 +197,7 @@ $this->f3->set('view','member/session.htm');
 		//$mysession = http_build_query($f3->get('SESSION'));
 		//$f3->dump($mysession   );
 		$this->f3->set('page_head','Login');
+		$this->f3->set('page_role','');
 		$f3->set('view','member/login.htm');
 	}
 	function auth() {

@@ -6,15 +6,16 @@ $(function () {
 			 editurl:"/edituser",
         datatype: "xml",
         mtype: "GET",
-        colNames: ["Username", "Email", "Role"],//],
+        colNames: ["Username", "Email", "Role","Password"],//],
         colModel: [
            
-			{ name: "username", width: 120 },
+			{ name: "username", width: 120, editable: true },
              {name: "email", width: 120, editable: true, edittype:"text"},
 			 { name: "role", width: 80,align: "right",editable: true ,
 			  edittype: "select",
                          editoptions: {
                              value: "admin:admin;editor:editor;user:user"    }}, 
+			{name: "password", width: 120, editable: true, },
 			 /**/
 			
         ],
@@ -47,8 +48,12 @@ $(function () {
             }
 
 
- $('#jqGrid').navGrid('#pager',
-                { edit: true, add: true, del: true, search: true, refresh: true, view: false, position: "left", cloneToTop: true });
+ $('#list').navGrid('#pager',
+                { edit: false, add: true, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: false },
+				{
+                    closeAfterAdd: true,
+                    recreateForm: true,}
+					);
 	}			); 
 </script>
  
