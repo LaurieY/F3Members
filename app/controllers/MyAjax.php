@@ -25,11 +25,131 @@ $f3=$this->f3;
 		$this->f3=$f3;	
 		$this->db=$db;
 	}
-	public function members()
+	public function members() //for POST membergrid
 	 {
 	 $f3=$this->f3;
+	 $members =	new Member($this->db);
 	 $f3->set('page_head','User List');
-//$f3->dump($f3->get('page_head'));
+	 $admin_logger = new Log('admin.log');
+	$admin_logger->write('in fn members');
+	$admin_logger->write('in fn members '.get_class($this->db)." Parent is ".get_parent_class($this->db)."\n");
+	$class_methods = get_class_methods('DB\SQL');
+/**	foreach ($class_methods as $method_name) {
+    $admin_logger->write('in fn members class methods '.$method_name."\n");
+	}**/
+	
+	$admin_logger->write('GET _search = '.$_GET['_search']."\n");
+if ($f3->get('GET._search')=='true'){
+// set up filters
+$filters = $f3->get('GET.filters');
+$admin_logger->write('in fn members filters= '.$filters."\n");
+
+$where = "";
+        if (isset($filters)) {
+            $filters = json_decode($filters);
+            $where = " where ";
+            $whereArray = array();
+            $rules = $filters->rules;
+/********************************/
+ $groupOperation = $filters->groupOp;
+        foreach($rules as $rule) {
+
+            $fieldName = $rule->field;
+            
+			$fieldData =str_replace("'", "",$this->db->quote($rule->data));
+			$admin_logger->write('in fn members new fielddata = '.str_replace("'", "",$fieldData)."\n");
+		   //$fieldData = mysqli_real_escape_string($members,$rule->data); 
+            switch ($rule->op) {
+           case "eq":
+                $fieldOperation = " = ".$fieldData."";
+                break;
+           case "ne":
+                $fieldOperation = " != '".$fieldData."'";
+                break;
+           case "lt":
+                $fieldOperation = " < '".$fieldData."'";
+                break;
+           case "gt":
+                $fieldOperation = " > '".$fieldData."'";
+                break;
+           case "le":
+                $fieldOperation = " <= '".$fieldData."'";
+                break;
+           case "ge":
+                $fieldOperation = " >= '".$fieldData."'";
+                break;
+           case "nu":
+                $fieldOperation = " = ''";
+                break;
+           case "nn":
+                $fieldOperation = " != ''";
+                break;
+           case "in":
+                $fieldOperation = " IN (".$fieldData.")";
+                break;
+           case "ni":
+                $fieldOperation = " NOT IN '".$fieldData."'";
+                break;
+           case "bw":
+                $fieldOperation = " LIKE '".$fieldData."%'";
+                break;
+           case "bn":
+                $fieldOperation = " NOT LIKE '".$fieldData."%'";
+                break;
+           case "ew":
+                $fieldOperation = " LIKE '%".$fieldData."'";
+                break;
+           case "en":
+                $fieldOperation = " NOT LIKE '%".$fieldData."'";
+                break;
+           case "cn":
+                $fieldOperation = " LIKE '%".$fieldData."%'";
+                break;
+           case "nc":
+                $fieldOperation = " NOT LIKE '%".$fieldData."%'";
+                break;
+            default:
+                $fieldOperation = "";
+                break;
+                }
+            if($fieldOperation != "") $whereArray[] = $fieldName.$fieldOperation;
+        }
+        if (count($whereArray)>0) {
+            $where .= join(" ".$groupOperation." ", $whereArray);
+        } else {
+            $where = "";
+        }
+
+/*******
+           foreach($rules as $rule) {
+                $whereArray[] = $rule->field." like '%".$rule->data."%'";
+            }
+            if (count($whereArray)>0) {
+                $where .= join(" and ", $whereArray);
+            } else {
+                $where = "";
+            }
+
+
+*********/ 
+        }   
+	$admin_logger->write('in fn members where= '.$where."\n");
+	/**********************  Now get the resulting xml via SWL using this where selection ******/
+	$whh =	$this->getresult_where($where);
+	
+	$admin_logger->write('in fn members where result = '.$whh."\n");
+echo $whh;
+}
+else {
+echo $this->getresult_where("where 1");
+}  //end of else of _search
+} // end of function  members
+
+
+private function getresult_where( $where_to_use)
+{
+ $f3=$this->f3;
+  $admin_logger = new Log('admin.log');
 header("Content-type: text/xml;charset=utf-8");
  $page = $_GET['page']; 
  $limit = $_GET['rows']; 
@@ -39,7 +159,7 @@ header("Content-type: text/xml;charset=utf-8");
  $db = mysql_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass')) or die("Connection Error: " . mysql_error()); 
  mysql_select_db($f3->get('db_name')) or die("Error connecting to db."); 
  // calculate the number of rows for the query. We need this for paging the result 
-$result = mysql_query("SELECT COUNT(*) AS count FROM members"); 
+$result = mysql_query("SELECT COUNT(*) AS count FROM members ".$where_to_use); 
 $row = mysql_fetch_array($result,MYSQL_ASSOC); 
 $count = $row['count']; 
  
@@ -64,8 +184,17 @@ if($start <0) $start = 0;
 // the actual query for the grid data 
 //$SQL = "SELECT id,surname	, forename, membnum FROM members ORDER BY $sidx $sord LIMIT $start , $limit"; 
 //$SQL = "SELECT id, FROM members ORDER BY $sidx $sord LIMIT $start , $limit"; 
- $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,datejoined FROM members ORDER BY $sidx $sord LIMIT $start , $limit"; 
-$result = mysql_query( $SQL ) or die("Couldn't execute query.".mysql_error()); 
+
+/************Get Total paid for this selection  ************/
+ $SQL_total="select sum(amtpaidthisyear)  as amt from members ".$where_to_use;
+ $result = mysql_query( $SQL_total ) or die("Couldn't execute query.".mysql_error()); 
+ $row = mysql_fetch_array($result,MYSQL_ASSOC); 
+ $amt_total = $row['amt'];
+ 
+ 
+ $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,datejoined FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
+ $admin_logger->write('in getresult_where SQL = '. $SQL."\n");
+ $result = mysql_query( $SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
 $s .=  "<rows>";
 $s .= "<page>".$page."</page>";
@@ -73,7 +202,7 @@ $s .= "<total>".$total_pages."</total>";
 $s .= "<records>".$count."</records>";
 
 $s .= '<userdata name="email">Total</userdata>';   # name = target column's name
-$s .= '<userdata name="amtpaidthisyear">1b2b3b</userdata>';
+$s .= '<userdata name="amtpaidthisyear">'.$amt_total.'</userdata>'; 
    
  
 // be sure to put text data in CDATA
@@ -105,9 +234,12 @@ $s .= "</row>";
 	
 	} 
 $s .= "</rows>"; 
-	echo $s;
-} // end of function  members
 
+$admin_logger->write('in getresult_where result = '.$s."\n");
+	return $s;
+
+	
+}
 public function users()
 	 {
 	 $f3=$this->f3;

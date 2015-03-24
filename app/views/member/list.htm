@@ -8,17 +8,22 @@ $(function () {
         colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined"],//],
         colModel: [
            
-			{ name: "surname", width: 120,editable: true, edittype:"text"},
+			{ name: "surname", width: 120,editable: true, edittype:"text",searchoptions : {
+                            // show search options
+                            sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  							
+						}},
              {name: "forename", width: 120,editable: true, edittype:"text"},
-			 { name: "membnum", width: 40 }, 
-			{ name: "phone", width: 85, align: "right" },
-            { name: "mobile", width: 85, align: "right" },
-            { name: "email", width: 210, align: "right" }, 
+			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] } }, //  eq = equal to  	
+			{ name: "phone", width: 85, align: "right",editable: true, edittype:"text" },
+            { name: "mobile", width: 85, align: "right",editable: true, edittype:"text" }, 
+            { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
 			 { name: "membtype", width: 40, align: "right" },
              { name: "location", width: 65, align: "right" },
-			  { name: "paidthisyear", width: 40, align: "right" ,editable: true, edittype:"text"},
-			  { name: "amtpaidthisyear", width: 70, align: "right" },
-			  		  { name: "datejoined", width: 100, align: "right" }, /**/
+			 { name: "paidthisyear", width: 40, align: "right" ,editable: true, 
+			  edittype:"checkbox", editoptions: { value:"True:False"}, 
+			  formatter: "checkbox", formatoptions: {disabled : false},}, 
+			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true}},
+			  { name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
         ],
         pager: "#pager",
@@ -34,22 +39,25 @@ $(function () {
 		 height:'auto',
 		 altRows: true,
 		 footerrow : true,
-		 userDataOnFooter : true, 
+		 userDataOnFooter : true,
+	 
     }); 
             var lastSelection;
 	        function editRow(id) {
                 if (id && id !== lastSelection) {
                     var grid = $("#list");
-                    grid.jqGrid('restoreRow',lastSelection);
+                    //grid.jqGrid('restoreRow',lastSelection);
                     grid.jqGrid('editRow',id, {keys:true, focusField: 4});
                     lastSelection = id;
                 }
             }
  $('#list').navGrid('#pager',
-                { edit: true, add: true, del: true, search: true, refresh: false, view: false, position: "left", cloneToTop: true },
+                { edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: true },
 				{
                     closeAfterAdd: true,
                     recreateForm: true,});
+			$('#list').jqGrid('filterToolbar',{searchOperators: true,	});
+	
 	}			); 
 </script>
  
