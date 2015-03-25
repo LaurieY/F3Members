@@ -59,10 +59,65 @@ $(function () {
                     closeAfterAdd: true,
                     recreateForm: true,});
 			$('#list').jqGrid('filterToolbar',{searchOperators: true,	});
-	
+			
+	$("#cm1").click( function() {
+	var s;
+	s = $("#list").jqGrid('getGridParam','selarrrow');
+	alert(s);
+	// s is list of id's, try changing it to member  numbers
+	z= $("#list").jqGrid('getCell',s[0],'membnum');
+	alert(z);
+});
+ var grid = $("#list");
+ 
+	$("#cm2").click( function() { //show only unpaid
+   var text = $("#searchText").val();
+    var postdata = grid.jqGrid('getGridParam', 'postData');
+    // build up the filter
+    // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
+    // ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+    var myfilter =  '{"groupOp":"AND","rules":[{"field":"paidthisyear","op":"eq","data":"0"}]}';         
+ 
+
+    $.extend(postdata, { filters: myfilter });
+    grid.jqGrid('setGridParam', { search: text.length > 1, postData: postdata });        
+    grid.trigger("reloadGrid", [{ page: 1}]);
+});
+
+
+ // Add Search
+$("#mySearch").button().click(function () {
+    var text = $("#searchText").val();
+    var postdata = grid.jqGrid('getGridParam', 'postData');
+    // build up the filter
+    // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
+    // ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+    var myfilter =  '{"groupOp":"AND","rules":[{"field":"surname","op":"bw","data":"'.concat(text).concat('"}]}');         
+  //  myfilter.rules.push({ field: "surname", op: "cn", data: text });
+  //  myfilter.rules.push({ field: "forename", op: "cn", data: text });
+ //   myfilter.rules.push({ field: "email", op: "cn", data: text });
+
+    $.extend(postdata, { filters: myfilter });
+    grid.jqGrid('setGridParam', { search: text.length > 1, postData: postdata });        
+    grid.trigger("reloadGrid", [{ page: 1}]);
+});
+ 
 	}			); 
 </script>
  
 
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
+	<a href="javascript:void(0)" id="cm1">Get Selected id's</a>
+	</br>
+	<a href="javascript:void(0)" id="cm2">Show only Unpaid</a>
+		</br>
+	<a href="javascript:void(0)" id="cm3">Get Selected id's</a>
+		</br>
+	<a href="javascript:void(0)" id="cm4">Get Selected id's</a>
+		</br>
+		Get Surname starts with
+	<fieldset>
+<input type="text" name="a" id="searchText" value="Ed"/>
+<button type="button" id="mySearch">Search</button>
+</fieldset>
