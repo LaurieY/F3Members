@@ -55,8 +55,11 @@ $where = "";
         foreach($rules as $rule) {
 
             $fieldName = $rule->field;
-            
-			$fieldData =str_replace("'", "",$this->db->quote($rule->data));
+            $admin_logger->write('in fn members old fieldname = '.$fieldName."\n");
+			$admin_logger->write('in fn members old fielddata = '.$rule->data."\n");
+			//$admin_logger->write('in fn members quoted fielddata = '.$this->db->quote($rule->data)."\n");
+			$fieldData =$rule->data;
+			//$fieldData =str_replace("'", "",$this->db->quote($rule->data)); // not necessary, the quote only add spurious quoted that I have to remove
 			$admin_logger->write('in fn members new fielddata = '.str_replace("'", "",$fieldData)."\n");
 		   //$fieldData = mysqli_real_escape_string($members,$rule->data); 
             switch ($rule->op) {
