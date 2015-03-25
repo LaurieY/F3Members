@@ -17,11 +17,9 @@ $(function () {
 			{ name: "phone", width: 85, align: "right",editable: true, edittype:"text" },
             { name: "mobile", width: 85, align: "right",editable: true, edittype:"text" }, 
             { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
-			 { name: "membtype", width: 40, align: "right" },
+			 { name: "membtype", width: 90, align: "right",editable: true, },
              { name: "location", width: 65, align: "right" },
-			 { name: "paidthisyear", width: 40, align: "right" ,editable: true, 
-			  edittype:"checkbox", editoptions: { value:"True:False"}, 
-			  formatter: "checkbox", formatoptions: {disabled : false},}, 
+			 { name: "paidthisyear", width: 80, align: "right" ,editable: true, 			  edittype:"text", }, 
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true}},
 			  { name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
@@ -45,14 +43,18 @@ $(function () {
 	 
     }); 
             var lastSelection;
-	        function editRow(id) {
+function editRow(id) { var grid = $("#list");
                 if (id && id !== lastSelection) {
-                    var grid = $("#list");
+                   
                     grid.jqGrid('restoreRow',lastSelection);
-                    grid.jqGrid('editRow',id, {keys:true, focusField: 4});
+                  //  grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
+				 } grid.jqGrid('editRow',id, true,  '','','','',reload);
                     lastSelection = id;
-                }
+                
             }
+		function reload(rowid, result) {
+		$("#list").trigger("reloadGrid", [{ page: 1}]);
+}
  $('#list').navGrid('#pager',
                 { edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: true },
 				{
@@ -60,28 +62,30 @@ $(function () {
                     recreateForm: true,});
 			$('#list').jqGrid('filterToolbar',{searchOperators: true,	});
 			
-	$("#cm1").click( function() {
-	var s;
-	s = $("#list").jqGrid('getGridParam','selarrrow');
-	alert(s);
-	// s is list of id's, try changing it to member  numbers
-	z= $("#list").jqGrid('getCell',s[0],'membnum');
-	alert(z);
-});
+	
  var grid = $("#list");
- 
+ //***** SHOW only UNPAIDS ***********
 	$("#cm2").click( function() { //show only unpaid
    var text = $("#searchText").val();
     var postdata = grid.jqGrid('getGridParam', 'postData');
     // build up the filter
     // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
     // ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
-    var myfilter =  '{"groupOp":"AND","rules":[{"field":"paidthisyear","op":"eq","data":"0"}]}';         
+    var myfilter =  '{"groupOp":"AND","rules":[{"field":"paidthisyear","op":"eq","data":"\'N\'"}]}';         
  
 
     $.extend(postdata, { filters: myfilter });
-    grid.jqGrid('setGridParam', { search: text.length > 1, postData: postdata });        
+    grid.jqGrid('setGridParam', { search: text.length > 0, postData: postdata });        
     grid.trigger("reloadGrid", [{ page: 1}]);
+}); 
+/***********  Mark Selected Rows as Paid  **/
+$("#cm3").click( function() {
+	var s;
+	s = $("#list").jqGrid('getGridParam','selarrrow');
+	alert(s);
+	// s is list of id's, try changing it to member  numbers
+	z= $("#list").jqGrid('getCell',s[0],'membnum');
+	alert(z);
 });
 
 
@@ -108,14 +112,16 @@ $("#mySearch").button().click(function () {
 
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
-	<a href="javascript:void(0)" id="cm1">Get Selected id's</a>
-	</br>
+	<br>
+	<a href="javascript:void(0)" id="cm1">Refresh </a>
+	<br>
+	<br>
 	<a href="javascript:void(0)" id="cm2">Show only Unpaid</a>
-		</br>
-	<a href="javascript:void(0)" id="cm3">Get Selected id's</a>
-		</br>
-	<a href="javascript:void(0)" id="cm4">Get Selected id's</a>
-		</br>
+		<br>
+		<br>
+	<a href="javascript:void(0)" id="cm3">Mark Selected as Paid</a>
+		<br>
+		<br>
 		Get Surname starts with
 	<fieldset>
 <input type="text" name="a" id="searchText" value="Ed"/>

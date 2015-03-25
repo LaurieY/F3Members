@@ -371,7 +371,12 @@ public function editmember()
     case "add":
         // do mysql insert statement here
 		$members->copyfrom('POST');
-			
+		if ($members->paidthisyear="Y")	{
+		$thismember= $members->membnum;
+		/***  calculate the amount paid  if added as zero ******/
+
+		
+		}
 		$admin_logger->write('in addmember uname '.$members->surname);
 		$admin_logger->write('in addmember Forename '.$members->forename);
 
@@ -382,10 +387,28 @@ public function editmember()
 		  
 		 // $f3->get('members')->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
 		  $members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
-	$admin_logger->write('in editmember '.$f3->get('members')->surname);
-	  $members->copyfrom('POST');
+	$admin_logger->write('in editmember for '.$members->surname.' membnum '.$members->membnum.' paidthis year '.$members->paidthisyear);
 	
-	  $members->update();
+	/*********IF the field paidthisyear has been changed from N to Y then also update the amtpaidthisyear using feespertypes table *****/
+	$wasnotpaid=false;
+	if ($members->paidthisyear=="N")	{$wasnotpaid=true;}
+	/**** now fetch the existing row to check if paidthisyear is about to change ****/
+	$admin_logger->write('in editmember for wasnotpaid = '.$wasnotpaid);
+		
+		//$thismember= $members->membnum;
+		$members->copyfrom('POST');
+	// ********* calculate amount paid
+	//$feespertpes =	new Feespertypes($this->db);
+	$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
+	$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
+	$admin_logger->write('in editmember /feespertype '.$feespertypes->membtype.' feetopay '.$feespertypes->feetopay);
+	$feetopay = $feespertypes->feetopay;
+	if($wasnotpaid && ($members->paidthisyear=="Y")) { $members->amtpaidthisyear= $feespertypes->feetopay;}
+	if(!$wasnotpaid && ($members->paidthisyear=="N")) { $members->amtpaidthisyear= 0;}
+	
+	
+	
+		$members->update();
         // do mysql update statement here
 	//	/
     break;
