@@ -168,6 +168,8 @@ class SQL {
 					$keys[]='/'.preg_quote(is_numeric($key)?chr(0).'?':$key).
 						'/';
 				}
+			//	print_r("LEY1   \n");
+			//	var_dump($query); //LEY
 				$query->execute();
 				$error=$query->errorinfo();
 				if ($error[0]!=\PDO::ERR_NONE) {
@@ -180,6 +182,9 @@ class SQL {
 					'(?:CALL|EXPLAIN|SELECT|PRAGMA|SHOW|RETURNING|EXEC)\b/is',
 					$cmd)) {
 					$result=$query->fetchall(\PDO::FETCH_ASSOC);
+				//	print_r("LEY2   \n");
+				//	var_dump($query); //LEY
+				//	var_dump($result); //LEY
 					// Work around SQLite quote bug
 					if (preg_match('/sqlite2?/',$this->engine))
 						foreach ($result as $pos=>$rec) {
@@ -195,6 +200,9 @@ class SQL {
 				}
 				else
 					$this->rows=$result=$query->rowcount();
+			//		print_r("LEY3   \n");
+			//		var_dump($query); //LEY
+			//		var_dump($result); //LEY
 				$query->closecursor();
 				unset($query);
 			}

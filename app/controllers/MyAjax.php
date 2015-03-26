@@ -33,8 +33,8 @@ $f3=$this->f3;
 	 $admin_logger = new Log('admin.log');
 	$admin_logger->write('in fn members');
 	$admin_logger->write('in fn members '.get_class($this->db)." Parent is ".get_parent_class($this->db)."\n");
-	$class_methods = get_class_methods('DB\SQL');
-/**	foreach ($class_methods as $method_name) {
+/**	$class_methods = get_class_methods('DB\SQL');
+	foreach ($class_methods as $method_name) {
     $admin_logger->write('in fn members class methods '.$method_name."\n");
 	}**/
 	
@@ -67,7 +67,7 @@ $where = "";
                 $fieldOperation = " = ".$fieldData."";
                 break;
            case "ne":
-                $fieldOperation = " != '".$fieldData."'";
+                $fieldOperation = " != ".$fieldData."";
                 break;
            case "lt":
                 $fieldOperation = " < '".$fieldData."'";
@@ -370,15 +370,48 @@ public function editmember()
 	 switch ($f3->get('POST.oper')) {
     case "add":
         // do mysql insert statement here
+		
+		/******  Find the next membership number as the highest+1**/
+	
+	
+	//$result=$this->db->exec('SELECT max(membnum) as maxnum FROM members '); 
+	$result=$this->db->exec('SELECT membnum FROM members order by membnum DESC LIMIT 1'); 
+	$admin_logger->write('in addmember MAXMEMBNUM= = '.print_r($result));
+	var_dump("Line 390");
+	var_dump($result);
+	$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
+
+//foreach($result as $row)
+//$admin_logger->write('each row of result = '.$row['membnum']."\n");
+
+	$admin_logger->write('in addmember maxmembnum row = '.$result[0]['membnum']."\n");
+
+	$max_membnum = ((int) $result[0]['membnum'])+1;
+//exit("EXIT LEY4\n");
+	
 		$members->copyfrom('POST');
-		if ($members->paidthisyear="Y")	{
+		$admin_logger->write('in addmember maxmembnum = '.$members->membnum."\n");
+		$members->membnum=$max_membnum;
+		
+		
+		$admin_logger->write('in addmember paidthisyear = '.$members->paidthisyear);
+		if ($members->paidthisyear=="Y")	{ 
 		$thismember= $members->membnum;
 		/***  calculate the amount paid  if added as zero ******/
-
+		if ($members->amtpaidthisyear> 0) {$admin_logger->write('in addmember amountpaid = '.$members->amtpaidthisyear);
+			}	
 		
-		}
+		else {
+		$admin_logger->write('in addmember NO amount paidthisyear ');
+		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
+		$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
+		$feetopay = $feespertypes->feetopay;
+		$members->amtpaidthisyear = $feetopay;
+		}}
 		$admin_logger->write('in addmember uname '.$members->surname);
 		$admin_logger->write('in addmember Forename '.$members->forename);
+		
+			
 
 		$members->save();
     break;

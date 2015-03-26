@@ -52,11 +52,13 @@ function editRow(id) { var grid = $("#list");
                     lastSelection = id;
                 
             }
+			
+			
 		function reload(rowid, result) {
 		$("#list").trigger("reloadGrid", [{ page: 1}]);
-}
+		}
  $('#list').navGrid('#pager',
-                { edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: true },
+                { edit: true, add: true, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
 				{
                     closeAfterAdd: true,
                     recreateForm: true,});
@@ -64,6 +66,26 @@ function editRow(id) { var grid = $("#list");
 			
 	
  var grid = $("#list");
+
+//***************  REFRESH BUTTON **********/
+$("#cm1").click( function() { //Refresh
+		var grid = $("#list");
+		//$('grid').jqGrid('clearGridData');
+		//$('grid').jqGrid('setGridParam', {data: dataToLoad});
+		//
+		  var text = $("#searchText").val();
+    var postdata = grid.jqGrid('getGridParam', 'postData');
+    // build up the filter
+    // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
+    // ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+    var myfilter =  '{"groupOp":"AND","rules":[{"field":"paidthisyear","op":"ne","data":"\'A\'"}]}';         
+ 
+
+    $.extend(postdata, { filters: myfilter });
+    grid.jqGrid('setGridParam', { search: text.length > 0, postData: postdata });        
+    grid.trigger("reloadGrid", [{ page: 1}]);$("grid").trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+ 
+});
  //***** SHOW only UNPAIDS ***********
 	$("#cm2").click( function() { //show only unpaid
    var text = $("#searchText").val();
@@ -113,7 +135,7 @@ $("#mySearch").button().click(function () {
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
 	<br>
-	<a href="javascript:void(0)" id="cm1">Refresh </a>
+	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 	<br>
 	<br>
 	<a href="javascript:void(0)" id="cm2">Show only Unpaid</a>
