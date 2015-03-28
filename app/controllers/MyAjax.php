@@ -436,10 +436,12 @@ public function editmember()
 	$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
 	$admin_logger->write('in editmember /feespertype '.$feespertypes->membtype.' feetopay '.$feespertypes->feetopay);
 	$feetopay = $feespertypes->feetopay;
+	var_dump($members);
+	
 	if($wasnotpaid && ($members->paidthisyear=="Y")) { $members->amtpaidthisyear= $feespertypes->feetopay;}
 	if(!$wasnotpaid && ($members->paidthisyear=="N")) { $members->amtpaidthisyear= 0;}
 	
-	
+	var_dump($members);
 	
 		$members->update();
         // do mysql update statement here
@@ -453,5 +455,16 @@ public function editmember()
 }
 	// echo $f3->get('POST.oper');
 	}
+	
+	function markpaid() { 
+	 $f3=$this->f3; 
+	$admin_logger = new Log('admin.log');
+	$admin_logger->write('in markpaid '.$this->f3->get('POST.membnum') );
+	$members =	new Member($this->db);
+	$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+	$members->paidthisyear='Y';
+	$thismember= $members->membnum;
+	$members->update();
+	echo('Done that');	}
 	
 } // end of class

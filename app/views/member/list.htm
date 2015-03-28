@@ -101,14 +101,29 @@ $("#cm1").click( function() { //Refresh
     grid.trigger("reloadGrid", [{ page: 1}]);
 }); 
 /***********  Mark Selected Rows as Paid  **/
-$("#cm3").click( function() {
+$("#cm3").click( function() { 
 	var s;
 	s = $("#list").jqGrid('getGridParam','selarrrow');
 	alert(s);
+	 
+	for(i=0;i <s.length; i++){
+		$("#list").jqGrid('resetSelection');
+//		$("#list").jqGrid('setCell',s[i],'paidthisyear',"Y");
+	//	$("#list").jqGrid('editRow',s[i]);
+	rowId=s[i];
+	$("#" + rowId).find('td').eq('9').html('Y')
+		//$("#list").jqGrid('saveRow',s[i],false,'/editmember');
+		$("#list").jqGrid('editRow',s[i]);
+		$("#list").jqGrid('saveRow',s[i],false,'/editmember');
+	}
 	// s is list of id's, try changing it to member  numbers
-	z= $("#list").jqGrid('getCell',s[0],'membnum');
-	alert(z);
-});
+	//z= $("#list").jqGrid('getCell',s[i],'membnum');
+	//alert(z);}
+	x= "membnum=2";
+	 $.post("\markpaid",        x);
+
+}
+);
 
 
  // Add Search

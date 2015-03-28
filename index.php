@@ -13,6 +13,7 @@ $f3->route('POST /edituser [ajax]','MyAjax->edituser');
 
 $f3->route('GET /','MemberController->index');
 $f3->route('POST /editmember [ajax]','MyAjax->editmember');
+$f3->route('POST /app/views/markpaid [ajax]','MyAjax->markpaid'); 
 
 $f3->route('GET /login','MemberController->login');
 $f3->route('GET /logout','MemberController->logout');
