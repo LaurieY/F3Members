@@ -85,7 +85,19 @@ $this->f3->set('view','member/session.htm');
 		$f3->set('SESSION.lastseen',time()); 
 	}
 		
-    public function create()
+    public function payments ()
+	
+	{
+	$f3=$this->f3;
+		   $member = new Member($this->db);
+    $f3->set('members',$member->all());
+	$f3->set('page_head','Update Payments');
+	$f3->set('page_role',$f3->get('SESSION.user_role'));
+	$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
+	$f3->set('view','member/listpaid.htm');
+	$f3->set('SESSION.lastseen',time()); 
+	}
+	public function create()
     {
         if($this->f3->exists('POST.create'))
         {

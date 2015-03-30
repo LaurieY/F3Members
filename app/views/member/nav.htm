@@ -4,7 +4,8 @@
         <ul class="nav">
 
             <li <check if="{{ @page_head == 'Member List' }}">class="active"</check>><a href="{{ @BASE.'/' }}"><em class="icon-th icon-black"></em> View Members</a></li>
-      		
+             <li <check if="{{ @page_head == 'Member List' }}">class="active"</check>><a href="{{ @BASE.'/payments' }}"><em class="icon-th icon-black"></em> Member Payments</a></li>
+    		
 			<check if="{{ @page_role == 'admin' }}">
 			<!-- page role is admin -->
             <li class="active"><a href="{{ @BASE.'/admin' }}"><em class="icon-plus-sign icon-black"></em> Admin</a></li>
