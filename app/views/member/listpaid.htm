@@ -47,6 +47,7 @@ $(function () {
 		 footerrow : true,
 		 userDataOnFooter : true,
 	 multiselect: false,
+								//	 ajaxRowOptions: { async: true },
 	// multikey: "ctrlKey",
 	 	loadComplete: function () { // change the edit icon into a Euro sign
                    // $(this).find("div.ui-inline-del>span")
@@ -57,8 +58,8 @@ $(function () {
                 onCellSelect: function (rowid,iCol,cellcontent,e) {
                    // if (iCol >= firstButtonColumnIndex) {
                         alert("rowid="+rowid+"\n");
-						x= "membnum=601";
-	 $.post("\markpaid",        x);
+						x= [membnum="601",membtype="M"];
+	 $.post("\markpaid",{membnum:"601",membtype:"M"});
                   //  }
                 },
 	/*			onSelectRow: function(id) {

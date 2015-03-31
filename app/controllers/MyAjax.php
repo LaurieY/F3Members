@@ -363,6 +363,7 @@ public function editmember()
 	 {
 	 $f3=$this->f3; 
 	 	$admin_logger = new Log('admin.log');
+		$f3->set('admin_log',$admin_logger);
 	$admin_logger->write('in editmember');
 
 	$members =	new Member($this->db);
@@ -415,33 +416,22 @@ public function editmember()
 
 		$members->save();
     break;
-    case "edit":
+    case "edit":   //************************************ EDIT **//
 		  
 		  
 		 // $f3->get('members')->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
 		  $members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
 	$admin_logger->write('in editmember for '.$members->surname.' membnum '.$members->membnum.' paidthis year '.$members->paidthisyear);
 	
+	$members->amtpaidthisyear=$this->get_amt_paid($members,($f3->get('POST.paidthisyear')=="Y"));
+	
+	
 	/*********IF the field paidthisyear has been changed from N to Y then also update the amtpaidthisyear using feespertypes table *****/
-	$wasnotpaid=false;
-	if ($members->paidthisyear=="N")	{$wasnotpaid=true;}
-	/**** now fetch the existing row to check if paidthisyear is about to change ****/
-	$admin_logger->write('in editmember for wasnotpaid = '.$wasnotpaid);
-		
-		//$thismember= $members->membnum;
-		$members->copyfrom('POST');
-	// ********* calculate amount paid
-	//$feespertpes =	new Feespertypes($this->db);
-	$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
-	$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
-	$admin_logger->write('in editmember /feespertype '.$feespertypes->membtype.' feetopay '.$feespertypes->feetopay);
-	$feetopay = $feespertypes->feetopay;
-	var_dump($members);
 	
-	if($wasnotpaid && ($members->paidthisyear=="Y")) { $members->amtpaidthisyear= $feespertypes->feetopay;}
-	if(!$wasnotpaid && ($members->paidthisyear=="N")) { $members->amtpaidthisyear= 0;}
 	
-	var_dump($members);
+	
+	
+	//var_dump($members);  //LEY dumps in the http response
 	
 		$members->update();
         // do mysql update statement here
@@ -455,16 +445,49 @@ public function editmember()
 }
 	// echo $f3->get('POST.oper');
 	}
+	/**************** get_amt_paid ******/
+ function  get_amt_paid($members,$topay) {
+		$f3=$this->f3; 
+		$admin_logger=$f3->get('admin_log');
+		$wasnotpaid=false;
+		if ($members->paidthisyear=="N")	{$wasnotpaid=true;}
+	/**** now fetch the existing row to check if paidthisyear is about to change ****/
+	$admin_logger->write('in get_amt_paid for paidthisyear = '.$members->paidthisyear);
+	$admin_logger->write('in get_amt_paid for wasnotpaid = '.$wasnotpaid);
+	$admin_logger->write('in get_amt_paid for topay = '.$topay);	
+		//$thismember= $members->membnum;
+		$members->copyfrom('POST');
+	// ********* calculate amount paid
+	//$feespertpes =	new Feespertypes($this->db);
+		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
+		$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
+	$admin_logger->write('in get_amt_paid /feespertype ='.$feespertypes->membtype.' feetopay '.$feespertypes->feetopay);
+		//$feetopay = $feespertypes->feetopay;
+		if($wasnotpaid && $topay)  return($feespertypes->feetopay);
+		else return(0);
+		
+		
+		//if(!$wasnotpaid && ($members->paidthisyear=="N")) { return(0);}
 	
-	function markpaid() { 
+}	
+function markpaid() { 
 	 $f3=$this->f3; 
-	$admin_logger = new Log('admin.log');
-	$admin_logger->write('in markpaid '.$this->f3->get('POST.membnum') );
-	$members =	new Member($this->db);
-	$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
-	$members->paidthisyear='Y';
-	$thismember= $members->membnum;
-	$members->update();
+	
+	 	$admin_logger = new Log('admin.log');
+		$f3->set('admin_log',$admin_logger);
+		$admin_logger->write('in markpaid membnum='.$this->f3->get('POST.membnum') );
+		$members =	new Member($this->db);
+		$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+	
+		//var_dump($members);
+		//var_dump($POST);
+		
+		
+		$members->amtpaidthisyear=$this->get_amt_paid($members,true);
+		$members->paidthisyear='Y';
+		//$thismember= $members->membnum;
+		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear );
+		$members->update();
 	echo('Done that');	}
 	
 } // end of class
