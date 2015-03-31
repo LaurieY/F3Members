@@ -103,7 +103,7 @@ var lastSelection;
 		}
 		
 	$('#list').navGrid('#pager',
-                { edit: false, add: false, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
+                { edit: true, add: true, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
 				{
                     closeAfterAdd: true,
                     recreateForm: true,});
@@ -197,14 +197,4 @@ $("#mySearch").button().click(function () {
 	<br>
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 	<br>
-	<br>
-	<a href="javascript:void(0)" id="cm2">Show only Unpaid</a>
-		<br>
-		<br>
-	
-		<br>
-		Get Surname starts with
-	<fieldset>
-<input type="text" name="a" id="searchText" value="Ed"/>
-<button type="button" id="mySearch">Search</button>
-</fieldset>
+
