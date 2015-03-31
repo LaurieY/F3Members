@@ -686,3 +686,5 @@
 [31-Mar-2015 10:36:37 America/Chicago] - app/controllers/MyAjax.php:426 
 [31-Mar-2015 10:36:40 America/Chicago] HTTP 404 (GET /membergrid)
 [31-Mar-2015 10:36:40 America/Chicago] - index.php:27 Base->run()
+[31-Mar-2015 11:39:49 America/Chicago] HTTP 404 (GET /app/views/markpaid)
+[31-Mar-2015 11:39:49 America/Chicago] - index.php:27 Base->run()

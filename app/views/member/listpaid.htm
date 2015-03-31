@@ -1,5 +1,14 @@
 <script type="text/javascript">
 $(function () {
+	  getColumnIndexByName = function(grid,columnName) {
+                    var cm = grid.jqGrid('getGridParam','colModel');
+                    for (var i=0,l=cm.length; i<l; i++) {
+                        if (cm[i].name===columnName) {
+                            return i; // return the index
+                        }
+                    }
+                    return -1;
+                },
     $("#list").jqGrid({ 
         url: "/membergrid",
 		editurl:"/editmember",
@@ -10,7 +19,7 @@ $(function () {
 		""],//],
         colModel: [
             
-			{ name: "surname", width: 120,editable: true, edittype:"text",searchoptions : {
+			{ name: "surname", width: 120,editable: true, edittype:"text",sortable:true,sorttype:'string',firstsortorder:'asc',searchoptions : {
                             // show search options
                             sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  							
 						}},
@@ -26,48 +35,59 @@ $(function () {
 			
 			 // { name: 'act', formatter: 'actions', sortable: false,search:false, width: 54 },
 			    //{ name: "datejoined", width: 100, align: "right",search:false }, 
-			  { name: 'edit', width: 20, sortable: false, search: false,
+			  { name: 'pay', width: 20, sortable: false, search: false,
                       formatter:function(){
-                          return "<span class='ui-icon ui-icon-pencil'></span>"
+                         // return "<span class='ui-icon ui-icon-pencil'></span>"
+						 return  "<span class='member-icons  money_euro'></span>"
                       }}, 
 			
         ],
         pager: "#pager",
 		onSelectRow: editRow,
         rowNum: 10,
-        rowList: [10, 20, 30],
-        sortname: "paidthisyear",
+        rowList: [10, 20, 30],multiSort: true,
+        sortname: "paidthisyear asc,surname",
+	
         sortorder: "asc",
+		
         viewrecords: true,
         gridview: true,
         autoencode: true,
-        caption: "Members auto grid",
+        caption: "Members Payments.  Click on the Gold Euro symbol to mark a member as paid",
 		 height:'auto',
-		 altRows: true,
+		 altRows: false,
 		 footerrow : true,
 		 userDataOnFooter : true,
 	 multiselect: false,
+
+	 
 								//	 ajaxRowOptions: { async: true },
 	// multikey: "ctrlKey",
-	 	loadComplete: function () { // change the edit icon into a Euro sign
+/*loadComplete: function () { // change the edit icon into a Euro sign
                    // $(this).find("div.ui-inline-del>span")
 				   $(this).find("span.ui-icon.ui-icon-pencil")
                         .removeClass("ui-icon ui-icon-pencil")
-                        .addClass("member-icons  money_euro");
-		},
-                onCellSelect: function (rowid,iCol,cellcontent,e) {
-                   // if (iCol >= firstButtonColumnIndex) {
-                        alert("rowid="+rowid+"\n");
-						x= [membnum="601",membtype="M"];
-	 $.post("\markpaid",{membnum:"601",membtype:"M"});
-                  //  }
-                },
+                        .addClass("member-icons  money_euro"); 
+		},*/
+onCellSelect: function (rowid,iCol,cellcontent,e) {
+				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
+                    if (iCol >= payColumnIndex) {
+                       // alert("rowid="+rowid+"\n");
+						xnum="601";
+						xnum= $("#list").jqGrid('getCell',rowid,'membnum');
+						xtype="M";
+						xtype=$("#list").jqGrid('getCell',rowid,'membtype');
+						//alert("member = "+xnum+" type= "+xtype);
+						$.post("\markpaid",{membnum:xnum,membtype:xtype});
+	$("#list").trigger("reloadGrid", [{ page: 1}]);
+						}
+					},
 	/*			onSelectRow: function(id) {
 				return true;
 				}***************/
 	
     }); 
-
+$('#list').jqGrid('filterToolbar',{searchOperators: true,	})
 var lastSelection;
 	function editRow(id) { var grid = $("#list");
                 if (id && id !== lastSelection) {
@@ -125,7 +145,7 @@ $("#cm1").click( function() { //Refresh
     grid.jqGrid('setGridParam', { search: text.length > 0, postData: postdata });        
     grid.trigger("reloadGrid", [{ page: 1}]);
 }); 
-/***********  Mark Selected Rows as Paid  **/
+/***********  Mark Clicked Euro icon  as Paid  **/
 $("#cm3").click( function() { 
 	var s;
 	s = $("#list").jqGrid('getGridParam','selarrrow');
@@ -181,8 +201,7 @@ $("#mySearch").button().click(function () {
 	<a href="javascript:void(0)" id="cm2">Show only Unpaid</a>
 		<br>
 		<br>
-	<a href="javascript:void(0)" id="cm3">Mark Selected as Paid</a>
-		<br>
+	
 		<br>
 		Get Surname starts with
 	<fieldset>

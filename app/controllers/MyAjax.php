@@ -488,6 +488,7 @@ function markpaid() {
 		//$thismember= $members->membnum;
 		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear );
 		$members->update();
-	echo('Done that');	}
-	
+	//echo('Done that');	
+	echo $this->getresult_where("where 1");
+	}
 } // end of class
