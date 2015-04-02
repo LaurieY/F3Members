@@ -155,7 +155,8 @@ private function getresult_where( $where_to_use)
   $admin_logger = new Log('admin.log');
 header("Content-type: text/xml;charset=utf-8");
  $page = $_GET['page']; 
- $limit = $_GET['rows']; 
+ //$limit = $_GET['rows'];  // temporary removal to force all rows
+ 
  $sidx = $_GET['sidx']; 
  $sord = $_GET['sord']; 
  //$fred = $f3->get('db_user');
@@ -165,14 +166,14 @@ header("Content-type: text/xml;charset=utf-8");
 $result = mysql_query("SELECT COUNT(*) AS count FROM members ".$where_to_use); 
 $row = mysql_fetch_array($result,MYSQL_ASSOC); 
 $count = $row['count']; 
- 
+  $limit = $count;  // temporary force all rows
 // calculate the total pages for the query 
 if( $count > 0 && $limit > 0) { 
               $total_pages = ceil($count/$limit); 
 } else { 
               $total_pages = 0; 
 } 
- 
+
 // if for some reasons the requested page is greater than the total 
 // set the requested page to total page 
 if ($page > $total_pages) $page=$total_pages;
@@ -489,6 +490,12 @@ function markpaid() {
 		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear );
 		$members->update();
 	//echo('Done that');	
-	echo $this->getresult_where("where 1");
+	//echo $this->getresult_where("where 1");// No only return the changed contents of that	one row?
+   $xnum= $members->membnum;
+   $xpaid= $members->paidthisyear;
+   $xpay= $members->amtpaidthisyear;
+   //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
+   echo json_encode($arr);
 	}
 } // end of class

@@ -24,14 +24,14 @@ $(function () {
                             sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  							
 						}},
              {name: "forename", width: 120,editable: true, edittype:"text"},
-			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] } }, //  eq = equal to  	
+			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] } ,sorttype:'number'}, //  eq = equal to  	
 			{ name: "phone", width: 85, align: "right",editable: true, edittype:"text" },
             { name: "mobile", width: 85, align: "right",editable: true, edittype:"text" }, 
             { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
 			 { name: "membtype", width: 90, align: "right",editable: true, },
              { name: "location", width: 65, align: "right" },
-			 { name: "paidthisyear", width: 80, align: "right" ,editable: true, 			  edittype:"text", }, 
-			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true}},
+			 { name: "paidthisyear", width: 80, align: "right" ,editable: true,		  edittype:"text", }, 
+			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
 			
 			 // { name: 'act', formatter: 'actions', sortable: false,search:false, width: 54 },
 			    //{ name: "datejoined", width: 100, align: "right",search:false }, 
@@ -43,10 +43,10 @@ $(function () {
 			
         ],
         pager: "#pager",
-		onSelectRow: editRow,
+		//onSelectRow: editRow,
         rowNum: 10,
-        rowList: [10, 20, 30],multiSort: true,
-        sortname: "paidthisyear asc,surname",
+        rowList: [10, 20, 30],multiSort: false,
+        sortname: "paidthisyear",
 	
         sortorder: "asc",
 		
@@ -59,7 +59,8 @@ $(function () {
 		 footerrow : true,
 		 userDataOnFooter : true,
 	 multiselect: false,
-
+	 loadonce:true,
+																		 data:leydata=new Array(),
 	 
 								//	 ajaxRowOptions: { async: true },
 	// multikey: "ctrlKey",
@@ -69,7 +70,10 @@ $(function () {
                         .removeClass("ui-icon ui-icon-pencil")
                         .addClass("member-icons  money_euro"); 
 		},*/
-onCellSelect: function (rowid,iCol,cellcontent,e) {
+		
+		/***********  Mark Clicked Euro icon  as Paid  **********/
+onCellSelect: function (rowid,iCol,cellcontent,e) { 
+ var grid = $("#list");
 				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
                     if (iCol >= payColumnIndex) {
                        // alert("rowid="+rowid+"\n");
@@ -78,8 +82,18 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						xtype="M";
 						xtype=$("#list").jqGrid('getCell',rowid,'membtype');
 						//alert("member = "+xnum+" type= "+xtype);
-						$.post("\markpaid",{membnum:xnum,membtype:xtype});
-	$("#list").trigger("reloadGrid", [{ page: 1}]);
+						//$.post("\markpaid",{membnum:xnum,membtype:xtype});
+						$.post("\markpaid",{membnum:xnum,membtype:xtype},function(data) {
+						$showit=$.parseJSON(data)
+						  $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
+						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
+						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
+						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
+						
+						});  
+						
+	//$("#list").trigger("reloadGrid", [{ page: 1}]);
 						}
 					},
 	/*			onSelectRow: function(id) {
@@ -107,7 +121,7 @@ var lastSelection;
 				{
                     closeAfterAdd: true,
                     recreateForm: true,});
-			$('#list').jqGrid('filterToolbar',{searchOperators: false,	});
+			//LEY $('#list').jqGrid('filterToolbar',{searchOperators: false,	});
 			
 	
  var grid = $("#list");
@@ -143,9 +157,8 @@ $("#cm1").click( function() { //Refresh
 
     $.extend(postdata, { filters: myfilter });
     grid.jqGrid('setGridParam', { search: text.length > 0, postData: postdata });        
-    grid.trigger("reloadGrid", [{ page: 1}]);
-}); 
-/***********  Mark Clicked Euro icon  as Paid  **/
+    grid.trigger("reloadGrid", [{ page: 1}]);}); 
+
 $("#cm3").click( function() { 
 	var s;
 	s = $("#list").jqGrid('getGridParam','selarrrow');
@@ -170,7 +183,9 @@ $("#cm3").click( function() {
 }
 );
 
-
+$("#cm4").click(function () {
+var postdata = grid.jqGrid('getGridParam', 'leydata');
+});
  // Add Search
 $("#mySearch").button().click(function () {
     var text = $("#searchText").val();
@@ -194,7 +209,15 @@ $("#mySearch").button().click(function () {
 
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
-	<br>
+	<div id="postresult" ></div>
+	
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 	<br>
+</br>
+<button id="cm5"  type="submit">Produ</button>
+
+
+	<a href="javascript:void(0)" id="cm4">Show the data contents</a>
+	<br>
+
 
