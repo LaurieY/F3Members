@@ -8,7 +8,7 @@
  * License: http://guriddo.net/?page_id=103334
  */
 //jsHint options
-/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
+/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */ 
 /*global jQuery */
 
 (function ($) {

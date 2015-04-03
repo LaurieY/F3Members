@@ -160,11 +160,11 @@ header("Content-type: text/xml;charset=utf-8");
  $sidx = $_GET['sidx']; 
  $sord = $_GET['sord']; 
  //$fred = $f3->get('db_user');
- $db = mysql_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass')) or die("Connection Error: " . mysql_error()); 
- mysql_select_db($f3->get('db_name')) or die("Error connecting to db."); 
+ $db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysql_error()); 
+ //mysqli_select_db($f3->get('db_name')) or die("Error connecting to db."); 
  // calculate the number of rows for the query. We need this for paging the result 
-$result = mysql_query("SELECT COUNT(*) AS count FROM members ".$where_to_use); 
-$row = mysql_fetch_array($result,MYSQL_ASSOC); 
+$result = mysqli_query($db,"SELECT COUNT(*) AS count FROM members ".$where_to_use); 
+$row = mysqli_fetch_array($result,MYSQL_ASSOC); 
 $count = $row['count']; 
   $limit = $count;  // temporary force all rows
 // calculate the total pages for the query 
@@ -191,14 +191,14 @@ if($start <0) $start = 0;
 
 /************Get Total paid for this selection  ************/
  $SQL_total="select sum(amtpaidthisyear)  as amt from members ".$where_to_use;
- $result = mysql_query( $SQL_total ) or die("Couldn't execute query.".mysql_error()); 
- $row = mysql_fetch_array($result,MYSQL_ASSOC); 
+ $result = mysqli_query($db, $SQL_total ) or die("Couldn't execute query.".mysql_error()); 
+ $row = mysqli_fetch_array($result,MYSQL_ASSOC); 
  $amt_total = $row['amt'];
  
  
  $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,datejoined FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
  $admin_logger->write('in getresult_where SQL = '. $SQL."\n");
- $result = mysql_query( $SQL ) or die("Couldn't execute query.".mysql_error()); 
+ $result = mysqli_query( $db,$SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
 $s .=  "<rows>";
 $s .= "<page>".$page."</page>";
@@ -223,7 +223,7 @@ while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
     $s .= "</row>";
 }  
 */
- while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+ while($row = mysqli_fetch_array($result,MYSQL_ASSOC)) {
    foreach($row as $key => $value)
       {if ($key=='id') {$s .= "<row id='". $value."'>";  }
 	  else
