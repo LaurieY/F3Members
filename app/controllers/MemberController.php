@@ -6,10 +6,17 @@ class MemberController extends Controller {
 	$auth_logger = new Log('auth.log');
 	$auth_logger->write( 'Entering beforeroute URI= '.$f3->get('URI'  ) );
 	$auth_logger->write( "Session user_id = ".$f3->get('SESSION.user_id')); 
-	
-	if (!(($f3->get('URI')=='/login' )||($f3->get('URI')=='/logout' )||($f3->get('SESSION.user_id'))||( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600)>time())     ) ) 
+	$auth_logger->write( "Session lastseen = ".$f3->get('SESSION.lastseen')); 
+	$auth_logger->write( "Session expiry secs = ".($f3->get('user_expiry')*3600)); 
+	$auth_logger->write( "Session time now = ".time());
+	$auth_logger->write( "Session lastseen  expiry = ".($f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600))); 
+
+	$relogincondition = !($f3->get('SESSION.user_id'))&&( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600)>time());
+	if (((!$f3->get('URI')=='/login' )&&(!$f3->get('URI')=='/logout' ))&&$relogincondition      ) 
 	// not login or logout and not a session user_id already then need to force a login
-	{ $this->f3->reroute('/login');
+	{$auth_logger->write( 'Exiting beforeroute with relogincondition ='.$relogincondition);
+	$auth_logger->write( 'Exiting beforeroute with reroute to login');	 
+	$this->f3->reroute('/login');
 		}
 	$auth_logger->write( 'Exiting beforeroute URI= '.$f3->get('URI'  ));		}
 	
@@ -72,8 +79,8 @@ $this->f3->set('view','member/session.htm');
 	$auth_logger->write( 'Entering index'  );	       
 		   $member = new Member($this->db);
         $f3->set('members',$member->all());
-		        $f3->set('page_head','Member List');
-				 $f3->set('page_role',$f3->get('SESSION.user_role'));
+		$f3->set('page_head','Member List');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
         $f3->set('message', $f3->get('PARAMS.message'));
 		$f3->set('listn', $f3->get('PARAMS.mylist'));
 
@@ -110,7 +117,7 @@ $this->f3->set('view','member/session.htm');
             $this->f3->set('page_head','Create User');
             $this->f3->set('view','user/create.htm');
         }
-
+$f3->set('SESSION.lastseen',time()); 
     }
 
     public function update()
@@ -129,7 +136,7 @@ $this->f3->set('view','member/session.htm');
             $this->f3->set('page_head','Update User');
             $this->f3->set('view','user/update.htm');
         }
-
+$f3->set('SESSION.lastseen',time()); 
     }
 		public function listn()	
 	{
@@ -156,13 +163,13 @@ $this->f3->set('view','member/session.htm');
             $user = new User($this->db);
             $user->delete($this->f3->get('PARAMS.id'));
         }
-
+$f3->set('SESSION.lastseen',time()); 
         $this->f3->reroute('/success/User Deleted');
     }
 	function login() {
 	$f3=$this->f3;
 		$login_logger = new Log('login.log');
-		$login_logger->erase();
+		//$login_logger->erase();
 	$login_logger->write( 'Entering login'  );
 /*	$login_logger->write( 'Root = '.$f3->get('ROOT')   );
 	$login_logger->write( 'Base = '.$f3->get('BASE')   );
@@ -173,6 +180,7 @@ $this->f3->set('view','member/session.htm');
 	//$f3->dump($mysession   );
 		$f3->clear('SESSION');
 		if ($f3->get('eurocookie')) {
+$login_logger->write( 'IN login IN Eurocookie'  );
 			$loc=Web\Geo::instance()->location();
 			if (isset($loc['continent_code']) && $loc['continent_code']=='EU')
 				$f3->set('message',
@@ -180,6 +188,7 @@ $this->f3->set('view','member/session.htm');
 					'for identification and security. Without these '.
 					'cookies, these pages would simply be inaccessible. By '.
 					'using these pages you agree to this safety measure.');
+$login_logger->write( 'In login in continent==EU'  );
 		}
 		F3::set('FONTS','ui/fonts/');
 	/*	$fontdir=http_build_query(scandir('ui'));
@@ -208,9 +217,11 @@ $this->f3->set('view','member/session.htm');
 		}
 		//$mysession = http_build_query($f3->get('SESSION'));
 		//$f3->dump($mysession   );
+	$login_logger->write( 'In  login setting page_head'  );
 		$this->f3->set('page_head','Login');
 		$this->f3->set('page_role','');
 		$f3->set('view','member/login.htm');
+		$f3->set('SESSION.lastseen',time()); 
 	}
 	function auth() {
 	$f3=$this->f3;

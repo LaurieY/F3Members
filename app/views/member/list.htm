@@ -17,10 +17,11 @@ $(function () {
 			{ name: "phone", width: 85, align: "right",editable: true, edittype:"text" },
             { name: "mobile", width: 85, align: "right",editable: true, edittype:"text" }, 
             { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
-			 { name: "membtype", width: 90, align: "right",editable: true, },
-             { name: "location", width: 65, align: "right" },
-			 { name: "paidthisyear", width: 80, align: "right" ,editable: true, 			  edittype:"text", }, 
-			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },sorttype:'number'},
+			{ name: "membtype", width: 90, align: "right",editable: true,
+			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member late 1st year;MJL2:Member late 2nd year;GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"},},
+             { name: "location", width: 65, align: "right" ,editable: true,edittype:'select',editoptions:{value:"C:Coast;I:Inland"},},
+			 { name: "paidthisyear", width: 80, align: "right" ,editable: true, edittype:'select',editoptions:{value:"Y:Paid;N:Not Paid"} }, 
+			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false },
 			  { name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
         ],
@@ -80,12 +81,19 @@ function editRow(id) { var grid = $("#list");
 		function reload(rowid, result) {
 		$("#list").trigger("reloadGrid", [{ page: 1}]);
 		}
- $('#list').navGrid('#pager',
-                { edit: true, add: true, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
-				{
-                    closeAfterAdd: true,
-                    recreateForm: true,});
-			$('#list').jqGrid('filterToolbar',{searchOperators: true,	});
+ $('#list').jqGrid('navGrid','#pager',
+		{ edit: true, add: true, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: false, },
+		{},	//	{ beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show(); }}, // use default settings for edit
+		{dataheight:'350px',beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }}, // use default settings for add
+		{},  // refresh 
+		{closeAfterAdd: true, 
+                    recreateForm: true
+				   }, // enable the advanced searching
+		{closeOnEscape:true}
+	
+
+                  );
+		$('#list').jqGrid('filterToolbar',{searchOperators: true,	});
 			
 	
  var grid = $("#list");
@@ -96,7 +104,7 @@ $("#cm1").click( function() { //Refresh
 		//$('grid').jqGrid('clearGridData');
 		//$('grid').jqGrid('setGridParam', {data: dataToLoad});
 		//
-		  var text = $("#searchText").val();
+		  //var text = $("#searchText").val();
     var postdata = grid.jqGrid('getGridParam', 'postData');
     // build up the filter
     // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
@@ -105,8 +113,10 @@ $("#cm1").click( function() { //Refresh
  
 
     $.extend(postdata, { filters: myfilter });
-    grid.jqGrid('setGridParam', { search: text.length > 0, postData: postdata });        
-    grid.trigger("reloadGrid", [{ page: 1}]);$("grid").trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+    grid.jqGrid('setGridParam', { search: false, postData: postdata,datatype:'xml' });        
+    grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+	//$("#list").setGridParam({datatype:'json', page:1}).trigger('reloadGrid');
+	//$("grid").trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
  
 });
  //***** SHOW only UNPAIDS ***********

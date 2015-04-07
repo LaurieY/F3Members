@@ -1,7 +1,7 @@
 <?php
 // *****************  mcrud index.php *
 //$f3=require('lib/base.php');
-
+require 'vendor/autoload.php';
 $f3 = require('lib/base.php');
 $f3->set('CACHE',FALSE);
 $f3->config('config/config.ini');
@@ -15,6 +15,12 @@ $f3->route('GET /','MemberController->index');
 $f3->route('GET /payments','MemberController->payments'); 
 $f3->route('POST /editmember [ajax]','MyAjax->editmember');
 $f3->route('POST /app/views/markpaid [ajax]','MyAjax->markpaid'); 
+
+
+$f3->route('GET /email1','EmailController->email1');
+$f3->route('GET /subscribe1','EmailController->subscribe1'); 
+$f3->route('GET /subscribe2','EmailController->subscribe2'); 
+$f3->route('GET /batchsubscribe2','EmailController->batch_subscribe2'); 
 
 $f3->route('GET /login','MemberController->login');
 $f3->route('GET /logout','MemberController->logout');

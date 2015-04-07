@@ -1,12 +1,13 @@
 <?php
 
 class Controller {
-
+ protected $mc; //for Mailchimp
 	protected $f3;
 	protected $db;
 
 	function beforeroute() {
 	$db=$this->db;
+	$this->mc = new Mailchimp('1e88266ff71a6f5eaef954a244cf5426-us2',array('debug'=> true));
 	//	$this->f3->set('message','');
 	//	echo ($this->f3->get('message' ));
 	}
