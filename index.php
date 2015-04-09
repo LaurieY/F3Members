@@ -29,5 +29,7 @@ $f3->route('GET /admin','AdminController->index');
 $f3->route('GET /users','UserController->index');
 $f3->route('GET /user/update/@usr','UserController->update');
 
+$f3->route('GET /1','MemberController->index1');
+$f3->route('GET /2','MemberController->index2');
 //$f3->config('config/routes.ini');
 $f3->run();

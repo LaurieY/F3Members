@@ -155,7 +155,7 @@ private function getresult_where( $where_to_use)
   $admin_logger = new Log('admin.log');
 header("Content-type: text/xml;charset=utf-8");
  $page = $_GET['page']; 
- //$limit = $_GET['rows'];  // temporary removal to force all rows
+ 
  
  $sidx = $_GET['sidx']; 
  $sord = $_GET['sord']; 
@@ -167,6 +167,8 @@ $result = mysqli_query($db,"SELECT COUNT(*) AS count FROM members ".$where_to_us
 $row = mysqli_fetch_array($result,MYSQL_ASSOC); 
 $count = $row['count']; 
   $limit = $count;  // temporary force all rows
+//  $limit = $_GET['rows'];  // temporary comment out  to force all rows need this if non-local grid, i.e. loadOnce=false
+
 // calculate the total pages for the query 
 if( $count > 0 && $limit > 0) { 
               $total_pages = ceil($count/$limit); 
@@ -367,30 +369,27 @@ public function editmember()
 		$f3->set('admin_log',$admin_logger);
 	$admin_logger->write('in editmember');
 
+	$members1 =	new Member($this->db);
 	$members =	new Member($this->db);
  $f3->set('members',$members);
 	 switch ($f3->get('POST.oper')) {
     case "add":
-        // do mysql insert statement here
+    
 		
 		/******  Find the next membership number as the highest+1**/
 	
 	
-	//$result=$this->db->exec('SELECT max(membnum) as maxnum FROM members '); 
+	
 	$result=$this->db->exec('SELECT membnum FROM members order by membnum DESC LIMIT 1'); 
-	$admin_logger->write('in addmember MAXMEMBNUM= = '.print_r($result));
-	var_dump("Line 390");
-	var_dump($result);
+	
+
 	$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
 
-//foreach($result as $row)
-//$admin_logger->write('each row of result = '.$row['membnum']."\n");
 
 	$admin_logger->write('in addmember maxmembnum row = '.$result[0]['membnum']."\n");
 
 	$max_membnum = ((int) $result[0]['membnum'])+1;
-//exit("EXIT LEY4\n");
-	
+
 		$members->copyfrom('POST');
 		$admin_logger->write('in addmember maxmembnum = '.$members->membnum."\n");
 		$members->membnum=$max_membnum;
@@ -418,23 +417,31 @@ public function editmember()
 		$members->save();
     break;
     case "edit":   //************************************ EDIT **//
-		  
-		  
-		 // $f3->get('members')->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
-		  $members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+	$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) ); //this did work but its not the same as the paid code
+
+		
 	$admin_logger->write('in editmember for '.$members->surname.' membnum '.$members->membnum.' paidthis year '.$members->paidthisyear);
-	
 	$members->amtpaidthisyear=$this->get_amt_paid($members,($f3->get('POST.paidthisyear')=="Y"));
 	
 	
 	/*********IF the field paidthisyear has been changed from N to Y then also update the amtpaidthisyear using feespertypes table *****/
-	
-	
+	$admin_logger->write('in editmember after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear);
+								$admin_logger->write('In editmember membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 	
 	
 	//var_dump($members);  //LEY dumps in the http response
 	
 		$members->update();
+	$xnum= $members->membnum;
+								$admin_logger->write('In editrow xnum is '.$xnum. ' and of type '.gettype($xnum));
+   $xpaid= $members->paidthisyear;
+   $xpay= $members->amtpaidthisyear;
+   //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
+	 $arrencoded= json_encode($arr);
+	
+	 $admin_logger->write('in editmember after jsonencode '.$arrencoded);
+   echo $arrencoded;
         // do mysql update statement here
 	//	/
     break;
@@ -456,6 +463,7 @@ public function editmember()
 	$admin_logger->write('in get_amt_paid for paidthisyear = '.$members->paidthisyear);
 	$admin_logger->write('in get_amt_paid for wasnotpaid = '.$wasnotpaid);
 	$admin_logger->write('in get_amt_paid for topay = '.$topay);	
+	//$admin_logger->write('In get_amt_paid1 membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 		//$thismember= $members->membnum;
 		$members->copyfrom('POST');
 	// ********* calculate amount paid
@@ -463,9 +471,10 @@ public function editmember()
 		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
 		$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
 	$admin_logger->write('in get_amt_paid /feespertype ='.$feespertypes->membtype.' feetopay '.$feespertypes->feetopay);
+	//$admin_logger->write('In get_amt_paid2 membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 		//$feetopay = $feespertypes->feetopay;
 		if($wasnotpaid && $topay)  return($feespertypes->feetopay);
-		else return(0);
+		else return($members->amtpaidthisyear); //i.e. do not change amtpaidthis year
 		
 		
 		//if(!$wasnotpaid && ($members->paidthisyear=="N")) { return(0);}
@@ -479,7 +488,10 @@ function markpaid() {
 		$admin_logger->write('in markpaid membnum='.$this->f3->get('POST.membnum') );
 		$members =	new Member($this->db);
 		$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+		$admin_logger->write('in markpaid after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear);
+								$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 	
+	//var_dump($members);
 		//var_dump($members);
 		//var_dump($POST);
 		
@@ -488,14 +500,19 @@ function markpaid() {
 		$members->paidthisyear='Y';
 		//$thismember= $members->membnum;
 		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear );
+		$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 		$members->update();
 	//echo('Done that');	
 	//echo $this->getresult_where("where 1");// No only return the changed contents of that	one row?
    $xnum= $members->membnum;
+   $admin_logger->write('In markpaid xnum is '.$xnum. ' and of type '.gettype($xnum));
    $xpaid= $members->paidthisyear;
    $xpay= $members->amtpaidthisyear;
    //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
 	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
-   echo json_encode($arr);
+	 	 $arrencoded= json_encode($arr);
+	 $admin_logger->write('in editmember after jsonencode '.$arrencoded);
+   echo $arrencoded;
+   //echo json_encode($arr);
 	}
 } // end of class

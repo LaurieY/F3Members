@@ -72,7 +72,7 @@ $this->f3->set('lyvar','in before');
 $this->f3->set('view','member/session.htm');
 }
 
-		public function index()	
+public function index()	
 	{
 	$f3=$this->f3;
 	$auth_logger = new Log('auth.log');
@@ -84,14 +84,47 @@ $this->f3->set('view','member/session.htm');
         $f3->set('message', $f3->get('PARAMS.message'));
 		$f3->set('listn', $f3->get('PARAMS.mylist'));
 
-		
-	//     $f3->set('listnn','member/list'.$f3->get('listn').'.htm');
-	//	 $f3->set('view','member/list'.$f3->get('listn').'.htm');
+	
 	  $f3->set('listnn','member/list.htm');
 	$f3->set('view','member/list.htm');
 		$f3->set('SESSION.lastseen',time()); 
 	}
 		
+		public function index1()	
+	{
+	$f3=$this->f3;
+	$auth_logger = new Log('auth.log');
+	$auth_logger->write( 'Entering index'  );	       
+		   $member = new Member($this->db);
+        $f3->set('members',$member->all());
+		$f3->set('page_head','Member List');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+        $f3->set('message', $f3->get('PARAMS.message'));
+		$f3->set('listn', $f3->get('PARAMS.mylist'));
+
+	
+	  $f3->set('listnn','member/list1_xml.htm');
+	$f3->set('view','member/list1_xml.htm');
+		$f3->set('SESSION.lastseen',time()); 
+	}
+	public function index2()	
+	{
+	$f3=$this->f3;
+	$auth_logger = new Log('auth.log');
+	$auth_logger->write( 'Entering index2'  );	       
+		   $member = new Member($this->db);
+        $f3->set('members',$member->all());
+		$f3->set('page_head','Member List');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+        $f3->set('message', $f3->get('PARAMS.message'));
+		$f3->set('listn', $f3->get('PARAMS.mylist'));
+
+	
+	  $f3->set('listnn','member/list2.htm');
+	$f3->set('view','member/list2.htm');
+		$f3->set('SESSION.lastseen',time()); 
+	}
+			
     public function payments ()
 	
 	{

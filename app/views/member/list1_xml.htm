@@ -32,12 +32,12 @@ $(function () {
         rowNum: 10, 
         rowList: [10, 20, 30],
 		sortname: "membnum",
-        sortorder: "desc", 
+        sortorder: "asc", 
         viewrecords: true,
-						loadonce:true,  //LEY
+						//loadonce:true,  //LEY
 		gridview: true,
         autoencode: true,
-        caption: "Members auto grid",
+        caption: "Members XML grid",
 		 height:'auto',
 		 altRows: false,
 		 footerrow : true,
@@ -45,9 +45,7 @@ $(function () {
 	 multiselect: false,
 	  
 	 ajaxRowOptions: { async: true },
-	 //cellEdit:true,
-	// multikey: "ctrlKey", 
-	
+
 	 
     }); 
             var lastSelection;
@@ -55,28 +53,21 @@ function editRow(id) { var grid = $("#list");
                 if (id && id !== lastSelection) {
                    
                     grid.jqGrid('restoreRow',lastSelection);
-                  //  grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
-				 } grid.jqGrid('FormToGrid', id,'#FormPost');
-				 grid.jqGrid('editRow',id, true,  '','','','',editreload); //rowid, keys, oneditfunc, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc
+                  
+				 } 
+				 //grid.jqGrid('editRow',id, true,  '','','','',editreload); //rowid, keys, oneditfunc, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc
                     lastSelection = id;
                 
             }
 			
-function editreload(rowid, result) {
-			//get response and update the local grid for those values that are computed i.e. amtpaidthisyear
-			$showit=$.parseJSON(result.responseText);
-			grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
-		$("#list").trigger("reloadGrid", [{ page: 1}]);
-		}		
+		
 		function reload(rowid, result) {
 		$("#list").trigger("reloadGrid", [{ page: 1}]);
 		}
  $('#list').jqGrid('navGrid','#pager',
-		{ edit: false, add: false, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: false, },
-		{afterSubmit: function(response, postdata) { $("#list").trigger("reloadGrid");
-		return true;
-		}},	//	{ beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show(); }}, // use default settings for edit
-		{dataheight:'350px',beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }}, // use default settings for add
+		{ edit: true, add: true, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: false, },
+		{},	//	{ beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show(); }}, // use default settings for edit
+		{}, // use default settings for add
 		{},  // refresh 
 		{closeAfterAdd: true, 
                     recreateForm: true
@@ -111,49 +102,17 @@ $("#cm1").click( function() { //Refresh
 	//$("grid").trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
  
 });
-
-
-	/**************  EDIT BUTTON ****/
-$("#bedit").click(function(){
-	var gr = jQuery("#list").jqGrid('getGridParam','selrow');
-	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:390,height:490,width:500,CloseAfterEdit:true,afterSubmit:afterFormEdit});
-	else alert("Please Select Row");
-});	
-function afterFormEdit(response, postdata) 
- { 
- 			$showit=$.parseJSON(response.responseText);
-			grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);
-return true;
-//return [success,message,new_id] 
- } 	/**************  ADD BUTTON ****/
-$("#badd").click(function(){
-	jQuery("#list").jqGrid('editGridRow','new',{dataheight:390,height:490,width:500,CloseAfterEdit:true,afterSubmit:afterFormAdd,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
-	
-});	
-function afterFormAdd(response, postdata) 
- { var grid = $("#list");
- 			//$showit=$.parseJSON(response.responseText);
-			//grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);
-if (response.statusText==="OK") {
-grid.jqGrid('setGridParam', { search: false, datatype:'xml' });  
-grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
-return true;}
-else alert("Error on Add Member ");
-//return [success,message,new_id] 
- } 
  
- 
-}); 
 
 
+
+	}			); 
 </script>
  
 
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
 	<br>
-	<input type="BUTTON" id="bedit" value="Edit Selected" /> &nbsp; &nbsp; &nbsp;<input type="BUTTON" id="badd" value="Add a Member" />
-<br><br><br>
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 	<br>
 

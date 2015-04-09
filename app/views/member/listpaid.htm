@@ -140,9 +140,9 @@ $("#cm1").click( function() { //Refresh
     var myfilter =  '{"groupOp":"AND","rules":[{"field":"paidthisyear","op":"ne","data":"\'A\'"}]}';         
  
 
-    $.extend(postdata, { filters: myfilter });
-    grid.jqGrid('setGridParam', { search: text.length > 0, postData: postdata });        
-    grid.trigger("reloadGrid", [{ page: 1}]);$("grid").trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+      $.extend(postdata, { filters: myfilter });
+    grid.jqGrid('setGridParam', { search: false, postData: postdata,datatype:'xml' });        
+    grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
  
 });
  //***** SHOW only UNPAIDS ***********
