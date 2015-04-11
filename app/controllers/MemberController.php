@@ -10,7 +10,8 @@ class MemberController extends Controller {
 	$auth_logger->write( "Session expiry secs = ".($f3->get('user_expiry')*3600)); 
 	$auth_logger->write( "Session time now = ".time());
 	$auth_logger->write( "Session lastseen  expiry = ".($f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600))); 
-
+	//$auth_logger->write( "Member beforeroute $this = ".var_export($f3->get('SESSION.user_id')));
+	
 	$relogincondition = !($f3->get('SESSION.user_id'))&&( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600)>time());
 	if (((!$f3->get('URI')=='/login' )&&(!$f3->get('URI')=='/logout' ))&&$relogincondition      ) 
 	// not login or logout and not a session user_id already then need to force a login
@@ -280,4 +281,18 @@ $login_logger->write( 'In login in continent==EU'  );
 		$this->f3->reroute('/login');
 	//$this->f3->reroute('/z');
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 }

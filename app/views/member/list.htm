@@ -16,7 +16,7 @@ $(function () {
 			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] }, searchrules:{integer:true},sorttype:'number'}, //  eq = equal to  	
 			{ name: "phone", width: 85, align: "right",editable: true, edittype:"text" },
             { name: "mobile", width: 85, align: "right",editable: true, edittype:"text" }, 
-            { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
+            { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] },editrules: { email: true, required: false},}, 
 			{ name: "membtype", width: 90, align: "right",editable: true,
 			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member late 1st year;MJL2:Member late 2nd year;GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"},},
              { name: "location", width: 65, align: "right" ,editable: true,edittype:'select',editoptions:{value:"C:Coast;I:Inland"},},
@@ -66,17 +66,19 @@ function editreload(rowid, result) {
 			//get response and update the local grid for those values that are computed i.e. amtpaidthisyear
 			$showit=$.parseJSON(result.responseText);
 			grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
-		$("#list").trigger("reloadGrid", [{ page: 1}]);
+		$curpg=$('#list').getGridParam('page'); // current page
+		$("#list").trigger("reloadGrid", [{ page: $curpg}]);
 		}		
-		function reload(rowid, result) {
+function reload(rowid, result) {
 		$("#list").trigger("reloadGrid", [{ page: 1}]);
 		}
  $('#list').jqGrid('navGrid','#pager',
 		{ edit: false, add: false, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: false, },
-		{afterSubmit: function(response, postdata) { $("#list").trigger("reloadGrid");
-		return true;
-		}},	//	{ beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show(); }}, // use default settings for edit
-		{dataheight:'350px',beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }}, // use default settings for add
+		{afterSubmit: function(response, postdata) { $("#list").trigger("reloadGrid");return true;},
+		//},		
+		 beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }
+		}, // use default settings for edit
+		{dataheight:'350px',beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show(); }}, // use default settings for add
 		{},  // refresh 
 		{closeAfterAdd: true, 
                     recreateForm: true
@@ -116,16 +118,24 @@ $("#cm1").click( function() { //Refresh
 	/**************  EDIT BUTTON ****/
 $("#bedit").click(function(){
 	var gr = jQuery("#list").jqGrid('getGridParam','selrow');
-	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:390,height:490,width:500,CloseAfterEdit:true,afterSubmit:afterFormEdit});
+	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:390,height:490,width:500,CloseAfterEdit:true,afterSubmit:afterFormEdit,reloadAfterSubmit:true,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
+	/**  hide amtpaid this year so that it doesn't get erroneously overwritten.  Can edit in inline mode */
 	else alert("Please Select Row");
 });	
 function afterFormEdit(response, postdata) 
  { 
  			$showit=$.parseJSON(response.responseText);
-			grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);
+			
+			
+			var rowid = jQuery("#list").jqGrid('getGridParam','selrow');
+			grid.jqGrid('setRowData',rowid,$showit);
+			grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);// only works id reloadaftersubmit is true
+	 /**** BUT that means all the other values will have to be put back into the grid */
+       $('#tr_amtpaidthisyear').value=$showit.amtpaidthisyear;
 return true;
 //return [success,message,new_id] 
- } 	/**************  ADD BUTTON ****/
+ } 	
+ /**************  ADD BUTTON ****/
 $("#badd").click(function(){
 	jQuery("#list").jqGrid('editGridRow','new',{dataheight:390,height:490,width:500,CloseAfterEdit:true,afterSubmit:afterFormAdd,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
 	
@@ -140,6 +150,23 @@ grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
 return true;}
 else alert("Error on Add Member ");
 //return [success,message,new_id] 
+ }  
+ /**************  DELETE BUTTON ****/
+$("#bdel").click(function(){
+var gr = jQuery("#list").jqGrid('getGridParam','selrow');
+	jQuery("#list").jqGrid('delGridRow',gr,{dataheight:390,height:490,width:500,CloseAfterEdit:true,afterSubmit:afterFormDel,});
+	
+});	
+function afterFormDel(response, postdata) 
+ { var grid = $("#list");
+ 			//$showit=$.parseJSON(response.responseText);
+			//grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);
+if (response.statusText==="OK") {
+grid.jqGrid('setGridParam', { search: false, datatype:'xml' });  
+grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+return true;}
+else alert("Error on Delete Entry ");
+return (false,'Error on Delete Entry' );
  } 
  
  
@@ -152,7 +179,7 @@ else alert("Error on Add Member ");
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
 	<br>
-	<input type="BUTTON" id="bedit" value="Edit Selected" /> &nbsp; &nbsp; &nbsp;<input type="BUTTON" id="badd" value="Add a Member" />
+	<input type="BUTTON" id="bedit" value="Edit Selected" /> &nbsp; &nbsp; &nbsp;<input type="BUTTON" id="badd" value="Add a Member" />&nbsp; &nbsp; &nbsp;<input type="BUTTON" id="bdel" value="Delete an Entry" />
 <br><br><br>
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 	<br>

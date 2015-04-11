@@ -1,6 +1,6 @@
 <?php
 
-class MyAjax extends Controller {
+class AjaxController extends Controller {
 //	protected $f3;
 //	protected $db;
 
@@ -8,12 +8,14 @@ class MyAjax extends Controller {
 //$f3->set('message','');
 	$f3=$this->f3;
 	$auth_logger = new Log('auth.log');
-	$auth_logger->write( 'Entering MyAjax beforeroute URI= '.$f3->get('URI'  ) );
-	$auth_logger->write( "MyAjax beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
-	//$auth_logger->write( "MyAjax beforeroute $_SESSION = ".
+	$auth_logger->write( 'Entering AjaxController beforeroute URI= '.$f3->get('URI'  ) );
+	$auth_logger->write( "AjaxController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
+	
+	$auth_logger->write( 'AjaxController beforeroute  $_Session user_id = '.$_SESSION['user_id']);
+	//$auth_logger->write( "AjaxController beforeroute $_SESSION = ".
 	//var_export($_SESSION);
-	//$auth_logger->write( "MyAjax beforeroute SESSION = ".var_export($f3->get('SESSION')));
-	//$auth_logger->write( "MyAjax beforeroute $this = ".var_export($this->f3,true));
+	//$auth_logger->write( "AjaxController beforeroute SESSION = ".var_export($f3->get('SESSION')));
+	//$auth_logger->write( "AjaxController beforeroute $this = ".var_export($this->f3,true));
 	//var_export($f3->get('SESSION'));
 	}
 
@@ -21,7 +23,7 @@ class MyAjax extends Controller {
 //		echo Template::instance()->render('layout.htm');	
 	}
 
-	function __construct() {
+/*	function __construct() {
 
         $this->f3=Base::instance();
 $f3=$this->f3;
@@ -33,7 +35,7 @@ $f3=$this->f3;
 
 		$this->f3=$f3;	
 		$this->db=$db;
-	}
+	}  */
 	public function members() //for POST membergrid
 	 {
 	 $f3=$this->f3;
@@ -270,11 +272,11 @@ header("Content-type: text/xml;charset=utf-8");
  $sidx = $_GET['sidx']; 
  $sord = $_GET['sord']; 
  //$fred = $f3->get('db_user');
- $db = mysql_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass')) or die("Connection Error: " . mysql_error()); 
- mysql_select_db($f3->get('db_name')) or die("Error connecting to db."); 
+ $db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysql_error()); 
+ //mysqli_select_db($f3->get('db_name')) or die("Error connecting to db."); 
  // calculate the number of rows for the query. We need this for paging the result 
-$result = mysql_query("SELECT COUNT(*) AS count FROM mem_users"); 
-$row = mysql_fetch_array($result,MYSQL_ASSOC); 
+$result = mysqli_query($db,"SELECT COUNT(*) AS count FROM mem_users"); 
+$row = mysqli_fetch_array($result,MYSQL_ASSOC); 
 $count = $row['count']; 
  
 // calculate the total pages for the query 
@@ -299,7 +301,7 @@ if($start <0) $start = 0;
 //$SQL = "SELECT id,surname	, forename, membnum FROM members ORDER BY $sidx $sord LIMIT $start , $limit"; 
 //$SQL = "SELECT id, FROM members ORDER BY $sidx $sord LIMIT $start , $limit"; 
  $SQL = "SELECT id,username ,email,role FROM mem_users ORDER BY $sidx $sord LIMIT $start , $limit"; 
-$result = mysql_query( $SQL ) or die("Couldn't execute query.".mysql_error()); 
+$result = mysqli_query($db, $SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
 $s .=  "<rows>";
 $s .= "<page>".$page."</page>";
@@ -312,7 +314,7 @@ $s .= "<records>".$count."</records>";
  
 // be sure to put text data in CDATA
 
- while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+ while($row = mysqli_fetch_array($result,MYSQL_ASSOC)) {
    foreach($row as $key => $value)
       {if ($key=='id') {$s .= "<row id='". $value."'>";  }
 	  else
@@ -381,7 +383,7 @@ public function editmember()
 		$f3->set('admin_log',$admin_logger);
 	$admin_logger->write('in editmember');
 
-	$members1 =	new Member($this->db);
+	//$members1 =	new Member($this->db);
 	$members =	new Member($this->db);
 	$trail = new Trail($this->db);  // audit trail
  $f3->set('members',$members);
@@ -428,39 +430,56 @@ public function editmember()
 		$trail->copyfrom('POST');	
 		$admin_logger->write('in addmember trail Surname '.$trail->surname);
 		$admin_logger->write('in addmember trail editor/user_id will be'.$f3->get('SESSION.user_id'  ));
-		var_dump($trail);
-		var_dump($members);
-		var_dump($f3->get('SESSION'));
+
 		$members->save();
 		
 		$trail->change="add";
 		$trail->editor=$f3->get('SESSION.user_id'  );
+		$trail->membnum=$members->membnum;  //new number was calculated for the $member sql
 		//$trail->editor='laurie';
 		$admin_logger->write('in addmember trail editor now  '.$trail->editor);
+		$trail->id='';
 		$trail->save();
     break;
     case "edit":   //************************************ EDIT **//
 	$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) ); //this did work but its not the same as the paid code
-
+		$temptrail= array();
+		$members->copyto('temptrail');
+		$trail->copyfrom('temptrail');	
+		$trail->change="editfrom";
+		$trail->editor=$f3->get('SESSION.user_id'  );
+		$trail->id='';
+		$trail->save();
+		$trail->reset();
 		
-	$admin_logger->write('in editmember for '.$members->surname.' membnum '.$members->membnum.' paidthis year '.$members->paidthisyear);
-	$members->amtpaidthisyear=$this->get_amt_paid($members,($f3->get('POST.paidthisyear')=="Y"));
+		
+		
+		/*********IF the field paidthisyear has been changed from N to Y then also update the amtpaidthisyear using feespertypes table *****/
+
+		$members->amtpaidthisyear=$this->get_amt_paid($members,($f3->get('POST.paidthisyear')=="Y"));
 	
 	
-	/*********IF the field paidthisyear has been changed from N to Y then also update the amtpaidthisyear using feespertypes table *****/
-	$admin_logger->write('in editmember after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear);
-	$admin_logger->write('In editmember membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
+		$admin_logger->write('in editmember after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear);
+		$admin_logger->write('In editmember membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 	
 	
 	//var_dump($members);  //LEY dumps in the http response
-	
+		$temptrail= array();
+		$members->copyto('temptrail');
+		$trail->copyfrom('temptrail');	
+		$trail->change="editto";
+		$trail->editor=$f3->get('SESSION.user_id'  );
 		$members->update();
+		$trail->id='';
+		$trail->save();
 	$xnum= $members->membnum;
 								$admin_logger->write('In editrow xnum is '.$xnum. ' and of type '.gettype($xnum));
    $xpaid= $members->paidthisyear;
    $xpay= $members->amtpaidthisyear;
    //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
-	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);// only works id reloadaftersubmit us true
+	 /*                              BUT that means all the other values will have to be put back into the grid */
+	 $arr=$members->cast();
 	 $arrencoded= json_encode($arr);
 	
 	 $admin_logger->write('in editmember after jsonencode '.$arrencoded);
@@ -471,7 +490,17 @@ public function editmember()
     case "del":
         // do mysql delete statement here
 		$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+		$temptrail= array();
+		$members->copyto('temptrail');
+		$trail->copyfrom('temptrail');	
+		$admin_logger->write('in delmember trail Surname '.$trail->surname);
+		$admin_logger->write('in delmember trail editor/user_id will be'.$f3->get('SESSION.user_id'  ));
+		$trail->change="del";
+		$trail->editor=$f3->get('SESSION.user_id'  );
+		/*  now get alll the details of the members entry into the trail entry  */
 		$members->erase();
+		$trail->id='';
+		$trail->save();
     break;
 }
 	// echo $f3->get('POST.oper');
@@ -514,10 +543,7 @@ function markpaid() {
 		$admin_logger->write('in markpaid after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear);
 								$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 	
-	//var_dump($members);
-		//var_dump($members);
-		//var_dump($POST);
-		
+	
 		
 		$members->amtpaidthisyear=$this->get_amt_paid($members,true);
 		$members->paidthisyear='Y';

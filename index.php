@@ -6,15 +6,17 @@ $f3 = require('lib/base.php');
 $f3->set('CACHE',FALSE);
 $f3->config('config/config.ini');
 
-$f3->route('GET /membergrid [ajax]','MyAjax->members');
+$f3->route('GET /membergrid [ajax]','AjaxController->members');
 //$f3->route('GET /membergrid','MyAjax->members');
-$f3->route('GET /usergrid [ajax]','MyAjax->users');
-$f3->route('POST /edituser [ajax]','MyAjax->edituser');
+$f3->route('GET /usergrid [ajax]','AjaxController->users');
+$f3->route('POST /edituser [ajax]','AjaxController->edituser');
 
 $f3->route('GET /','MemberController->index');
 $f3->route('GET /payments','MemberController->payments'); 
-$f3->route('POST /editmember [ajax]','MyAjax->editmember');
-$f3->route('POST /app/views/markpaid [ajax]','MyAjax->markpaid'); 
+
+$f3->route('POST /editmember [ajax]','AjaxController->editmember');
+
+$f3->route('POST /app/views/markpaid [ajax]','AjaxController->markpaid'); 
 
 
 $f3->route('GET /email1','EmailController->email1');
