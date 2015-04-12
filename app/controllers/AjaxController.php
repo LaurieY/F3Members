@@ -9,9 +9,9 @@ class AjaxController extends Controller {
 	$f3=$this->f3;
 	$auth_logger = new Log('auth.log');
 	$auth_logger->write( 'Entering AjaxController beforeroute URI= '.$f3->get('URI'  ) );
-	$auth_logger->write( "AjaxController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
+	//$auth_logger->write( "AjaxController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
 	
-	$auth_logger->write( 'AjaxController beforeroute  $_Session user_id = '.$_SESSION['user_id']);
+	//$auth_logger->write( 'AjaxController beforeroute  $_Session user_id = '.$_SESSION['user_id']);
 	//$auth_logger->write( "AjaxController beforeroute $_SESSION = ".
 	//var_export($_SESSION);
 	//$auth_logger->write( "AjaxController beforeroute SESSION = ".var_export($f3->get('SESSION')));
@@ -36,7 +36,75 @@ $f3=$this->f3;
 		$this->f3=$f3;	
 		$this->db=$db;
 	}  */
-	public function members() //for POST membergrid
+	
+	/****************** Return the audit trail table */
+public function trail () {
+	$f3=$this->f3;
+	$trail =	new Trail($this->db);
+	$f3->set('page_head','User List');
+	$admin_logger = new Log('admin.log');
+	$admin_logger->write('in fn trail');
+	header("Content-type: text/xml;charset=utf-8");
+	$page = $_GET['page']; 
+	$limit = $_GET['rows']; 
+	$sidx = $_GET['sidx']; 
+	$sord = $_GET['sord']; 
+
+	$db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysqli_error()); 
+	// calculate the number of rows for the query. We need this for paging the result 
+	$result = mysqli_query($db,"SELECT COUNT(*) AS count FROM trail"); 
+	$row = mysqli_fetch_array($result,MYSQL_ASSOC); 
+	$count = $row['count']; 
+ 
+// calculate the total pages for the query 
+	if( $count > 0 && $limit > 0) { 
+              $total_pages = ceil($count/$limit); 
+	} else { 
+              $total_pages = 0; 
+	}	 
+ 
+// if for some reasons the requested page is greater than the total 
+// set the requested page to total page 
+	if ($page > $total_pages) $page=$total_pages;
+ 
+// calculate the starting position of the rows 
+	$start = $limit*$page - $limit;
+ 
+// if for some reasons start position is negative set it to 0 
+// typical case is that the user type 0 for the requested page 
+	if($start <0) $start = 0; 
+ $where_to_use = "where 1";
+// the actual query for the grid data 
+		$SQL = 	"SELECT * FROM trail  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit";
+
+	$result = mysqli_query($db, $SQL ) or die("Couldn't execute query.".mysqli_error()); 
+	$s = "<?xml version='1.0' encoding='utf-8'?>";
+	$s .=  "<rows>";
+	$s .= "<page>".$page."</page>";
+	$s .= "<total>".$total_pages."</total>";
+	$s .= "<records>".$count."</records>";
+
+   
+ 
+// be sure to put text data in CDATA
+
+	while($row = mysqli_fetch_array($result,MYSQL_ASSOC)) {
+		foreach($row as $key => $value)
+		{if ($key=='id') {$s .= "<row id='". $value."'>";  }
+		else
+		{ $s .= "<cell>". "$value"."</cell>";
+	  
+			}
+         //$key holds the table column name
+		}
+		$s .= "</row>"; 
+	
+	} 
+	$s .= "</rows>"; 
+	echo $s;
+	
+	}
+public function members() //for POST membergrid
 	 {
 	 $f3=$this->f3;
 		 $members =	new Member($this->db);
@@ -44,7 +112,7 @@ $f3=$this->f3;
 	 $f3->set('page_head','User List');
 	 $admin_logger = new Log('admin.log');
 	$admin_logger->write('in fn members');
-	$admin_logger->write('in fn members '.get_class($this->db)." Parent is ".get_parent_class($this->db)."\n");
+	//$admin_logger->write('in fn members '.get_class($this->db)." Parent is ".get_parent_class($this->db)."\n");
 	 $admin_logger->write( "In Ajax POST membergrid fn members Session user_id = ".$f3->get('SESSION.user_id')); 
 
 /**	$class_methods = get_class_methods('DB\SQL');
@@ -171,39 +239,37 @@ header("Content-type: text/xml;charset=utf-8");
  $page = $_GET['page']; 
  
  
- $sidx = $_GET['sidx']; 
- $sord = $_GET['sord']; 
+	$sidx = $_GET['sidx']; 
+	$sord = $_GET['sord']; 
  //$fred = $f3->get('db_user');
- $db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysql_error()); 
+	$db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysql_error()); 
  //mysqli_select_db($f3->get('db_name')) or die("Error connecting to db."); 
  // calculate the number of rows for the query. We need this for paging the result 
-$result = mysqli_query($db,"SELECT COUNT(*) AS count FROM members ".$where_to_use); 
-$row = mysqli_fetch_array($result,MYSQL_ASSOC); 
-$count = $row['count']; 
-  $limit = $count;  // temporary force all rows
+	$result = mysqli_query($db,"SELECT COUNT(*) AS count FROM members ".$where_to_use); 
+	$row = mysqli_fetch_array($result,MYSQL_ASSOC); 
+	$count = $row['count']; 
+	$limit = $count;  // temporary force all rows
 //  $limit = $_GET['rows'];  // temporary comment out  to force all rows need this if non-local grid, i.e. loadOnce=false
 
 // calculate the total pages for the query 
-if( $count > 0 && $limit > 0) { 
-              $total_pages = ceil($count/$limit); 
-} else { 
+	if( $count > 0 && $limit > 0) { 
+				$total_pages = ceil($count/$limit); 
+	} else { 
               $total_pages = 0; 
-} 
+	} 
 
 // if for some reasons the requested page is greater than the total 
 // set the requested page to total page 
-if ($page > $total_pages) $page=$total_pages;
+	if ($page > $total_pages) $page=$total_pages;
  
 // calculate the starting position of the rows 
-$start = $limit*$page - $limit;
+	$start = $limit*$page - $limit;
  
 // if for some reasons start position is negative set it to 0 
 // typical case is that the user type 0 for the requested page 
-if($start <0) $start = 0; 
+	if($start <0) $start = 0; 
  
-// the actual query for the grid data 
-//$SQL = "SELECT id,surname	, forename, membnum FROM members ORDER BY $sidx $sord LIMIT $start , $limit"; 
-//$SQL = "SELECT id, FROM members ORDER BY $sidx $sord LIMIT $start , $limit"; 
+
 
 /************Get Total paid for this selection  ************/
  $SQL_total="select sum(amtpaidthisyear)  as amt from members ".$where_to_use;
@@ -211,6 +277,7 @@ if($start <0) $start = 0;
  $row = mysqli_fetch_array($result,MYSQL_ASSOC); 
  $amt_total = $row['amt'];
  
+ // the actual query for the grid data 
  
  $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,datejoined FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
  $admin_logger->write('in getresult_where SQL = '. $SQL."\n");
@@ -477,8 +544,7 @@ public function editmember()
    $xpaid= $members->paidthisyear;
    $xpay= $members->amtpaidthisyear;
    //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
-	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);// only works id reloadaftersubmit us true
-	 /*                              BUT that means all the other values will have to be put back into the grid */
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
 	 $arr=$members->cast();
 	 $arrencoded= json_encode($arr);
 	

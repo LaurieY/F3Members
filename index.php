@@ -29,6 +29,9 @@ $f3->route('GET /logout','MemberController->logout');
 $f3->route('POST /login','MemberController->auth');
 $f3->route('GET /admin','AdminController->index');
 $f3->route('GET /users','UserController->index');
+$f3->route('GET /trail','MemberController->trail');
+
+$f3->route('GET /trailgrid','AjaxController->trail');
 $f3->route('GET /user/update/@usr','UserController->update');
 
 $f3->route('GET /1','MemberController->index1');

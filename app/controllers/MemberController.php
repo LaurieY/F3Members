@@ -4,13 +4,14 @@ class MemberController extends Controller {
 	function beforeroute() {
 	$f3=$this->f3;
 	$auth_logger = new Log('auth.log');
-	$auth_logger->write( 'Entering beforeroute URI= '.$f3->get('URI'  ) );
-	$auth_logger->write( "Session user_id = ".$f3->get('SESSION.user_id')); 
+	//$auth_logger->write( 'Entering beforeroute URI= '.$f3->get('URI'  ) );
+	if($f3->get('SESSION.user_id')){$auth_logger->write( "Session user_id = ".$f3->get('SESSION.user_id')); 
 	$auth_logger->write( "Session lastseen = ".$f3->get('SESSION.lastseen')); 
 	$auth_logger->write( "Session expiry secs = ".($f3->get('user_expiry')*3600)); 
 	$auth_logger->write( "Session time now = ".time());
 	$auth_logger->write( "Session lastseen  expiry = ".($f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600))); 
-	//$auth_logger->write( "Member beforeroute $this = ".var_export($f3->get('SESSION.user_id')));
+
+	}
 	
 	$relogincondition = !($f3->get('SESSION.user_id'))&&( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600)>time());
 	if (((!$f3->get('URI')=='/login' )&&(!$f3->get('URI')=='/logout' ))&&$relogincondition      ) 
@@ -73,6 +74,25 @@ $this->f3->set('lyvar','in before');
 $this->f3->set('view','member/session.htm');
 }
 
+/**********  show a grid for the audit trail table IFF logged in with role admin ******/
+
+public function trail() {
+$f3=$this->f3;
+	$auth_logger = new Log('auth.log');
+	$auth_logger->write( 'Entering trail'  );	
+if ($f3->get('SESSION.user_role')==="admin"){
+		   $trail = new Trail($this->db);
+        $f3->set('trail',$trail->all());
+		$f3->set('page_head','Audit Trail List');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+        $f3->set('message', $f3->get('PARAMS.message'));
+		//$f3->set('listn', $f3->get('PARAMS.mylist'));
+		//$f3->set('listnn','member/list.htm');
+		$f3->set('view','admin/trail.htm');
+		$f3->set('SESSION.lastseen',time()); 
+
+}
+}
 public function index()	
 	{
 	$f3=$this->f3;

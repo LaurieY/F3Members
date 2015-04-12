@@ -1,15 +1,15 @@
 <div class="navbar">
-<!-- in user admin.htm --> 
+<!-- in user admin/nav.htm --> 
     <div class="navbar-inner">
         <ul class="nav">
 
 
-			<li class="active"><a href="{{ @BASE.'/' }}"><i class="icon-plus-sign icon-black"></i> Members</a></li>
+			<li class="active"><a href="{{ @BASE.'/' }}"><i class="icon-plus-sign icon-black"></i>Back to Members</a></li>
             <check if="{{ @page_head == 'Admin' }}">
 			<li class="active"> <a href="{{ @BASE.'/users' }}"><i class="icon-th icon-black"></i>Users</a></li>
-            <li class="active"> <a href="{{ @BASE.'/admin/refs' }}"><i class="icon-plus-sign icon-black"></i> Reference Tables</a></li>
-
+			<li class="active"> <a href="{{ @BASE.'/trail' }}"><i class="icon-th icon-black"></i>Audit Trail</a></li>
            
+
             </check>
         </ul>
     </div>

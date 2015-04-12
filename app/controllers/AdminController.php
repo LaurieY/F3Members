@@ -26,7 +26,7 @@ class AdminController extends Controller {
         $this->f3->set('page_head','Admin');
         $this->f3->set('message', $this->f3->get('PARAMS.message'));
 	//	$admin_logger->write('in admin index PARAMS.message is '.$f3->get('PARAMS.message'));
-        $this->f3->set('view','admin/list.htm');
+        $this->f3->set('view','admin/index.htm');
 
 	}
 
