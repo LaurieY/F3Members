@@ -68,3 +68,8 @@ Mon, 13 Apr 2015 16:02:38 +0000 [192.168.10.1] IN login IN Eurocookie
 Mon, 13 Apr 2015 16:02:39 +0000 [192.168.10.1] In login in continent==EU
 Mon, 13 Apr 2015 16:02:44 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
 Mon, 13 Apr 2015 16:02:44 +0000 [192.168.10.1] In  login setting page_head
+Mon, 13 Apr 2015 16:54:15 +0000 [192.168.10.1] Entering login
+Mon, 13 Apr 2015 16:54:15 +0000 [192.168.10.1] IN login IN Eurocookie
+Mon, 13 Apr 2015 16:54:17 +0000 [192.168.10.1] In login in continent==EU
+Mon, 13 Apr 2015 16:54:17 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
+Mon, 13 Apr 2015 16:54:17 +0000 [192.168.10.1] In  login setting page_head

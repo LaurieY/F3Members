@@ -73,11 +73,94 @@ public function trail () {
 // if for some reasons start position is negative set it to 0 
 // typical case is that the user type 0 for the requested page 
 	if($start <0) $start = 0; 
- $where_to_use = "where 1";
-// the actual query for the grid data 
-		$SQL = 	"SELECT * FROM trail  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit";
+	$filters = $f3->get('GET.filters');
+	$where = "";
+        if (isset($filters)) {
+            $filters = json_decode($filters);
+            $where = " where ";
+            $whereArray = array();
+            $rules = $filters->rules;
+/********************************/
+ $groupOperation = $filters->groupOp;
+        foreach($rules as $rule) {
 
-	$result = mysqli_query($db, $SQL ) or die("Couldn't execute query.".mysqli_error()); 
+            $fieldName = $rule->field;
+            $admin_logger->write('in fn trail old fieldname = '.$fieldName."\n");
+			$admin_logger->write('in fn trail old fielddata = '.$rule->data."\n");
+			//$admin_logger->write('in fn trail quoted fielddata = '.$this->db->quote($rule->data)."\n");
+			$fieldData =$rule->data;
+			//$fieldData =str_replace("'", "",$this->db->quote($rule->data)); // not necessary, the quote only add spurious quoted that I have to remove
+			$admin_logger->write('in fn trail new fielddata = '.str_replace("'", "",$fieldData)."\n");
+		   
+            switch ($rule->op) {
+           case "eq":
+                $fieldOperation = " = '".$fieldData."'";
+				
+                break;
+           case "ne":
+                $fieldOperation = " != '".$fieldData."'";
+                break;
+           case "lt":
+                $fieldOperation = " < '".$fieldData."'";
+                break;
+           case "gt":
+                $fieldOperation = " > '".$fieldData."'";
+                break;
+           case "le":
+                $fieldOperation = " <= '".$fieldData."'";
+                break;
+           case "ge":
+                $fieldOperation = " >= '".$fieldData."'";
+                break;
+           case "nu":
+                $fieldOperation = " = ''";
+                break;
+           case "nn":
+                $fieldOperation = " != ''";
+                break;
+           case "in":
+                $fieldOperation = " IN (".$fieldData.")";
+                break;
+           case "ni":
+                $fieldOperation = " NOT IN '".$fieldData."'";
+                break;
+           case "bw":
+                $fieldOperation = " LIKE '".$fieldData."%'";
+                break;
+           case "bn":
+                $fieldOperation = " NOT LIKE '".$fieldData."%'";
+                break;
+           case "ew":
+                $fieldOperation = " LIKE '%".$fieldData."'";
+                break;
+           case "en":
+                $fieldOperation = " NOT LIKE '%".$fieldData."'";
+                break;
+           case "cn":
+                $fieldOperation = " LIKE '%".$fieldData."%'";
+                break;
+           case "nc":
+                $fieldOperation = " NOT LIKE '%".$fieldData."%'";
+                break;
+            default:
+                $fieldOperation = "";
+                break;
+                }
+            if($fieldOperation != "") $whereArray[] = $fieldName.$fieldOperation;
+        }
+        if (count($whereArray)>0) {
+            $where .= join(" ".$groupOperation." ", $whereArray);
+        } else {
+            $where = "";
+        }
+		}
+ $where_to_use = $where;
+
+// the actual query for the grid data 
+$admin_logger->write('in fn trail where value ='. $where_to_use );
+	$SQL = 	"SELECT * FROM trail  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit";
+$admin_logger->write('in fn trail SQL is ='.$SQL );
+	$result = mysqli_query($db, $SQL ) or die("Couldn't execute query.".mysql_error()); 
 	$s = "<?xml version='1.0' encoding='utf-8'?>";
 	$s .=  "<rows>";
 	$s .= "<page>".$page."</page>";
@@ -145,11 +228,11 @@ $where = "";
 			$admin_logger->write('in fn members new fielddata = '.str_replace("'", "",$fieldData)."\n");
 		   //$fieldData = mysqli_real_escape_string($members,$rule->data); 
             switch ($rule->op) {
-           case "eq":
-                $fieldOperation = " = ".$fieldData."";
-                break;
+   case "eq":
+                $fieldOperation = " = '".$fieldData."'";
+		        break;
            case "ne":
-                $fieldOperation = " != ".$fieldData."";
+                $fieldOperation = " != '".$fieldData."'";
                 break;
            case "lt":
                 $fieldOperation = " < '".$fieldData."'";

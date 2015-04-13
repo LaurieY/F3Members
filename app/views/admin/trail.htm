@@ -24,7 +24,7 @@ $(function () {
 			  { name: "amtpaidthisyear", width: 50, align: "right",editable: false,},
 			  { name: "datejoined", width: 100, align: "right",search:false },   
 			  { name: "created_at", width: 150, align: "right",search:true }, 
-			  { name: "editor", width: 80, align: "right",search:true }, 
+			  { name: "editor", width: 120, align: "right",search:true, searchoptions : {sopt: ["bw"] },searchrules:{string:true}}, 
 			  { name: "change", width: 80, align: "right",search:false }, 
 			  
 			
@@ -54,6 +54,7 @@ $(function () {
                 { edit: false, add: false, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: false },
 				{}
 					);
+ $('#list').jqGrid('filterToolbar',{searchOperators: true,	});
 	}			); 
 </script>
  
