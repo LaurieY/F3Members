@@ -7,14 +7,24 @@ class MemberController extends Controller {
 	//$auth_logger->write( 'Entering beforeroute URI= '.$f3->get('URI'  ) );
 	if($f3->get('SESSION.user_id')){$auth_logger->write( "Session user_id = ".$f3->get('SESSION.user_id')); 
 	$auth_logger->write( "Session lastseen = ".$f3->get('SESSION.lastseen')); 
-	$auth_logger->write( "Session expiry secs = ".($f3->get('user_expiry')*3600)); 
+	$auth_logger->write( "Session expiry config secs = ".($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))); 
+	//$auth_logger->write( "Session expiry secs = ".($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))); 
 	$auth_logger->write( "Session time now = ".time());
-	$auth_logger->write( "Session lastseen  expiry = ".($f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600))); 
+	$auth_logger->write( "Session lastseen  expiry = ".($f3->get('SESSION.lastseen')+(($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))))); 
 
 	}
+	else
+	{$auth_logger->write( "In membercontroller beforeroute Session user_id NOT set");
+	$auth_logger->write( "Session lastseen = ".$f3->get('SESSION.lastseen')); 
+	$auth_logger->write( "Session expiry config secs = ".($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))); 
+	//$auth_logger->write( "Session expiry secs = ".($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))); 
+	$auth_logger->write( "Session time now = ".time());
+	$auth_logger->write( "Session lastseen  expiry = ".($f3->get('SESSION.lastseen')+(($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))))); 
+}
 	
-	$relogincondition = !($f3->get('SESSION.user_id'))&&( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*3600)>time());
-	if (((!$f3->get('URI')=='/login' )&&(!$f3->get('URI')=='/logout' ))&&$relogincondition      ) 
+	$relogincondition = (!$f3->get('SESSION.user_id'))||( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*($f3->get('user_expiry_mult')))<time());
+	$auth_logger->write( 'beforeroute with relogincondition ='.$relogincondition);
+	if ((!($f3->get('URI')=='/login' )&&!($f3->get('URI')=='/logout' ))&&$relogincondition      ) 
 	// not login or logout and not a session user_id already then need to force a login
 	{$auth_logger->write( 'Exiting beforeroute with relogincondition ='.$relogincondition);
 	$auth_logger->write( 'Exiting beforeroute with reroute to login');	 
