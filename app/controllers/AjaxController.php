@@ -589,6 +589,7 @@ public function editmember()
 		//$trail->editor='laurie';
 		$admin_logger->write('in addmember trail editor now  '.$trail->editor);
 		$trail->id='';
+		$trail->created_at=date("Y-m-d H:i:s");
 		$trail->save();
     break;
     case "edit":   //************************************ EDIT **//
@@ -597,8 +598,10 @@ public function editmember()
 		$members->copyto('temptrail');
 		$trail->copyfrom('temptrail');	
 		$trail->change="editfrom";
+		
 		$trail->editor=$f3->get('SESSION.user_id'  );
 		$trail->id='';
+		$trail->created_at=date("Y-m-d H:i:s");
 		$trail->save();
 		$trail->reset();
 		
@@ -620,6 +623,7 @@ public function editmember()
 		$trail->change="editto";
 		$trail->editor=$f3->get('SESSION.user_id'  );
 		$members->update();
+		$trail->created_at=date("Y-m-d H:i:s");
 		$trail->id='';
 		$trail->save();
 	$xnum= $members->membnum;
@@ -649,6 +653,7 @@ public function editmember()
 		/*  now get alll the details of the members entry into the trail entry  */
 		$members->erase();
 		$trail->id='';
+		$trail->created_at=date("Y-m-d H:i:s");
 		$trail->save();
     break;
 }
