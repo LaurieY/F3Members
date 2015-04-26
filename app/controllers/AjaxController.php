@@ -9,6 +9,19 @@ class AjaxController extends Controller {
 	$f3=$this->f3;
 	$auth_logger = new Log('auth.log');
 	$auth_logger->write( 'Entering AjaxController beforeroute URI= '.$f3->get('URI'  ) );
+	$auth_logger->write( 'Entering AjaxController beforeroute user role = '.$f3->get('SESSION.user_role' ));
+	if (!$f3->get('SESSION.user_id') ) {
+		$this->f3->reroute('/login');
+	}
+/*	if ($f3->get('SESSION.user_role') =='user' ) {//don't allow any changes for standard user so payments not allowed
+	$f3->set('message','Cannot access this page');
+	$auth_logger->write( 'Entering AjaxController beforeroute reroute to /');
+			
+			$this->f3->reroute('/login');
+	}
+	*/
+	
+	
 	//$auth_logger->write( "AjaxController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
 	
 	//$auth_logger->write( 'AjaxController beforeroute  $_Session user_id = '.$_SESSION['user_id']);
@@ -362,7 +375,7 @@ header("Content-type: text/xml;charset=utf-8");
  
  // the actual query for the grid data 
  
- $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,datejoined FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
+ $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,datejoined,1 FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
  $admin_logger->write('in getresult_where SQL = '. $SQL."\n");
  $result = mysqli_query( $db,$SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
@@ -565,15 +578,18 @@ public function editmember()
 		$thismember= $members->membnum;
 		/***  calculate the amount paid  if added as zero ******/
 		if ($members->amtpaidthisyear> 0) {$admin_logger->write('in addmember amountpaid = '.$members->amtpaidthisyear);
-			}	
+			}	//amount specified to use that
 		
-		else {
+		else { // no amount specified use reference table amount
 		$admin_logger->write('in addmember NO amount paidthisyear ');
 		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
 		$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
-		$feetopay = $feespertypes->feetopay;
+		$feetopay = $feespertypes->firstyearfee;
 		$members->amtpaidthisyear = $feetopay;
+		$admin_logger->write('in addmember amount paidthisyear ='. $feetopay);
 		}}
+		$members->datepaid=date("Y-m-d H:i:s");
+		$members->datejoined=date("Y-m-d H:i:s");
 		$admin_logger->write('in addmember surname '.$members->surname);
 		$admin_logger->write('in addmember Forename '.$members->forename);
 		
@@ -586,7 +602,9 @@ public function editmember()
 		$trail->change="add";
 		$trail->editor=$f3->get('SESSION.user_id'  );
 		$trail->membnum=$members->membnum;  //new number was calculated for the $member sql
-		//$trail->editor='laurie';
+		$trail->amtpaidthisyear=$members->amtpaidthisyear;
+		$trail->datepaid=$members->datepaid;
+		$trail->datejoined=$members->datejoined;
 		$admin_logger->write('in addmember trail editor now  '.$trail->editor);
 		$trail->id='';
 		$trail->created_at=date("Y-m-d H:i:s");
@@ -624,6 +642,10 @@ public function editmember()
 		$trail->editor=$f3->get('SESSION.user_id'  );
 		$members->update();
 		$trail->created_at=date("Y-m-d H:i:s");
+		$trail->membnum=$members->membnum;  //new number was calculated for the $member sql
+		$trail->amtpaidthisyear=$members->amtpaidthisyear;
+		$trail->datepaid=$members->datepaid;
+		$trail->datejoined=$members->datejoined;
 		$trail->id='';
 		$trail->save();
 	$xnum= $members->membnum;
@@ -654,6 +676,7 @@ public function editmember()
 		$members->erase();
 		$trail->id='';
 		$trail->created_at=date("Y-m-d H:i:s");
+		
 		$trail->save();
     break;
 }
@@ -664,7 +687,7 @@ public function editmember()
 		$f3=$this->f3; 
 		$admin_logger=$f3->get('admin_log');
 		$wasnotpaid=false;
-		if ($members->paidthisyear=="N")	{$wasnotpaid=true;}
+		if ($members->paidthisyear!="Y")	{$wasnotpaid=true;}
 	/**** now fetch the existing row to check if paidthisyear is about to change ****/
 	$admin_logger->write('in get_amt_paid for paidthisyear = '.$members->paidthisyear);
 	$admin_logger->write('in get_amt_paid for wasnotpaid = '.$wasnotpaid);
@@ -695,7 +718,7 @@ function markpaid() {
 		$members =	new Member($this->db);
 		$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
 		$admin_logger->write('in markpaid after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear);
-								$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
+		$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 	
 	
 		
@@ -718,4 +741,22 @@ function markpaid() {
    echo $arrencoded;
    //echo json_encode($arr);
 	}
+	
+function markwillpay() { 
+	 $f3=$this->f3;
+	 $members =	new Member($this->db);
+	$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+	$members->amtpaidthisyear=0;
+	$members->paidthisyear='W';	
+	$members->update();
+	$xnum= $members->membnum;
+   
+   $xpaid= $members->paidthisyear;
+   $xpay= $members->amtpaidthisyear;
+ 
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
+	$arrencoded= json_encode($arr);
+	
+   echo $arrencoded;
+	 }
 } // end of class

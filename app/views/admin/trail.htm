@@ -6,7 +6,7 @@ $(function () {
 			// editurl:"/edituser",
         datatype: "xml",
         mtype: "GET",
-       colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined","Changed","By Whom","Change"],//],
+       colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined","Paid","Changed","By Whom","Change"],//],
         colModel: [
            
 			{ name: "surname", width: 120,editable: false, edittype:"text",searchoptions : {
@@ -22,7 +22,8 @@ $(function () {
              { name: "location", width: 50, align: "right" ,editable: false,},
 			 { name: "paidthisyear", width: 50, align: "right" ,editable: false,  }, 
 			  { name: "amtpaidthisyear", width: 50, align: "right",editable: false,},
-			  { name: "datejoined", width: 100, align: "right",search:false },   
+			  { name: "datejoined", width: 100, align: "right",search:false },    
+			  { name: "datepaid", width: 100, align: "right",search:false },   
 			  { name: "created_at", width: 150, align: "right",search:true }, 
 			  { name: "editor", width: 120, align: "right",search:true, searchoptions : {sopt: ["bw"] },searchrules:{string:true}}, 
 			  { name: "change", width: 80, align: "right",search:false }, 

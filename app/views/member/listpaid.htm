@@ -16,7 +16,7 @@ $(function () {
         mtype: "GET",
         colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid",
 		//"Joined",
-		""],//],
+		"Pay","WillPay"],//],
         colModel: [
             
 			{ name: "surname", width: 120,editable: true, edittype:"text",sortable:true,sorttype:'string',firstsortorder:'asc',searchoptions : {
@@ -35,11 +35,16 @@ $(function () {
 			
 			 // { name: 'act', formatter: 'actions', sortable: false,search:false, width: 54 },
 			    //{ name: "datejoined", width: 100, align: "right",search:false }, 
-			  { name: 'pay', width: 20, sortable: false, search: false,
+			  { name: 'pay', width: 40, sortable: false, search: false,
                       formatter:function(){
                          // return "<span class='ui-icon ui-icon-pencil'></span>"
 						 return  "<span class='member-icons  money_euro'></span>"
-                      }}, 
+                      }},
+ { name: 'willpay', width: 65, sortable: false, search: false,
+                      formatter:function(){
+                         // return "<span class='ui-icon ui-icon-pencil'></span>"
+						  return  "<span class='member-icons  money_promise'></span>"
+                      }},					  
 			
         ],
         pager: "#pager",
@@ -75,14 +80,15 @@ $(function () {
 onCellSelect: function (rowid,iCol,cellcontent,e) { 
  var grid = $("#list");
 				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
-                    if (iCol >= payColumnIndex) {
+                willpayColumnIndex = getColumnIndexByName( $("#list"),'willpay');    
                        // alert("rowid="+rowid+"\n");
-						xnum="601";
+						//xnum="601";
 						xnum= $("#list").jqGrid('getCell',rowid,'membnum');
-						xtype="M";
+						//xtype="M";
 						xtype=$("#list").jqGrid('getCell',rowid,'membtype');
 						//alert("member = "+xnum+" type= "+xtype);
 						//$.post("\markpaid",{membnum:xnum,membtype:xtype});
+						if (iCol == payColumnIndex) { // clicked on to pay icon
 						$.post("\markpaid",{membnum:xnum,membtype:xtype},function(data) {
 						$showit=$.parseJSON(data)
 						  $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
@@ -94,6 +100,15 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						});  
 						
 	//$("#list").trigger("reloadGrid", [{ page: 1}]);
+						}
+						if (iCol == willpayColumnIndex) { // might be will-pay
+						$.post("\markwillpay",{membnum:xnum,membtype:xtype},function(data) {
+						$showit=$.parseJSON(data)
+						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
+						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
+						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear
+						});  
 						}
 					},
 	/*			onSelectRow: function(id) {

@@ -2,21 +2,32 @@
 <!-- in member nav.htm -->
     <div class="navbar-inner">
         <ul class="nav">
-
-            <li <check if="{{ @page_head == 'Member List' }}">class="active"</check>><a href="{{ @BASE.'/' }}"><em class="icon-th icon-black"></em> View Members</a></li>
-             <li <check if="{{ @page_head == 'Member List' }}">class="active"</check>><a href="{{ @BASE.'/payments' }}"><em class="icon-th icon-black"></em> Member Payments</a></li>
-    		
+            <!-- check if="{{ @page_head == 'Member List'||@page_head == 'Update Payments'}} " --> 
+			<check if="{{ @page_head != 'Login'}} "> 
+			<true>
+			<li class="active" ><a href="{{ @BASE.'/' }}"><em class="icon-th icon-black"></em> View Members</a></li>
+            <li class="active" ><a href="{{ @BASE.'/changeme' }}"><em class="icon-th icon-black"></em> Change My Details</a></li>
+			
+			<check if="{{ @page_role == 'user'}}">
+			<!-- page role is not user but is in member list--> 
+			<false>
+			<li class="active"><a href="{{ @BASE.'/payments' }}"><em class="icon-th icon-black"></em> Member Payments</a></li>
+    		 </false></check>
+			
 			<check if="{{ @page_role == 'admin' }}">
 			<!-- page role is admin -->
-          
+          <true>
 			<li class="active"> <a href="{{ @BASE.'/users' }}"><i class="icon-th icon-black"></i>Users</a></li>
 			<li class="active"> <a href="{{ @BASE.'/trail' }}"><i class="icon-th icon-black"></i>Audit Trail</a></li>
             <!-- li class="active"> <a href="{{ @BASE.'/admin/refs' }}"><i class="icon-plus-sign icon-black"></i>Reference Tables</a></li -->
-           
+           </true>
             </check>
+			<li class="active"> <a href="{{ @BASE.'/logout' }}"><i class="icon-th icon-black"></i>Logout</a></li>
+			</true></check>
 
            
         </ul>
 		<!-- member nav after /ul-->
     </div>
+	<div id="myrole" style="display:none;">{{@page_role}}</div>
 </div>

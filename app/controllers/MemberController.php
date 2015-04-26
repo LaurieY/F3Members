@@ -3,6 +3,7 @@
 class MemberController extends Controller {
 	function beforeroute() {
 	$f3=$this->f3;
+	 $f3->set('message','');
 	$auth_logger = new Log('auth.log');
 	//$auth_logger->write( 'Entering beforeroute URI= '.$f3->get('URI'  ) );
 	if($f3->get('SESSION.user_id')){$auth_logger->write( "Session user_id = ".$f3->get('SESSION.user_id')); 
@@ -32,15 +33,17 @@ class MemberController extends Controller {
 		}
 	$auth_logger->write( 'Exiting beforeroute URI= '.$f3->get('URI'  ));		}
 	
-	private  function checkpwd() {
+function checkpwd($thisuserid,$thispassword) { 
 	$f3=$this->f3;
 	$auth_logger = new Log('auth.log');
 			$memuser = new DB\SQL\Mapper($this->db, 'mem_users'); 
 			
-		$thisuser=$memuser->load(array('username =:user',array(':user'=> $f3->get('POST.user_id')) ) );
-			
-			$auth_logger->write( 'the posted password = '.$f3->get('SESSION.password'))	;
-			
+		//$thisuser=$memuser->load(array('username =:user',array(':user'=> $f3->get('POST.user_id')) ) );
+			$thisuser=$memuser->load(array('username =:user',array(':user'=> $thisuserid)));
+			//$auth_logger->write( 'the posted password = '.$f3->get('SESSION.password'))	;
+			$auth_logger->write( 'the posted userid/name = '.$thisuserid);
+			//$auth_logger->write( 'the posted username = '.$thisuser);
+			$auth_logger->write( 'the posted password = '.$thispassword);
 			if($memuser->loaded() ){
 			$auth_logger->write( 'thisusers loaded count = '.$memuser->loaded())	;
 			$auth_logger->write( 'thisuser = '.$thisuser->username)	;
@@ -164,6 +167,9 @@ public function index()
     $f3->set('members',$member->all());
 	$f3->set('page_head','Update Payments');
 	$f3->set('page_role',$f3->get('SESSION.user_role'));
+	if ($f3->get('SESSION.user_role') =='user' ) {//don't allow any changes for standard user so payments not allowed
+	$this->f3->reroute('/login');
+	}
 	$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
 	$f3->set('view','member/listpaid.htm');
 	$f3->set('SESSION.lastseen',time()); 
@@ -184,7 +190,7 @@ public function index()
 $f3->set('SESSION.lastseen',time()); 
     }
 
-    public function update()
+/*********    public function update()
     {
 
         $user = new User($this->db);
@@ -202,6 +208,7 @@ $f3->set('SESSION.lastseen',time());
         }
 $f3->set('SESSION.lastseen',time()); 
     }
+	**/
 		public function listn()	
 	{
 	        $user = new Member($this->db);
@@ -245,9 +252,12 @@ $f3->set('SESSION.lastseen',time());
 		$f3->clear('SESSION');
 		if ($f3->get('eurocookie')) {
 $login_logger->write( 'IN login IN Eurocookie'  );
-			$loc=Web\Geo::instance()->location();
+		/*	$loc=Web\Geo::instance()->location(); // innecessary because we ARE in the EU
+			$f3->set('message','Cookies Set');
 			if (isset($loc['continent_code']) && $loc['continent_code']=='EU')
-				$f3->set('message',
+			*/
+				
+			$f3->set('message',
 					'The administrator pages of this Web site uses cookies '.
 					'for identification and security. Without these '.
 					'cookies, these pages would simply be inaccessible. By '.
@@ -287,7 +297,7 @@ $login_logger->write( 'In login in continent==EU'  );
 		$f3->set('view','member/login.htm');
 		$f3->set('SESSION.lastseen',time()); 
 	}
-	function auth() {
+	 function auth() {
 	$f3=$this->f3;
 	$f3->clear('message');
 	
@@ -295,7 +305,9 @@ $login_logger->write( 'In login in continent==EU'  );
 			$f3->set('message','Cookies must be enabled to enter this area');
 		else {/***********
 	****/
-		if ($this->checkpwd() ){$f3->reroute('/');
+	$thisuserid= $f3->get('POST.user_id');
+	$thispassword = $f3->get('SESSION.password') ;
+		if ($this->checkpwd($thisuserid,$thispassword) ){$f3->reroute('/');
 		
 		}
 		else 
