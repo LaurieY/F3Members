@@ -162,4 +162,6 @@ pip-log.txt
 .DS_Store
 
 # Mine
-*log
+*.log
+*.gz
+lib/api/*

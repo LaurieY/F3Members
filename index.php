@@ -17,7 +17,7 @@ $f3->route('GET /payments','MemberController->payments');
 $f3->route('POST /editmember [ajax]','AjaxController->editmember');
 
 $f3->route('POST /app/views/markpaid [ajax]','AjaxController->markpaid'); 
-
+$f3->route('POST /app/views/markwillpay [ajax]','AjaxController->markwillpay'); 
 
 $f3->route('GET /email1','EmailController->email1');
 $f3->route('GET /subscribe1','EmailController->subscribe1'); 
@@ -33,7 +33,8 @@ $f3->route('GET /trail','MemberController->trail');
 
 $f3->route('GET /trailgrid','AjaxController->trail');
 $f3->route('GET /user/update/@usr','UserController->update');
-
+$f3->route('GET /changeme','UserController->changeme');
+$f3->route('POST /changeme','UserController->changeme');
 $f3->route('GET /1','MemberController->index1');
 $f3->route('GET /2','MemberController->index2');
 //$f3->config('config/routes.ini');

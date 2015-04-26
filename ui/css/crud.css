@@ -109,7 +109,12 @@ body {
 				height: 16px;
 				}
 				.member-icons ,
-			.ui-widget-content  .member-icons { background-image:url("images/money_euro.png");}
+			.ui-widget-content  .member-icons { background-image:url("images/money_euro2.png");}
 			//.member-icons {   background-image:url("images/ui-icons_222222_256x240.png");} 
-			 .money_euro  {  width: 16px;   height: 16px;background-position:0px 0px; }
+			 .money_euro  {  width: 16px;   height: 16px;background-position:-0px 0px; }
+			.money_promise {  width: 16px;   height: 16px;background-position:-16px 0px; }
+			 
+		
+			
+			 
 			
