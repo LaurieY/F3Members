@@ -8,10 +8,10 @@ class AdminController extends Controller {
 	$auth_logger->write( "AdminController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
 	if ((!$f3->get('SESSION.user_id')) ||($f3->get('SESSION.user_role')!='admin')||( $f3->get('SESSION.lastseen')+($f3->get('admin_expiry')*3600)>time()))
 			{$f3->set('message','Cookies must be enabled to enter this area and user must have admin access');
-			$f3->reroute('/');}
+			$this->nocookie();
 
 	}
-
+}
 
 		public function index()	
 	{
@@ -29,7 +29,19 @@ class AdminController extends Controller {
         $this->f3->set('view','admin/index.htm');
 
 	}
+public function nocookie()
+{
+$f3=$this->f3;
+	$auth_logger = new Log('auth.log');
+	$auth_logger->write( 'Entering admin nocookie'  );	
+			$f3->set('page_head','No Cookie set');
+		$f3->set('page_role','user');
+        $f3->set('message', 'Session Cookies MUST be allowed in your Browser for this program to function');
+		
+		$f3->set('view','admin/nocookie.htm');
+		//$f3->set('SESSION.lastseen',time()); 
 
+}
 	
 
 	

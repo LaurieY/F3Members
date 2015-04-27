@@ -9,9 +9,10 @@
             <li class="active" ><a href="{{ @BASE.'/changeme' }}"><em class="icon-th icon-black"></em> Change My Details</a></li>
 			
 			<check if="{{ @page_role == 'user'}}">
-			<!-- page role is not user but is in member list--> 
+			<!-- page role is not user but we are in member list / not in Login--> 
 			<false>
 			<li class="active"><a href="{{ @BASE.'/payments' }}"><em class="icon-th icon-black"></em> Member Payments</a></li>
+			<li class="active"><a href="{{ @BASE.'/exports' }}"><em class="icon-th icon-black"></em> List Exports</a></li>
     		 </false></check>
 			
 			<check if="{{ @page_role == 'admin' }}">

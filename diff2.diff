@@ -1,0 +1,78 @@
+diff --git a/app/views/header.htm b/app/views/header.htm
+index 8c91d3e..8063e34 100755
+--- a/app/views/header.htm
++++ b/app/views/header.htm
+@@ -21,6 +21,7 @@
+ 		  <link rel="stylesheet" type="text/css" media="screen" href="../../ui/css/jquery-ui.css">
+ 
+ 	        <link href="../../ui/css/crud.css" rel="stylesheet" type="text/css" media="screen">		
++			<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /> 
+     </head>
+ 
+     <body>
+diff --git a/diff1.diff b/diff1.diff
+new file mode 100755
+index 0000000..0fd5e0c
+--- /dev/null
++++ b/diff1.diff
+@@ -0,0 +1,13 @@
++diff --git a/app/views/header.htm b/app/views/header.htm
++index 6170229..8c91d3e 100755
++--- a/app/views/header.htm
+++++ b/app/views/header.htm
++@@ -26,7 +26,7 @@
++     <body>
++ <!-- contents of header.htm -->
++         <div class="container">
++-		V0.45 (validations and audit trail and pwd change)
+++		V0.46 (validations and audit trail and pwd change release)
++            <check if ="{{ @page_head == 'Admin' }}">
++ 		   <true>
++ 		   <include href="admin/nav.htm" />
+diff --git a/favicon.ico b/favicon.ico
+new file mode 100755
+index 0000000..873a928
+Binary files /dev/null and b/favicon.ico differ
+diff --git a/login.log b/login.log
+index 28c8c3c..b2e4bec 100755
+--- a/login.log
++++ b/login.log
+@@ -213,3 +213,38 @@ Sun, 26 Apr 2015 15:05:53 +0000 [192.168.10.1] IN login IN Eurocookie
+ Sun, 26 Apr 2015 15:05:54 +0000 [192.168.10.1] In login in continent==EU
+ Sun, 26 Apr 2015 15:05:54 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
+ Sun, 26 Apr 2015 15:05:54 +0000 [192.168.10.1] In  login setting page_head
++Sun, 26 Apr 2015 17:50:51 +0000 [192.168.10.1] Entering login
++Sun, 26 Apr 2015 17:50:51 +0000 [192.168.10.1] IN login IN Eurocookie
++Sun, 26 Apr 2015 17:50:51 +0000 [192.168.10.1] In login in continent==EU
++Sun, 26 Apr 2015 17:50:51 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
++Sun, 26 Apr 2015 17:50:51 +0000 [192.168.10.1] In  login setting page_head
++Sun, 26 Apr 2015 17:59:07 +0000 [192.168.10.1] Entering login
++Sun, 26 Apr 2015 17:59:07 +0000 [192.168.10.1] IN login IN Eurocookie
++Sun, 26 Apr 2015 17:59:07 +0000 [192.168.10.1] In login in continent==EU
++Sun, 26 Apr 2015 17:59:07 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
++Sun, 26 Apr 2015 17:59:07 +0000 [192.168.10.1] In  login setting page_head
++Sun, 26 Apr 2015 17:59:19 +0000 [192.168.10.1] Entering login
++Sun, 26 Apr 2015 17:59:19 +0000 [192.168.10.1] IN login IN Eurocookie
++Sun, 26 Apr 2015 17:59:19 +0000 [192.168.10.1] In login in continent==EU
++Sun, 26 Apr 2015 17:59:19 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
++Sun, 26 Apr 2015 17:59:19 +0000 [192.168.10.1] In  login setting page_head
++Sun, 26 Apr 2015 17:59:53 +0000 [192.168.10.1] Entering login
++Sun, 26 Apr 2015 17:59:53 +0000 [192.168.10.1] IN login IN Eurocookie
++Sun, 26 Apr 2015 17:59:53 +0000 [192.168.10.1] In login in continent==EU
++Sun, 26 Apr 2015 17:59:53 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
++Sun, 26 Apr 2015 17:59:53 +0000 [192.168.10.1] In  login setting page_head
++Sun, 26 Apr 2015 18:01:41 +0000 [192.168.10.1] Entering login
++Sun, 26 Apr 2015 18:01:41 +0000 [192.168.10.1] IN login IN Eurocookie
++Sun, 26 Apr 2015 18:01:41 +0000 [192.168.10.1] In login in continent==EU
++Sun, 26 Apr 2015 18:01:41 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
++Sun, 26 Apr 2015 18:01:41 +0000 [192.168.10.1] In  login setting page_head
++Sun, 26 Apr 2015 18:03:45 +0000 [192.168.10.1] Entering login
++Sun, 26 Apr 2015 18:03:45 +0000 [192.168.10.1] IN login IN Eurocookie
++Sun, 26 Apr 2015 18:03:45 +0000 [192.168.10.1] In login in continent==EU
++Sun, 26 Apr 2015 18:03:45 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
++Sun, 26 Apr 2015 18:03:45 +0000 [192.168.10.1] In  login setting page_head
++Sun, 26 Apr 2015 18:04:04 +0000 [192.168.10.1] Entering login
++Sun, 26 Apr 2015 18:04:04 +0000 [192.168.10.1] IN login IN Eurocookie
++Sun, 26 Apr 2015 18:04:04 +0000 [192.168.10.1] In login in continent==EU
++Sun, 26 Apr 2015 18:04:04 +0000 [192.168.10.1] message contains= The administrator pages of this Web site uses cookies for identification and security. Without these cookies, these pages would simply be inaccessible. By using these pages you agree to this safety measure.
++Sun, 26 Apr 2015 18:04:04 +0000 [192.168.10.1] In  login setting page_head

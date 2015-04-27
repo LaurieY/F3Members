@@ -27,15 +27,21 @@ $f3->route('GET /batchsubscribe2','EmailController->batch_subscribe2');
 $f3->route('GET /login','MemberController->login');
 $f3->route('GET /logout','MemberController->logout');
 $f3->route('POST /login','MemberController->auth');
-$f3->route('GET /admin','AdminController->index');
-$f3->route('GET /users','UserController->index');
+$f3->route('GET /admin','AdminController->index'); // not currently used
+
 $f3->route('GET /trail','MemberController->trail');
 
 $f3->route('GET /trailgrid','AjaxController->trail');
-$f3->route('GET /user/update/@usr','UserController->update');
+$f3->route('GET /users','UserController->index');
+//$f3->route('GET /user/update/@usr','UserController->update');
 $f3->route('GET /changeme','UserController->changeme');
 $f3->route('POST /changeme','UserController->changeme');
-$f3->route('GET /1','MemberController->index1');
-$f3->route('GET /2','MemberController->index2');
+
+$f3->route('GET /nocookie','AdminController->nocookie');
+
+$f3->route('GET /exports','MemberController->exports');
+$f3->route('POST /exports','MemberController->exports');
+//$f3->route('GET /1','MemberController->index1');
+//$f3->route('GET /2','MemberController->index2');
 //$f3->config('config/routes.ini');
 $f3->run();

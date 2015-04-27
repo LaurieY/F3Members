@@ -501,13 +501,14 @@ public function edituser()
 	$admin_logger->write('in edituser');
 	// $memuser = new DB\SQL\Mapper($this->db, 'mem_users',array("id","username","email","role")); 
 	// $f3->get('POST.oper');
-
+	$trail = new Trail($this->db);  // audit trail
 	  //$this->f3->set('mem_users',$user->all());
 	// echo (' POST.oper = '.$f3->get('POST.oper'));
 	$mem_user =	new User($this->db);
  $f3->set('mem_user',$mem_user);
 	 switch ($f3->get('POST.oper')) {
     case "add":
+	$temptrail= array();
         // do mysql insert statement here
 		$mem_user->copyfrom('POST');
 		$salt=$f3->get('security_salt'); 
@@ -516,9 +517,13 @@ public function edituser()
 		$admin_logger->write('in edituser uname '.$mem_user->username);
 		$admin_logger->write('in edituser pwd '.$mem_user->password);
 		$mem_user->password = $encrypt_pwd ;
+		$trail->surname=$mem_user->username;
 		$admin_logger->write('in edituser pwd '.$mem_user->password);
 		$admin_logger->write('in edituser pwd'.$mem_user->password."##\n");
 		$mem_user->save();
+		$trail->change="add";
+		$trail->editor=$f3->get('SESSION.user_id'  );
+		$trail->save();
     break;
     case "edit":
 		  
@@ -533,6 +538,23 @@ public function edituser()
 	//	/
     break;
     case "del":
+	$mem_user->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
+	
+		$temptrail= array();
+		//$mem_user->copyto('temptrail');
+		//$trail->copyfrom('temptrail');	
+		$trail->surname=$mem_user->username;
+		$admin_logger->write('in deluser trail Surname '.$trail->surname);
+		$admin_logger->write('in deluser trail editor/user_id will be'.$f3->get('SESSION.user_id'  ));
+		$trail->change="del";
+		$trail->editor=$f3->get('SESSION.user_id'  );
+		/*  now get all the details of the members entry into the trail entry  */
+		$mem_user->erase();
+		$trail->id='';
+		$trail->created_at=date("Y-m-d H:i:s");
+		
+		$trail->save();
+	
         // do mysql delete statement here
     break;
 }
