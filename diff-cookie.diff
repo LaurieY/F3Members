@@ -1,0 +1,759 @@
+diff --git a/app/controllers/AdminController.php b/app/controllers/AdminController.php
+index 1d15602..a0950f0 100755
+--- a/app/controllers/AdminController.php
++++ b/app/controllers/AdminController.php
+@@ -8,10 +8,10 @@ class AdminController extends Controller {
+ 	$auth_logger->write( "AdminController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
+ 	if ((!$f3->get('SESSION.user_id')) ||($f3->get('SESSION.user_role')!='admin')||( $f3->get('SESSION.lastseen')+($f3->get('admin_expiry')*3600)>time()))
+ 			{$f3->set('message','Cookies must be enabled to enter this area and user must have admin access');
+-			$f3->reroute('/');}
++			$this->nocookie();
+ 
+ 	}
+-
++}
+ 
+ 		public function index()	
+ 	{
+@@ -29,7 +29,19 @@ class AdminController extends Controller {
+         $this->f3->set('view','admin/index.htm');
+ 
+ 	}
+-
++public function nocookie()
++{
++$f3=$this->f3;
++	$auth_logger = new Log('auth.log');
++	$auth_logger->write( 'Entering admin nocookie'  );	
++			$f3->set('page_head','No Cookie set');
++		$f3->set('page_role','user');
++        $f3->set('message', 'Session Cookies MUST be allowed in your Browser for this program to function');
++		
++		$f3->set('view','admin/nocookie.htm');
++		//$f3->set('SESSION.lastseen',time()); 
++
++}
+ 	
+ 
+ 	
+diff --git a/app/controllers/AjaxController.php b/app/controllers/AjaxController.php
+index 8a59879..67cbc6a 100755
+--- a/app/controllers/AjaxController.php
++++ b/app/controllers/AjaxController.php
+@@ -501,13 +501,14 @@ public function edituser()
+ 	$admin_logger->write('in edituser');
+ 	// $memuser = new DB\SQL\Mapper($this->db, 'mem_users',array("id","username","email","role")); 
+ 	// $f3->get('POST.oper');
+-
++	$trail = new Trail($this->db);  // audit trail
+ 	  //$this->f3->set('mem_users',$user->all());
+ 	// echo (' POST.oper = '.$f3->get('POST.oper'));
+ 	$mem_user =	new User($this->db);
+  $f3->set('mem_user',$mem_user);
+ 	 switch ($f3->get('POST.oper')) {
+     case "add":
++	$temptrail= array();
+         // do mysql insert statement here
+ 		$mem_user->copyfrom('POST');
+ 		$salt=$f3->get('security_salt'); 
+@@ -516,9 +517,13 @@ public function edituser()
+ 		$admin_logger->write('in edituser uname '.$mem_user->username);
+ 		$admin_logger->write('in edituser pwd '.$mem_user->password);
+ 		$mem_user->password = $encrypt_pwd ;
++		$trail->surname=$mem_user->username;
+ 		$admin_logger->write('in edituser pwd '.$mem_user->password);
+ 		$admin_logger->write('in edituser pwd'.$mem_user->password."##\n");
+ 		$mem_user->save();
++		$trail->change="add";
++		$trail->editor=$f3->get('SESSION.user_id'  );
++		$trail->save();
+     break;
+     case "edit":
+ 		  
+@@ -533,6 +538,23 @@ public function edituser()
+ 	//	/
+     break;
+     case "del":
++	$mem_user->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) );
++	
++		$temptrail= array();
++		//$mem_user->copyto('temptrail');
++		//$trail->copyfrom('temptrail');	
++		$trail->surname=$mem_user->username;
++		$admin_logger->write('in deluser trail Surname '.$trail->surname);
++		$admin_logger->write('in deluser trail editor/user_id will be'.$f3->get('SESSION.user_id'  ));
++		$trail->change="del";
++		$trail->editor=$f3->get('SESSION.user_id'  );
++		/*  now get all the details of the members entry into the trail entry  */
++		$mem_user->erase();
++		$trail->id='';
++		$trail->created_at=date("Y-m-d H:i:s");
++		
++		$trail->save();
++	
+         // do mysql delete statement here
+     break;
+ }
+diff --git a/app/controllers/Controller.php b/app/controllers/Controller.php
+index fe68861..8db819f 100755
+--- a/app/controllers/Controller.php
++++ b/app/controllers/Controller.php
+@@ -13,6 +13,10 @@ class Controller {
+ 	}
+ 
+ 	function afterroute() {
++	$auth_logger = new Log('auth.log');
++	$f3=$this->f3;
++	//$f3->set('page_head','Login');
++	$auth_logger->write( 'Entering Controller afterroute URI= '.$f3->get('URI'  ) );
+ 		echo Template::instance()->render('layout.htm');	
+ 	}
+ 
+diff --git a/app/controllers/MemberController.php b/app/controllers/MemberController.php
+index 403fc67..1670fab 100755
+--- a/app/controllers/MemberController.php
++++ b/app/controllers/MemberController.php
+@@ -5,7 +5,13 @@ class MemberController extends Controller {
+ 	$f3=$this->f3;
+ 	 $f3->set('message','');
+ 	$auth_logger = new Log('auth.log');
+-	//$auth_logger->write( 'Entering beforeroute URI= '.$f3->get('URI'  ) );
++	$auth_logger->write( 'Entering MemberController beforeroute URI= '.$f3->get('URI'  ) );
++	if (!$f3->get('COOKIE.PHPSESSID')){
++			$f3->set('message','Cookies must be enabled to enter this area');
++			$auth_logger->write( ' COOKIE PHPSESSID NOT exists contents = '.var_export($f3->get('COOKIE'), true));
++			$f3->reroute('/nocookie');
++			}
++	
+ 	if($f3->get('SESSION.user_id')){$auth_logger->write( "Session user_id = ".$f3->get('SESSION.user_id')); 
+ 	$auth_logger->write( "Session lastseen = ".$f3->get('SESSION.lastseen')); 
+ 	$auth_logger->write( "Session expiry config secs = ".($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))); 
+@@ -22,17 +28,51 @@ class MemberController extends Controller {
+ 	$auth_logger->write( "Session time now = ".time());
+ 	$auth_logger->write( "Session lastseen  expiry = ".($f3->get('SESSION.lastseen')+(($f3->get('user_expiry'))*($f3->get('user_expiry_mult'))))); 
+ }
+-	
++	$relogincondition= true;
+ 	$relogincondition = (!$f3->get('SESSION.user_id'))||( $f3->get('SESSION.lastseen')+($f3->get('user_expiry')*($f3->get('user_expiry_mult')))<time());
+-	$auth_logger->write( 'beforeroute with relogincondition ='.$relogincondition);
++	$auth_logger->write( 'beforeroute with relogincondition a ='.$relogincondition);
+ 	if ((!($f3->get('URI')=='/login' )&&!($f3->get('URI')=='/logout' ))&&$relogincondition      ) 
+ 	// not login or logout and not a session user_id already then need to force a login
+ 	{$auth_logger->write( 'Exiting beforeroute with relogincondition ='.$relogincondition);
+ 	$auth_logger->write( 'Exiting beforeroute with reroute to login');	 
+ 	$this->f3->reroute('/login');
+ 		}
+-	$auth_logger->write( 'Exiting beforeroute URI= '.$f3->get('URI'  ));		}
++	$auth_logger->write( 'Exiting beforeroute URI= '.$f3->get('URI'  ));
++	$auth_logger->write( 'Exiting beforeroute page_head set to = '.$f3->get('page_head'  ));
++//debug_backtrace();	
++}
++ function auth() {
++	$f3=$this->f3;
++	$f3->clear('message');
+ 	
++//$f3->set('page_head','Login');
++		$auth_logger = new Log('auth.log');
++		$auth_logger->write( 'In auth ');
++		//if (!$f3->get('COOKIE.sent'))
++		if (!$f3->get('COOKIE.PHPSESSID'))
++			{$f3->set('message','Cookies must be enabled to enter this area');
++			$auth_logger->write( 'In auth Cookies must be enabled to enter this area');
++			$auth_logger->write( ' COOKIE contents = '.var_export($f3->get('COOKIE'), true));
++			$auth_logger->write( ' SESSION contents = '.var_export($f3->get('SESSION'), true));
++		//	echo var_export($f3->get('COOKIE'),true);
++			//echo var_export($f3->get('SESSION'), true);
++			$f3->reroute('/nocookie');
++			}
++		else {/***********
++	****/
++	$auth_logger->write( 'In auth Cookies ARE enabled');
++			$auth_logger->write( ' COOKIE contents = '.var_export($f3->get('COOKIE'), true));
++			$auth_logger->write( ' SESSION contents = '.var_export($f3->get('SESSION'), true));
++	$thisuserid= $f3->get('POST.user_id');
++	$thispassword = $f3->get('SESSION.password') ;
++		if ($this->checkpwd($thisuserid,$thispassword) ){$f3->reroute('/');
++		
++		}
++		else 
++		$this->login($f3); 
++		//$f3->reroute('/login');
++		}
++	}	
+ function checkpwd($thisuserid,$thispassword) { 
+ 	$f3=$this->f3;
+ 	$auth_logger = new Log('auth.log');
+@@ -41,7 +81,7 @@ function checkpwd($thisuserid,$thispassword) {
+ 		//$thisuser=$memuser->load(array('username =:user',array(':user'=> $f3->get('POST.user_id')) ) );
+ 			$thisuser=$memuser->load(array('username =:user',array(':user'=> $thisuserid)));
+ 			//$auth_logger->write( 'the posted password = '.$f3->get('SESSION.password'))	;
+-			$auth_logger->write( 'the posted userid/name = '.$thisuserid);
++			$auth_logger->write( 'checkpwd the posted userid/name = '.$thisuserid);
+ 			//$auth_logger->write( 'the posted username = '.$thisuser);
+ 			$auth_logger->write( 'the posted password = '.$thispassword);
+ 			if($memuser->loaded() ){
+@@ -64,7 +104,9 @@ function checkpwd($thisuserid,$thispassword) {
+ 				$f3->set('message','Invalid user ID or password');
+ 				return false;}
+ 			else {$auth_logger->write( 'encrypted password IS equal to POST.password which was = '.$f3->get('POST.password'))	;
+-				$f3->clear('COOKIE.sent');
++				//$f3->clear('COOKIE.sent');
++				
++				
+ 				$f3->clear('SESSION.captcha');
+ 				$f3->set('SESSION.user_id',$f3->get('POST.user_id'));
+ 				$f3->set('SESSION.crypt',$pwdcrypt);
+@@ -80,32 +122,14 @@ function checkpwd($thisuserid,$thispassword) {
+ 		
+ 	return true;
+ 		}
+-public function sessionly ()
++/**public function sessionly ()
+ { $this->f3->set('page_head','Session info');
+ 
+ $this->f3->set('lyvar','in before');
+ $this->f3->set('view','member/session.htm');
+ }
++**/
+ 
+-/**********  show a grid for the audit trail table IFF logged in with role admin ******/
+-
+-public function trail() {
+-$f3=$this->f3;
+-	$auth_logger = new Log('auth.log');
+-	$auth_logger->write( 'Entering trail'  );	
+-if ($f3->get('SESSION.user_role')==="admin"){
+-		   $trail = new Trail($this->db);
+-        $f3->set('trail',$trail->all());
+-		$f3->set('page_head','Audit Trail List');
+-		$f3->set('page_role',$f3->get('SESSION.user_role'));
+-        $f3->set('message', $f3->get('PARAMS.message'));
+-		//$f3->set('listn', $f3->get('PARAMS.mylist'));
+-		//$f3->set('listnn','member/list.htm');
+-		$f3->set('view','admin/trail.htm');
+-		$f3->set('SESSION.lastseen',time()); 
+-
+-}
+-}
+ public function index()	
+ 	{
+ 	$f3=$this->f3;
+@@ -123,121 +147,26 @@ public function index()
+ 	$f3->set('view','member/list.htm');
+ 		$f3->set('SESSION.lastseen',time()); 
+ 	}
+-		
+-		public function index1()	
+-	{
+-	$f3=$this->f3;
+-	$auth_logger = new Log('auth.log');
+-	$auth_logger->write( 'Entering index'  );	       
+-		   $member = new Member($this->db);
+-        $f3->set('members',$member->all());
+-		$f3->set('page_head','Member List');
+-		$f3->set('page_role',$f3->get('SESSION.user_role'));
+-        $f3->set('message', $f3->get('PARAMS.message'));
+-		$f3->set('listn', $f3->get('PARAMS.mylist'));
+-
+-	
+-	  $f3->set('listnn','member/list1_xml.htm');
+-	$f3->set('view','member/list1_xml.htm');
+-		$f3->set('SESSION.lastseen',time()); 
++function exports(){
++	$f3=$this->f3;	
++	$admin_logger = new Log('admin.log');
++	$f3->set('message', $f3->get('PARAMS.message'));
++	if($f3->exists('POST.exporttype'))
++	{// analyze the export type and produce the list and download it
++	$admin_logger->write('in MemberController  exports WITH POST');
+ 	}
+-	public function index2()	
+-	{
+-	$f3=$this->f3;
+-	$auth_logger = new Log('auth.log');
+-	$auth_logger->write( 'Entering index2'  );	       
+-		   $member = new Member($this->db);
+-        $f3->set('members',$member->all());
+-		$f3->set('page_head','Member List');
++	else { // NOT a POST so setup the forms
++	$admin_logger->write('in MemberController  exports NOT POST');
++        $f3->set('view','member/exports.htm'); 
++		$f3->set('page_head','Export Mailing Lists');
+ 		$f3->set('page_role',$f3->get('SESSION.user_role'));
+-        $f3->set('message', $f3->get('PARAMS.message'));
+-		$f3->set('listn', $f3->get('PARAMS.mylist'));
+-
+-	
+-	  $f3->set('listnn','member/list2.htm');
+-	$f3->set('view','member/list2.htm');
+-		$f3->set('SESSION.lastseen',time()); 
+ 	}
+-			
+-    public function payments ()
+ 	
+-	{
+-	$f3=$this->f3;
+-		   $member = new Member($this->db);
+-    $f3->set('members',$member->all());
+-	$f3->set('page_head','Update Payments');
+-	$f3->set('page_role',$f3->get('SESSION.user_role'));
+-	if ($f3->get('SESSION.user_role') =='user' ) {//don't allow any changes for standard user so payments not allowed
+-	$this->f3->reroute('/login');
+-	}
+-	$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
+-	$f3->set('view','member/listpaid.htm');
+-	$f3->set('SESSION.lastseen',time()); 
++	
+ 	}
+-	public function create()
+-    {
+-        if($this->f3->exists('POST.create'))
+-        {
+-            $user = new User($this->db);
+-            $user->add();
+-
+-            $this->f3->reroute('/success/New User Created');
+-        } else
+-        {
+-            $this->f3->set('page_head','Create User');
+-            $this->f3->set('view','user/create.htm');
+-        }
+-$f3->set('SESSION.lastseen',time()); 
+-    }
+-
+-/*********    public function update()
+-    {
+-
+-        $user = new User($this->db);
+-
+-        if($this->f3->exists('POST.update'))
+-        {
+-            $user->edit($this->f3->get('POST.id'));
+-            $this->f3->reroute('/success/User Updated');
+-        } else
+-        {
+-            $user->getById($this->f3->get('PARAMS.id'));
+-            $this->f3->set('user',$user);
+-            $this->f3->set('page_head','Update User');
+-            $this->f3->set('view','user/update.htm');
+-        }
+-$f3->set('SESSION.lastseen',time()); 
+-    }
+-	**/
+-		public function listn()	
+-	{
+-	        $user = new Member($this->db);
+-        $this->f3->set('members',$user->all());
+-		        $this->f3->set('page_head','User List');
+-        $this->f3->set('message', $this->f3->get('PARAMS.message'));
+-		$this->f3->set('listn', $this->f3->get('PARAMS.mylist'));
+ 
+-		
+-	     $this->f3->set('listnn','member/list'.$this->f3->get('listn').'.htm');
+-		 $this->f3->set('view','member/list'.$this->f3->get('listn').'.htm');
+-	//  $this->f3->set('listnn','member/list.htm');
+-	//$this->f3->set('view','member/list.htm');
+-		 
+-	}
+-		
+-   
+ 
+-    public function delete()
+-    {
+-        if($this->f3->exists('PARAMS.id'))
+-        {
+-            $user = new User($this->db);
+-            $user->delete($this->f3->get('PARAMS.id'));
+-        }
+-$f3->set('SESSION.lastseen',time()); 
+-        $this->f3->reroute('/success/User Deleted');
+-    }
+-	function login() {
++public function login() {
+ 	$f3=$this->f3;
+ 		$login_logger = new Log('login.log');
+ 		//$login_logger->erase();
+@@ -251,7 +180,7 @@ $f3->set('SESSION.lastseen',time());
+ 	//$f3->dump($mysession   );
+ 		$f3->clear('SESSION');
+ 		if ($f3->get('eurocookie')) {
+-$login_logger->write( 'IN login IN Eurocookie'  );
++		$login_logger->write( 'IN login IN Eurocookie'  );
+ 		/*	$loc=Web\Geo::instance()->location(); // innecessary because we ARE in the EU
+ 			$f3->set('message','Cookies Set');
+ 			if (isset($loc['continent_code']) && $loc['continent_code']=='EU')
+@@ -272,7 +201,7 @@ $login_logger->write( 'In login in continent==EU'  );
+ 		$login_logger->write( 'Session.captcha = '.$f3-> get( 'SESSION.captcha' ))	;
+ 		****/
+ 		
+-		$f3->set('COOKIE.sent',TRUE);
++		//$f3->set('COOKIE.sent',TRUE);
+ 		$img = new Image();
+ 		//$fred=$img->captcha('ui/fonts/thunder.ttf',16,5);
+ 		$login_logger->write( 'message contains= '.$f3->get('message'))	;
+@@ -292,49 +221,59 @@ $login_logger->write( 'In login in continent==EU'  );
+ 		//$mysession = http_build_query($f3->get('SESSION'));
+ 		//$f3->dump($mysession   );
+ 	$login_logger->write( 'In  login setting page_head'  );
+-		$this->f3->set('page_head','Login');
+-		$this->f3->set('page_role','');
++	if ($f3->get('COOKIE.PHPSESSID'))
++	$login_logger->write( ' COOKIE PHPSESSID exists contents = '.var_export($f3->get('COOKIE'), true));
++	else
++	$login_logger->write( ' COOKIE PHPSESSID NOT exists contents = '.var_export($f3->get('COOKIE'), true));
++		$f3->set('page_head','Login');
++		$f3->set('page_role','');
+ 		$f3->set('view','member/login.htm');
+ 		$f3->set('SESSION.lastseen',time()); 
+ 	}
+-	 function auth() {
+-	$f3=$this->f3;
+-	$f3->clear('message');
+ 	
+-		if (!$f3->get('COOKIE.sent'))
+-			$f3->set('message','Cookies must be enabled to enter this area');
+-		else {/***********
+-	****/
+-	$thisuserid= $f3->get('POST.user_id');
+-	$thispassword = $f3->get('SESSION.password') ;
+-		if ($this->checkpwd($thisuserid,$thispassword) ){$f3->reroute('/');
+-		
+-		}
+-		else 
+-		$this->login($f3);
+-		}
+-	}
+ 
+ 	//! Terminate session
+-	function logout() {
++function logout() {
+ 	//$f3=$this->f3;
+ 		$this->f3->clear('SESSION');
+ 		
+ 		$this->f3->reroute('/login');
+ 	//$this->f3->reroute('/z');
+-	}
+-	
+-	
+-	
+-	
+-	
+-	
+-	
+-	
+-	
+-	
+-	
+-	
++	}		
+ 	
++public function payments ()
++		{
++	$f3=$this->f3;
++		   $member = new Member($this->db);
++    $f3->set('members',$member->all());
++	$f3->set('page_head','Update Payments');
++	$f3->set('page_role',$f3->get('SESSION.user_role'));
++	if ($f3->get('SESSION.user_role') =='user' ) {//don't allow any changes for standard user so payments not allowed
++	$this->f3->reroute('/login');
++	}
++	$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
++	$f3->set('view','member/listpaid.htm');
++	$f3->set('SESSION.lastseen',time()); 
++	}
++/**********  show a grid for the audit trail table IFF logged in with role admin ******/
++
++public function trail() {
++$f3=$this->f3;
++	$auth_logger = new Log('auth.log');
++	$auth_logger->write( 'Entering trail'  );	
++if ($f3->get('SESSION.user_role')==="admin"){
++		   $trail = new Trail($this->db);
++        $f3->set('trail',$trail->all());
++		$f3->set('page_head','Audit Trail List');
++		$f3->set('page_role',$f3->get('SESSION.user_role'));
++        $f3->set('message', $f3->get('PARAMS.message'));
++		//$f3->set('listn', $f3->get('PARAMS.mylist'));
++		//$f3->set('listnn','member/list.htm');
++		$f3->set('view','admin/trail.htm');
++		$f3->set('SESSION.lastseen',time()); 
++
++}
++}
++
+ 
+-}
+\ No newline at end of file
++} // end of Class MemberController
+\ No newline at end of file
+diff --git a/app/controllers/UserController.php b/app/controllers/UserController.php
+index 46f3ecb..647ba89 100755
+--- a/app/controllers/UserController.php
++++ b/app/controllers/UserController.php
+@@ -15,21 +15,7 @@ class UserController extends Controller {
+ 	}
+ 	
+ 		
+-    public function create()
+-    {$f3=$this->f3;
+-        if($f3->exists('POST.create'))
+-        {
+-            $user = new User($this->db);
+-            $user->add();
+-
+-            $f3->reroute('/success/New User Created');
+-        } else
+-        {
+-            $f3->set('page_head','Create User');
+-            $f3->set('view','user/create.htm');
+-        }
+-
+-    }
++ 
+ public function changeme()
+ {$f3=$this->f3;
+       $user = new User($this->db);
+@@ -119,46 +105,5 @@ function checkpwd($thisuserid,$thispassword) {
+ 		
+ 	return true;
+ 		}
+-public function sessionly ()
+-{ $this->f3->set('page_head','Session info');
+-
+-$this->f3->set('lyvar','in before');
+-$this->f3->set('view','member/session.htm');
+-}
+-
+-    public function update()
+-    {$f3=$this->f3;
+-	$admin_logger = new Log('admin.log');
+-	$admin_logger->write('in User Update');
+-		$user = new User($this->db);
+-		$f3->set('mem_users',$user->all());
+-        
+-
+-        if($f3->exists('POST.update'))
+-        {
+-            $user->edit($f3->get('POST.usr'));
+-            $f3->reroute('/admin');
+-        } else
+-        {$admin_logger->write('in User Update PARAMS.message is '.$f3->get('PARAMS.message'));
+-		$admin_logger->write('in User Update PARAMS.usr is '.$f3->get('PARAMS.usr'));
+-            $user->getByUser($f3->get('SESSION.user_id'));
+-			$f3->set('message','');
+-            $f3->set('user',$user);
+-            $f3->set('page_head','Update User');
+-            $f3->set('view','user/update.htm');
+-			$f3->set('page_role',$f3->get('SESSION.user_role'));
+-        }
+-
+-    }
+-
+-    public function delete()
+-    {$f3=$this->f3;
+-        if($f3->exists('PARAMS.id'))
+-        {
+-            $user = new User($this->db);
+-            $user->delete($f3->get('PARAMS.id'));
+-        }
+ 
+-        $f3->reroute('/success/User Deleted');
+-    }
+ }
+\ No newline at end of file
+diff --git a/app/views/admin/nocookie.htm b/app/views/admin/nocookie.htm
+new file mode 100755
+index 0000000..e69de29
+diff --git a/app/views/header.htm b/app/views/header.htm
+index 8063e34..e83d5a1 100755
+--- a/app/views/header.htm
++++ b/app/views/header.htm
+@@ -27,7 +27,7 @@
+     <body>
+ <!-- contents of header.htm -->
+         <div class="container">
+-		V0.46 (validations and audit trail and pwd change release)
++		V0.48 (validations and audit trail and pwd change release, COOKIE fixes)
+            <check if ="{{ @page_head == 'Admin' }}">
+ 		   <true>
+ 		   <include href="admin/nav.htm" />
+diff --git a/app/views/member/exports.htm b/app/views/member/exports.htm
+new file mode 100755
+index 0000000..186c2c9
+--- /dev/null
++++ b/app/views/member/exports.htm
+@@ -0,0 +1,85 @@
++<html>
++<head>
++<title>Export Email List</title>
++<script>
++function validatePassword() {
++var currentPassword,newPassword,confirmPassword,output = true;
++
++currentPassword = document.frmChange.currentPassword;
++newPassword = document.frmChange.newPassword;
++confirmPassword = document.frmChange.confirmPassword;
++
++if(!currentPassword.value) {
++currentPassword.focus();
++document.getElementById("currentPassword").innerHTML = "required";
++output = false;
++}
++else if(!newPassword.value) {
++newPassword.focus();
++document.getElementById("newPassword").innerHTML = "required";
++output = false;
++}
++else if(!confirmPassword.value) {
++confirmPassword.focus();
++document.getElementById("confirmPassword").innerHTML = "required";
++output = false;
++}
++if(newPassword.value != confirmPassword.value) {
++newPassword.value="";
++confirmPassword.value="";
++newPassword.focus();
++document.getElementById("confirmPassword").innerHTML = "not same";
++output = false;
++} 	
++return output;
++}
++function validateEmail() {
++var newEmail,confirmEmail,output = true;
++document.getElementById("newEmail").innerHTML = "";
++document.getElementById("confirmEmail").innerHTML = "";
++newEmail = document.frmEmail.newEmail;
++confirmEmail = document.frmEmail.confirmEmail;
++if(!newEmail.value) {
++newEmail.focus();
++document.getElementById("newEmail").innerHTML = "required";
++output = false;
++}
++else if(newEmail.value != confirmEmail.value) {
++newEmail.value="";
++confirmEmail.value="";
++newEmail.focus();
++document.getElementById("confirmEmail").innerHTML = "not same";
++output = false;
++
++}
++return output;
++}
++</script>
++</head>
++<body>
++<form name="frmChange" method="post" action="" onSubmit="return validatePassword()">
++<div style="width:500px;">
++<div class="message"><?php if(isset($message)) { echo $message; } ?></div>
++<table border="0" cellpadding="10" cellspacing="0" width="500" align="center" class="tblSaveForm">
++<tr class="tableheader">
++<td colspan="2"></td>
++</tr>
++<tr>
++<td width="40%"><label>Current Password</label></td>
++<td width="60%"><input type="password" name="currentPassword" class="txtField"/><span id="currentPassword"  class="required"></span></td>
++</tr>
++<tr>
++<td><label>New Password</label></td>
++<td><input type="password" name="newPassword" class="txtField"/><span id="newPassword" class="required"></span></td>
++</tr>
++<td><label>Confirm Password</label></td>
++<td><input type="password" name="confirmPassword" class="txtField"/><span id="confirmPassword" class="required"></span></td>
++</tr>
++<tr>
++<td colspan="2"><input type="submit" name="submit" value="Submit" class="btnSubmit"></td>
++</tr>
++</table>
++</div>
++</form>
++
++</body></html>
+\ No newline at end of file
+diff --git a/app/views/member/login.htm b/app/views/member/login.htm
+index d348664..8aa0b9a 100755
+--- a/app/views/member/login.htm
++++ b/app/views/member/login.htm
+@@ -1,4 +1,4 @@
+-<!--  include href="user/user.htm" / --> 
++<!--  include href="member/login.htm" / --> 
+ <div class="main">
+ 	<form method="post" action="{{ @BASE }}/login" class="login">
+ 		<h5>Login</h5>
+diff --git a/app/views/member/nav.htm b/app/views/member/nav.htm
+index 34d87f3..d3accec 100755
+--- a/app/views/member/nav.htm
++++ b/app/views/member/nav.htm
+@@ -9,9 +9,10 @@
+             <li class="active" ><a href="{{ @BASE.'/changeme' }}"><em class="icon-th icon-black"></em> Change My Details</a></li>
+ 			
+ 			<check if="{{ @page_role == 'user'}}">
+-			<!-- page role is not user but is in member list--> 
++			<!-- page role is not user but we are in member list / not in Login--> 
+ 			<false>
+ 			<li class="active"><a href="{{ @BASE.'/payments' }}"><em class="icon-th icon-black"></em> Member Payments</a></li>
++			<li class="active"><a href="{{ @BASE.'/exports' }}"><em class="icon-th icon-black"></em> List Exports</a></li>
+     		 </false></check>
+ 			
+ 			<check if="{{ @page_role == 'admin' }}">
+diff --git a/config/routes.ini b/config/routes.ini
+index b99265f..e49f6d5 100755
+--- a/config/routes.ini
++++ b/config/routes.ini
+@@ -1,13 +1,14 @@
+ [routes]
+-GET /example [ajax]=UserController->example
+-GET /get_json=UserController->get_json
+-GET /=UserController->index
+-GET /@mylist=UserController->listn
+-GET /2=UserController->list2
+-GET /3=UserController->list3
+-GET /4=UserController->list4
+-GET /success/@message=UserController->index
+-GET|POST /user/create=UserController->create
+-GET /user/update/@id=UserController->update
+-POST /user/update=UserController->update
+-GET /user/delete/@id=UserController->delete
++
++; GET /example [ajax]=UserController->example
++; GET /get_json=UserController->get_json
++; GET /=UserController->index
++; GET /@mylist=UserController->listn
++; GET /2=UserController->list2
++; GET /3=UserController->list3
++; GET /4=UserController->list4
++; GET /success/@message=UserController->index
++; GET|POST /user/create=UserController->create
++; GET /user/update/@id=UserController->update
++; POST /user/update=UserController->update
++; GET /user/delete/@id=UserController->delete
+diff --git a/index.php b/index.php
+index f417f29..52f4fd5 100755
+--- a/index.php
++++ b/index.php
+@@ -27,15 +27,21 @@ $f3->route('GET /batchsubscribe2','EmailController->batch_subscribe2');
+ $f3->route('GET /login','MemberController->login');
+ $f3->route('GET /logout','MemberController->logout');
+ $f3->route('POST /login','MemberController->auth');
+-$f3->route('GET /admin','AdminController->index');
+-$f3->route('GET /users','UserController->index');
++$f3->route('GET /admin','AdminController->index'); // not currently used
++
+ $f3->route('GET /trail','MemberController->trail');
+ 
+ $f3->route('GET /trailgrid','AjaxController->trail');
+-$f3->route('GET /user/update/@usr','UserController->update');
++$f3->route('GET /users','UserController->index');
++//$f3->route('GET /user/update/@usr','UserController->update');
+ $f3->route('GET /changeme','UserController->changeme');
+ $f3->route('POST /changeme','UserController->changeme');
+-$f3->route('GET /1','MemberController->index1');
+-$f3->route('GET /2','MemberController->index2');
++
++$f3->route('GET /nocookie','AdminController->nocookie');
++
++$f3->route('GET /exports','MemberController->exports');
++$f3->route('POST /exports','MemberController->exports');
++//$f3->route('GET /1','MemberController->index1');
++//$f3->route('GET /2','MemberController->index2');
+ //$f3->config('config/routes.ini');
+ $f3->run();

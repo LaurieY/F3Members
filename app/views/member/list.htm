@@ -156,11 +156,20 @@ else alert("Error on Add Member ");
  }  
  /**************  DELETE BUTTON ****/
 $("#bdel").click(function(){
-var gr = jQuery("#list").jqGrid('getGridParam','selrow');
-	jQuery("#list").jqGrid('delGridRow',gr,{dataheight:100,height:200,width:500,afterSubmit:afterFormDel,});
+var grid = $("#list");
+var gr = grid.jqGrid('getGridParam','selrow');
+if( gr != null ){
+	grid.jqGrid('delGridRow',gr,{dataheight:100,height:200,width:500,afterSubmit:afterFormDel,beforeShowForm: function ($form) {
+ 	var delrow2=grid.jqGrid('getLocalRow',gr);
+	$("td.delmsg", $form[0]).html("Do you really want delete this row <br/>with <b>member number=" +
+         delrow2.membnum + " and surname=" +delrow2.surname  +"</b> ?");} 
+		 })}
+		
+		 else alert("Please Select Row");
+});
 	//jQuery("#list").jqGrid('delGridRow',gr,{dataheight:100,height:200,width:500,closeAfterEdit:true,});
 	
-});	
+
 function afterFormDel(response, postdata) 
  { var grid = $("#list");
  			//$showit=$.parseJSON(response.responseText);

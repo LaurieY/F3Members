@@ -238,7 +238,7 @@ function logout() {
 		$this->f3->clear('SESSION');
 		
 		$this->f3->reroute('/login');
-	//$this->f3->reroute('/z');
+
 	}		
 	
 public function payments ()
