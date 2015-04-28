@@ -164,4 +164,6 @@ pip-log.txt
 # Mine
 *.log
 *.gz
+*.zip
 lib/api/*
+*.diff

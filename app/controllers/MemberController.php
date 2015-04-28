@@ -65,7 +65,7 @@ class MemberController extends Controller {
 			$auth_logger->write( ' SESSION contents = '.var_export($f3->get('SESSION'), true));
 	$thisuserid= $f3->get('POST.user_id');
 	$thispassword = $f3->get('SESSION.password') ;
-		if ($this->checkpwd($thisuserid,$thispassword) ){$f3->reroute('/');
+		if ($this->checkpwd($thisuserid,$thispassword) ){$f3->reroute('/members');
 		
 		}
 		else 
