@@ -6,15 +6,15 @@ $(function () {
 			// editurl:"/edituser",
         datatype: "xml",
         mtype: "GET",
-       colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined","Paid","Changed","By Whom","Change"],//],
+       colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined","Paid","Fee Where?","Changed","By Whom","Change"],//],
         colModel: [
            
-			{ name: "surname", width: 120,editable: false, edittype:"text",searchoptions : {
+			{ name: "surname", width: 110,editable: false, edittype:"text",searchoptions : {
                             // show search options
                             sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  							
 						}},
-             {name: "forename", width: 120,editable: false, },
-			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] }, searchrules:{integer:true},sorttype:'number'}, //  eq = equal to  	
+             {name: "forename", width: 110,editable: false, },
+			 { name: "membnum", width: 60,searchoptions : {sopt: ["eq"] }, searchrules:{integer:true},sorttype:'number'}, //  eq = equal to  	
 			{ name: "phone", width: 85, align: "right",editable: false,},
             { name: "mobile", width: 85, align: "right",editable: false,  }, 
             { name: "email", width: 210, align: "right",editable: false,searchoptions : {sopt: ["cn"] },editrules: { email: true, required: false},}, 
@@ -24,8 +24,9 @@ $(function () {
 			  { name: "amtpaidthisyear", width: 50, align: "right",editable: false,},
 			  { name: "datejoined", width: 100, align: "right",search:false },    
 			  { name: "datepaid", width: 100, align: "right",search:false },   
+			  { name: "feewhere", width: 100, align: "right",search:false },   
 			  { name: "created_at", width: 150, align: "right",search:true }, 
-			  { name: "editor", width: 120, align: "right",search:true, searchoptions : {sopt: ["bw"] },searchrules:{string:true}}, 
+			  { name: "editor", width: 80, align: "right",search:true, searchoptions : {sopt: ["bw"] },searchrules:{string:true}}, 
 			  { name: "change", width: 80, align: "right",search:false }, 
 			  
 			

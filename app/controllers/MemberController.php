@@ -6,7 +6,9 @@ class MemberController extends Controller {
 	 $f3->set('message','');
 	$auth_logger = new Log('auth.log');
 	$auth_logger->write( 'Entering MemberController beforeroute URI= '.$f3->get('URI'  ) );
+	
 	if (!$f3->get('COOKIE.PHPSESSID')){
+	//if (!$this->check_cookie()) {
 			$f3->set('message','Cookies must be enabled to enter this area');
 			$auth_logger->write( ' COOKIE PHPSESSID NOT exists contents = '.var_export($f3->get('COOKIE'), true));
 			$f3->reroute('/nocookie');
@@ -40,6 +42,23 @@ class MemberController extends Controller {
 	$auth_logger->write( 'Exiting beforeroute URI= '.$f3->get('URI'  ));
 	$auth_logger->write( 'Exiting beforeroute page_head set to = '.$f3->get('page_head'  ));
 //debug_backtrace();	
+}
+function check_cookie()
+{$auth_logger = new Log('auth.log');
+$f3=$this->f3;
+	$auth_logger->write( 'Entering check_cookie URI= '.$f3->get('URI'  ) );
+	
+    setcookie('COOK_CHK', uniqid(), time()+60);
+    if(!isset($_COOKIE['COOK_CHK']))
+    {$auth_logger->write( 'check_cookie !isset' );
+        header('Location: ' . $_SERVER['PHP_SELF']);
+    }
+    else
+    {$auth_logger->write( 'check_cookie isset inner' );
+        return TRUE;
+    }
+$auth_logger->write( 'check_cookie isset outer' );
+    return TRUE;
 }
  function auth() {
 	$f3=$this->f3;
@@ -178,7 +197,7 @@ public function login() {
 	$login_logger->write( 'Logs = '.$f3->get('LOGS')   ); */
 	//$mysession = http_build_query($f3->get('SESSION'));
 	//$f3->dump($mysession   );
-		$f3->clear('SESSION');
+		//$f3->clear('SESSION');
 		if ($f3->get('eurocookie')) {
 		$login_logger->write( 'IN login IN Eurocookie'  );
 		/*	$loc=Web\Geo::instance()->location(); // innecessary because we ARE in the EU
@@ -223,12 +242,14 @@ $login_logger->write( 'In login in continent==EU'  );
 	$login_logger->write( 'In  login setting page_head'  );
 	if ($f3->get('COOKIE.PHPSESSID'))
 	$login_logger->write( ' COOKIE PHPSESSID exists contents = '.var_export($f3->get('COOKIE'), true));
-	else
+	else {
 	$login_logger->write( ' COOKIE PHPSESSID NOT exists contents = '.var_export($f3->get('COOKIE'), true));
-		$f3->set('page_head','Login');
+			$this->f3->reroute('/nocookie');}
+			$f3->set('page_head','Login');
 		$f3->set('page_role','');
 		$f3->set('view','member/login.htm');
 		$f3->set('SESSION.lastseen',time()); 
+
 	}
 	
 

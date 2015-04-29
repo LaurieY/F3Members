@@ -6,6 +6,7 @@ class AdminController extends Controller {
 	$f3=$this->f3;
 		$auth_logger = new Log('auth.log');
 	$auth_logger->write( "AdminController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
+	$auth_logger->write( "AdminController beforeroute  URI= ".$f3->get('URI'  ));
 	if ((!$f3->get('SESSION.user_id')) ||($f3->get('SESSION.user_role')!='admin')||( $f3->get('SESSION.lastseen')+($f3->get('admin_expiry')*3600)>time()))
 			{$f3->set('message','Cookies must be enabled to enter this area and user must have admin access');
 			$this->nocookie();
