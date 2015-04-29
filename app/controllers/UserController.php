@@ -40,7 +40,7 @@ public function changeme()
 		$admin_logger->write('in User changeme new pwdcrypt '.$pwdcrypt);
 		$user->password= $pwdcrypt;
 		$user->update();
-		$f3->reroute('/');
+		$f3->reroute('/members');
 				}
 		else {
 		$admin_logger->write('in User changeme after checkpwd failed');
@@ -53,7 +53,7 @@ public function changeme()
 		//$user->getById();
 		$user->email= $f3->get('POST.newEmail');
 		$user->update();
-		$f3->reroute('/');
+		$f3->reroute('/members');
 		}
 		$admin_logger->write('in User changeme not POST user_id = '.$f3->get('SESSION.user_id'));
         $f3->set('view','admin/changeme.htm'); 

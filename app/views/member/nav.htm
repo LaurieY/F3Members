@@ -5,7 +5,7 @@
             <!-- check if="{{ @page_head == 'Member List'||@page_head == 'Update Payments'}} " --> 
 			<check if="{{ @page_head != 'Login'}} "> 
 			<true>
-			<li class="active" ><a href="{{ @BASE.'/' }}"><em class="icon-th icon-black"></em> View Members</a></li>
+			<li class="active" ><a href="{{ @BASE.'/members' }}"><em class="icon-th icon-black"></em> View Members</a></li>
             <li class="active" ><a href="{{ @BASE.'/changeme' }}"><em class="icon-th icon-black"></em> Change My Details</a></li>
 			
 			<check if="{{ @page_role == 'user'}}">
