@@ -25,9 +25,9 @@ $f3->route('GET /subscribe2','EmailController->subscribe2');
 $f3->route('GET /batchsubscribe2','EmailController->batch_subscribe2'); 
 
 $f3->route('GET /','LoginController->startup');
-$f3->route('GET /login','MemberController->login');
-$f3->route('GET /logout','MemberController->logout');
-$f3->route('POST /login','MemberController->auth');
+$f3->route('GET /login','LoginController->login');
+$f3->route('GET /logout','LoginController->logout');
+$f3->route('POST /login','LoginController->auth');
 $f3->route('GET /admin','AdminController->index'); // not currently used
 
 $f3->route('GET /trail','MemberController->trail');
