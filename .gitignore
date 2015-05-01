@@ -167,3 +167,4 @@ pip-log.txt
 *.zip
 lib/api/*
 *.diff
+error_log

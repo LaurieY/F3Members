@@ -223,7 +223,7 @@ $filters = $f3->get('GET.filters');
 $admin_logger->write('in fn members filters= '.$filters."\n");
 
 $where = "";
-        if (isset($filters)) {
+        if (isset($filters)) { // ********************filters NO LONGER USED with local grid
             $filters = json_decode($filters);
             $where = " where ";
             $whereArray = array();
@@ -322,7 +322,8 @@ $where = "";
 echo $whh;
 }
 else {
-echo $this->getresult_where("where 1");
+$u3ayear = $members->getu3ayear();
+echo $this->getresult_where("where u3ayear='".$u3ayear."'");
 }  //end of else of _search
 } // end of function  members
 
@@ -617,9 +618,10 @@ public function editmember()
 		
 		$trail->copyfrom('POST');	
 		$admin_logger->write('in addmember trail Surname '.$trail->surname);
-		$admin_logger->write('in addmember trail editor/user_id will be'.$f3->get('SESSION.user_id'  ));
+		$admin_logger->write('in addmember trail editor/user_id will be '.$f3->get('SESSION.user_id'  ));
 
-		$members->save();
+		$members->add();
+		$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
 		
 		$trail->change="add";
 		$trail->editor=$f3->get('SESSION.user_id'  );

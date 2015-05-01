@@ -170,6 +170,7 @@ class Mapper extends \DB\Cursor {
 	*	@param $ttl int
 	**/
 	function select($fields,$filter=NULL,array $options=NULL,$ttl=0) {
+
 		if (!$options)
 			$options=array();
 		$options+=array(
@@ -259,6 +260,7 @@ class Mapper extends \DB\Cursor {
 			if ($options['offset'])
 				$sql.=' OFFSET '.(int)$options['offset'];
 		}
+		
 		$result=$this->db->exec($sql,$args,$ttl);
 		$out=array();
 		foreach ($result as &$row) {
@@ -406,6 +408,7 @@ class Mapper extends \DB\Cursor {
 			if ($this->engine!='oci')
 				$this->_id=$this->db->lastinsertid($seq);
 			// Reload to obtain default and auto-increment field values
+
 			$this->load($inc?
 				array($inc.'=?',$this->db->value(
 					$this->fields[$inc]['pdo_type'],$this->_id)):
