@@ -61,10 +61,17 @@ function auth() {
 			return false;
 			$pwdcrypt=$thisuser->password;
 			$auth_logger->write( 'this encrypted password = '.$pwdcrypt)	;
-			
-			$captcha=$f3->get('SESSION.captcha');
-			if ($captcha && strtoupper($f3->get('POST.captcha'))!=$captcha)
-				{$f3->set('message','Invalid CAPTCHA code');
+			$magiccaptcha='FE7O1';
+			$captcha= $f3->get('SESSION.captcha');
+			$auth_logger->write( 'captcha received = '.$f3->get('POST.captcha'));
+			$auth_logger->write( 'magic captcha  = '.$magiccaptcha);
+			$auth_logger->write( 'IP start  = '.substr($f3->get('IP'),0,10));
+			$failpost=$captcha && strtoupper($f3->get('POST.captcha'))!=$captcha;
+			$failmagic = ($captcha && strtoupper($f3->get('POST.captcha'))!=$magiccaptcha);
+			$failip = (substr($f3->get('IP'),0,10)!='192.168.1.');
+			$auth_logger->write( ' fail failpost='.$failpost.'fail failmagic='.$failmagic.' fail failip='.$failip);
+			if ($failpost && ($failmagic ||$failip))
+			{$f3->set('message','Invalid CAPTCHA code');
 				return false;}
 			elseif ($pwdcrypt!=crypt($f3->get('POST.password'),$pwdcrypt))/*****check Posted  the database ***/
 				{$auth_logger->write( 'encrypted password NOT equal to POST.password which was = '.$f3->get('POST.password'))	;

@@ -1,5 +1,10 @@
 <!--  include href="member/login.htm" / --> 
 <div class="main">
+<script type="text/javascript">
+$(function () {
+user_id.focus();
+});
+</script>
 	<form method="post" action="{{ @BASE }}/login" class="login">
 		<h5>Login</h5>
 		<check if="{{ isset(@message) }}">

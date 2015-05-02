@@ -1,17 +1,43 @@
 <script type="text/javascript">
 $(function () {
+// **************  functions for the custome elements in the add and edit forms for the feewhere element  **********
+function myelem (value, options) { 
+// var el = document.createElement("input");
+ // el.type="radio";
+ // el.value = value;
+ // return el;
+//}
+var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
+						'<input id="'+options.id + '_other' +
+                        '" type="radio" size="20" name="fee" value="other">Other  '+
+						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" ></div>';
+          // return DOM element from jQuery object
+          return $(elemStr)[0];
+		  }
+ 
+function myvalue(elem, operation, value) {
+    if(operation === 'get') {
+      // return $(elem).val();
+	  var fred=$('input[id*="amtpaid"]').val();
+	  var fred=$('input[id*="feewhere_text"]').val();
+	 if( $('input:radio[name="fee"]:checked').val() =='other') return  fred;
+		  else return $('input:radio[name="fee"]:checked').val();
+    } else if(operation === 'set') {
+       $('input',elem).val(value);
+    }
+}
 var myrole= $('#myrole').text();
-if (myrole == 'user') {myeditability=false;
+if (myrole == 'user') {myeditability=false;hidemoney=true;
 $("#bedit").hide();$("#badd").hide();$("#bdel").hide();
 }
-else myeditability=true;
+else {myeditability=true; hidemoney=false;}
     $("#list").jqGrid({ 
         url: "/membergrid",
 		editurl:"/editmember",
         datatype: "xml",
 		ignoreCase: true,
         mtype: "GET",
-        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid","Joined"],//],
+        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", " FeeWhere?","Joined",],//],
         colModel: [
            
 			{ name: "surname", width: 120,editable: myeditability, edittype:"text",searchoptions : {
@@ -27,8 +53,11 @@ else myeditability=true;
 			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member late 1st year;MJL2:Member late 2nd year;GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"},},
              { name: "location", width: 65, align: "right" ,editable: myeditability,edittype:'select',editoptions:{value:"C:Coast;I:Inland"},},
 			 { name: "paidthisyear", width: 80, align: "right" ,editable: myeditability, edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
-			  { name: "amtpaidthisyear", width: 80, align: "right",editable: myeditability,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false },
-			  { name: "datejoined", width: 100, align: "right",search:false }, /**/
+			  { name: "amtpaidthisyear", width: 80, align: "right",editable: myeditability,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false,hidden: hidemoney },
+			  			 // { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'select',editoptions:{value:"Treasurer:Treasurer;Inland:Inland"} ,searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
+			 { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
+			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
+			 { name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
         ],
 			pager: "#pager",
@@ -124,7 +153,7 @@ $("#cm1").click( function() { //Refresh
 	/**************  EDIT BUTTON ****/
 $("#bedit").click(function(){
 	var gr = jQuery("#list").jqGrid('getGridParam','selrow');
-	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:320,height:440,width:500,closeAfterEdit:true,afterSubmit:afterFormEdit,reloadAfterSubmit:true,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
+	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:390,height:490,width:500,closeAfterEdit:true,afterSubmit:afterFormEdit,reloadAfterSubmit:true,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
 	/**  hide amtpaid this year so that it doesn't get erroneously overwritten.  Can edit in inline mode */
 	else alert("Please Select Row");
 });	

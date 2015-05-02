@@ -376,7 +376,7 @@ header("Content-type: text/xml;charset=utf-8");
  
  // the actual query for the grid data 
  
- $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,datejoined,1 FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
+ $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,feewhere,datejoined,1 FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
  $admin_logger->write('in getresult_where SQL = '. $SQL."\n");
  $result = mysqli_query( $db,$SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
@@ -769,9 +769,10 @@ function markpaid() {
 function markwillpay() { 
 	 $f3=$this->f3;
 	 $members =	new Member($this->db);
-	$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $members->getu3ayear()) );
 	$members->amtpaidthisyear=0;
 	$members->paidthisyear='W';	
+	$members->feewhere = $f3->get('POST.feewhere');
 	$members->update();
 	$xnum= $members->membnum;
    

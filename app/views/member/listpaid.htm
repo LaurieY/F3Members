@@ -15,8 +15,9 @@ $(function () {
         datatype: "xml",
 		ignoreCase: true,
         mtype: "GET",
-        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid",
+        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", 
 		//"Joined",
+		" FeeWhere?",
 		"Pay","WillPay"],//],
         colModel: [
             
@@ -33,9 +34,10 @@ $(function () {
              { name: "location", width: 65, align: "right" },
 			 { name: "paidthisyear", width: 80, align: "right" ,editable: true,		  edittype:"text", }, 
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
-			
+			// { name: "datejoined", width: 100, align: "right",search:false , hidden:true}, 
+			 { name: "feewhere", width: 80, align: "left",search:true,},
 			 // { name: 'act', formatter: 'actions', sortable: false,search:false, width: 54 },
-			    //{ name: "datejoined", width: 100, align: "right",search:false }, 
+			   
 			  { name: 'pay', width: 40, sortable: false, search: false,
                       formatter:function(){
                          // return "<span class='ui-icon ui-icon-pencil'></span>"
@@ -77,7 +79,8 @@ $(function () {
                         .addClass("member-icons  money_euro"); 
 		},*/
 		
-		/***********  Mark Clicked Euro icon  as Paid  **********/
+		/***********  Mark Clicked Euro icon  as Paid  , W Icon as will pay
+		if Will pay empty feewhere, if marking as paid prompt for where the fees are**********/
 onCellSelect: function (rowid,iCol,cellcontent,e) { 
  var grid = $("#list");
 				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
@@ -91,24 +94,28 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						//$.post("\markpaid",{membnum:xnum,membtype:xtype});
 						if (iCol == payColumnIndex) { // clicked on to pay icon
 						$.post("\markpaid",{membnum:xnum,membtype:xtype},function(data) {
-						$showit=$.parseJSON(data)
+						$showit=$.parseJSON(data);
 						  $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
 						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
 						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+						grid.jqGrid('setCell', rowid, 'feewhere', 'Treasurer');
 						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
 						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
+						grid.jqGrid('getLocalRow', rowid).feewhere = 'Trasurer';
 						
 						});  
 						
 	//$("#list").trigger("reloadGrid", [{ page: 1}]);
 						}
 						if (iCol == willpayColumnIndex) { // might be will-pay
-						$.post("\markwillpay",{membnum:xnum,membtype:xtype},function(data) {
-						$showit=$.parseJSON(data)
+						$.post("\markwillpay",{membnum:xnum,membtype:xtype,feewhere:' '},function(data) {
+						$showit=$.parseJSON(data);
 						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
 						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+						grid.jqGrid('setCell', rowid, 'feewhere', ' ');
 						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
-						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear
+						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
+						grid.jqGrid('getLocalRow', rowid).feewhere = ' ';
 						});  
 						}
 					},

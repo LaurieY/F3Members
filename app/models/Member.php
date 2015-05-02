@@ -11,17 +11,18 @@ class Member extends DB\SQL\Mapper {
 		// need to filter by current u3ayear
 		$this->load(array('u3ayear =:u3ayear',array(':u3ayear'=> $this->getu3ayear()) ) );
 		//$this->first();
+		
         return $this->query;
     }
 
     public function add() {
       //  $this->copyFrom('POST');
-		$this->u3ayear=getu3ayear();
+		$this->u3ayear=$this->getu3ayear();
 		$this->fyear=(string) getdate()['year'];
 		$this->created_at=date("Y-m-d H:i:s");
         $this->save();
     }
-function getu3ayear(){
+public function getu3ayear(){
   $today = getdate();
 	  $thismon= $today['mon'];
 	  $thisyear = (string) $today['year'];
