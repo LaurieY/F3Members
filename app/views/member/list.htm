@@ -1,16 +1,31 @@
 <script type="text/javascript">
 $(function () {
-// **************  functions for the custome elements in the add and edit forms for the feewhere element  **********
+// **************  functions for the custom elements in the add and edit forms for the feewhere element  **********
+
 function myelem (value, options) { 
 // var el = document.createElement("input");
  // el.type="radio";
  // el.value = value;
  // return el;
 //}
-var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
+var treaschecked =" ";
+var otherchecked =" ";
+if (value=='Treasurer'||value=='' ) {
+treaschecked ='checked';
+otherchecked =" ";
+}
+else {
+otherchecked ='checked';}
+
+
+
+//********  get current value of feewhere , if not selected set to Treasurer, otherwise set to existng value
+
+//var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
+var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
 						'<input id="'+options.id + '_other' +
-                        '" type="radio" size="20" name="fee" value="other">Other  '+
-						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" ></div>';
+                        '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
+						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" value=	"'+value+'" ></div>';
           // return DOM element from jQuery object
           return $(elemStr)[0];
 		  }
@@ -27,10 +42,10 @@ function myvalue(elem, operation, value) {
     }
 }
 var myrole= $('#myrole').text();
-if (myrole == 'user') {myeditability=false;hidemoney=true;
+if (myrole == 'user') {myeditability=false;hidemoney=true;paideditability=false;
 $("#bedit").hide();$("#badd").hide();$("#bdel").hide();
 }
-else {myeditability=true; hidemoney=false;}
+else {myeditability=true; paideditability=false;hidemoney=false;}
     $("#list").jqGrid({ 
         url: "/membergrid",
 		editurl:"/editmember",
@@ -42,9 +57,9 @@ else {myeditability=true; hidemoney=false;}
            
 			{ name: "surname", width: 120,editable: myeditability, edittype:"text",searchoptions : {
                             // show search options
-                            sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  							
-						}},
-             {name: "forename", width: 120,editable: myeditability, edittype:"text"},
+                            sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  	
+							},editrules: { number: false, required: true}},
+             {name: "forename", width: 120,editable: myeditability, edittype:"text", editrules: { number: false, required: true}},
 			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] }, searchrules:{integer:true},sorttype:'number'}, //  eq = equal to  	
 			{ name: "phone", width: 85, align: "right",editable: myeditability, edittype:"text" },
             { name: "mobile", width: 85, align: "right",editable: myeditability, edittype:"text" }, 
@@ -52,11 +67,11 @@ else {myeditability=true; hidemoney=false;}
 			{ name: "membtype", width: 90, align: "right",editable: myeditability,
 			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member late 1st year;MJL2:Member late 2nd year;GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"},},
              { name: "location", width: 65, align: "right" ,editable: myeditability,edittype:'select',editoptions:{value:"C:Coast;I:Inland"},},
-			 { name: "paidthisyear", width: 80, align: "right" ,editable: myeditability, edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
-			  { name: "amtpaidthisyear", width: 80, align: "right",editable: myeditability,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false,hidden: hidemoney },
+			 { name: "paidthisyear", width: 80, align: "right" ,editable: paideditability, edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
+			  { name: "amtpaidthisyear", width: 80, align: "right",editable: paideditability,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false,hidden: hidemoney },
 			  			 // { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'select',editoptions:{value:"Treasurer:Treasurer;Inland:Inland"} ,searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
 			 { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
-			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
+			 searchoptions : {sopt: ["bw","eq"] },editable: paideditability, editrules: {edithidden:false}   },
 			 { name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
         ],
@@ -101,20 +116,23 @@ function editreload(rowid, result) {
 			$showit=$.parseJSON(result.responseText);
 			grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
 		$curpg=$('#list').getGridParam('page'); // current page
-		$("#list").trigger("reloadGrid", [{ page: $curpg}]);
+		//$("#list").trigger("reloadGrid", [{ page: $curpg}]); 
+		reloadpage($curpg);
 		}		
 function reload(rowid, result) {
 		$("#list").trigger("reloadGrid", [{ page: 1}]);
 		}
- 
+function reloadpage(relpage) {
+		$("#list").trigger("reloadGrid", [{ page: relpage}]);
+		}
 $('#list').jqGrid('navGrid','#pager',
 		{ edit: false, add: false, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: false, },
 		{afterSubmit: function(response, postdata) { $("#list").trigger("reloadGrid");return true;},
 		//},		
-		 beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }
+		 beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }  // for edit
 		}, // use default settings for edit
 		{dataheight:'350px',beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show(); }}, // use default settings for add
-		{},  // refresh 
+		{},  // refresh   //for delete
 		{closeAfterAdd: true, 
                     recreateForm: true
 				   }, // enable the advanced searching
@@ -152,24 +170,28 @@ $("#cm1").click( function() { //Refresh
 
 	/**************  EDIT BUTTON ****/
 $("#bedit").click(function(){
+$( "#addeditdel" ).val( "" );
 	var gr = jQuery("#list").jqGrid('getGridParam','selrow');
 	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:390,height:490,width:500,closeAfterEdit:true,afterSubmit:afterFormEdit,reloadAfterSubmit:true,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
 	/**  hide amtpaid this year so that it doesn't get erroneously overwritten.  Can edit in inline mode */
 	else alert("Please Select Row");
 });	
-function afterFormEdit(response, postdata) 
+function afterFormEdit(response, postdata)  // Form edit doesn't allow amtpaid or paid status  to be changed
  { 			$showit=$.parseJSON(response.responseText);
 			
 			var rowid = jQuery("#list").jqGrid('getGridParam','selrow');
 			grid.jqGrid('setRowData',rowid,$showit);
-			grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);// only works id reloadaftersubmit is true
+			grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);// only works if reloadaftersubmit is true
 			/**** BUT that means all the other values will have to be put back into the grid */
 			$('#tr_amtpaidthisyear').value=$showit.amtpaidthisyear;
+	
+			$( "#addeditdel" ).val( "edit actioned" );
 			return [true];
 
  } 	
  /**************  ADD BUTTON ****/
 $("#badd").click(function(){
+$( "#addeditdel" ).val( "" );
 	jQuery("#list").jqGrid('editGridRow','new',{dataheight:320,height:440,width:500,closeAfterAdd:true,afterSubmit:afterFormAdd,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
 	
 });	
@@ -180,12 +202,14 @@ function afterFormAdd(response, postdata)
 if (response.statusText==="OK") {
 grid.jqGrid('setGridParam', { search: false, datatype:'xml' });  
 grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+$( "#addeditdel" ).val( "add actioned" );
 return [true];}
 else alert("Error on Add Member ");
 //return [success,message,new_id] 
  }  
  /**************  DELETE BUTTON ****/
 $("#bdel").click(function(){
+$( "#addeditdel" ).val( "d" );
 var grid = $("#list");
 var gr = grid.jqGrid('getGridParam','selrow');
 if( gr != null ){
@@ -207,6 +231,7 @@ function afterFormDel(response, postdata)
 if (response.statusText==="OK") {
 grid.jqGrid('setGridParam', { search: false, datatype:'xml' });  
 grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+$( "#addeditdel" ).val( "delete actioned" );
 return [true];}
 else alert("Error on Delete Entry ");
 return (false,'Error on Delete Entry' );
@@ -226,4 +251,5 @@ return (false,'Error on Delete Entry' );
 <br><br><br>
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 	<br>
+	<input type="hidden" id="addeditdel" value="a" />
 

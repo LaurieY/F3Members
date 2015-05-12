@@ -223,12 +223,12 @@ $filters = $f3->get('GET.filters');
 $admin_logger->write('in fn members filters= '.$filters."\n");
 
 $where = "";
-        if (isset($filters)) { // ********************filters NO LONGER USED with local grid
+    /****    if (isset($filters)) { // ********************filters NO LONGER USED with local grid
             $filters = json_decode($filters);
             $where = " where ";
             $whereArray = array();
             $rules = $filters->rules;
-/********************************/
+
  $groupOperation = $filters->groupOp;
         foreach($rules as $rule) {
 
@@ -301,19 +301,8 @@ $where = "";
             $where = "";
         }
 
-/*******
-           foreach($rules as $rule) {
-                $whereArray[] = $rule->field." like '%".$rule->data."%'";
-            }
-            if (count($whereArray)>0) {
-                $where .= join(" and ", $whereArray);
-            } else {
-                $where = "";
-            }
 
-
-*********/ 
-        }   
+        }     *************/
 	$admin_logger->write('in fn members where= '.$where."\n");
 	/**********************  Now get the resulting xml via SWL using this where selection ******/
 	$whh =	$this->getresult_where($where);
@@ -338,6 +327,7 @@ header("Content-type: text/xml;charset=utf-8");
  
 	$sidx = $_GET['sidx']; 
 	$sord = $_GET['sord']; 
+	$extrasort = ', membnum DESC';
  //$fred = $f3->get('db_user');
 	$db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysql_error()); 
  //mysqli_select_db($f3->get('db_name')) or die("Error connecting to db."); 
@@ -369,14 +359,19 @@ header("Content-type: text/xml;charset=utf-8");
 
 
 /************Get Total paid for this selection  ************/
+
+ 
  $SQL_total="select sum(amtpaidthisyear)  as amt from members ".$where_to_use;
  $result = mysqli_query($db, $SQL_total ) or die("Couldn't execute query.".mysql_error()); 
  $row = mysqli_fetch_array($result,MYSQL_ASSOC); 
  $amt_total = $row['amt'];
- 
+ $members =	new Member($this->db);
+ $fytotals = $members->gettotals(); // this will return an assoc array
+ $amt_total_lastfy = $fytotals['lastfy'];
+ $amt_total_thisfy = $fytotals['thisfy'];
  // the actual query for the grid data 
- 
- $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,feewhere,datejoined,1 FROM members  ".$where_to_use." ORDER BY $sidx $sord LIMIT $start , $limit"; 
+ // Fetch extra columns to allow for the icons columns in the payments grid
+ $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,feewhere,datejoined,1,2 FROM members  ".$where_to_use." ORDER BY $sidx $sord ". $extrasort. " LIMIT $start , $limit"; 
  $admin_logger->write('in getresult_where SQL = '. $SQL."\n");
  $result = mysqli_query( $db,$SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
@@ -385,8 +380,10 @@ $s .= "<page>".$page."</page>";
 $s .= "<total>".$total_pages."</total>";
 $s .= "<records>".$count."</records>";
 
-$s .= '<userdata name="email">Total</userdata>';   # name = target column's name
-$s .= '<userdata name="amtpaidthisyear">'.$amt_total.'</userdata>'; 
+$s .= '<userdata name="forename">Total LastFY</userdata>';   # name = target column's name
+$s .= '<userdata name="phone">'.$amt_total_lastfy.'</userdata>'; 
+$s .= '<userdata name="email">Total ThisFY</userdata>';   # name = target column's name
+$s .= '<userdata name="location">'.$amt_total_thisfy.'</userdata>'; 
    
  
 // be sure to put text data in CDATA
@@ -759,7 +756,9 @@ function markpaid() {
    $xpaid= $members->paidthisyear;
    $xpay= $members->amtpaidthisyear;
    //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
-	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
+   // add total to the return
+   $fytotals = $members->gettotals();
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
 	 	 $arrencoded= json_encode($arr);
 	 $admin_logger->write('in editmember after jsonencode '.$arrencoded);
    echo $arrencoded;
@@ -769,7 +768,7 @@ function markpaid() {
 function markwillpay() { 
 	 $f3=$this->f3;
 	 $members =	new Member($this->db);
-	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $members->getu3ayear()) );
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $members->getu3ayear()) ); 
 	$members->amtpaidthisyear=0;
 	$members->paidthisyear='W';	
 	$members->feewhere = $f3->get('POST.feewhere');
@@ -778,8 +777,30 @@ function markwillpay() {
    
    $xpaid= $members->paidthisyear;
    $xpay= $members->amtpaidthisyear;
+ // add new total to the return
+ $fytotals = $members->gettotals(); // this will return an assoc array
  
-	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
+	$arrencoded= json_encode($arr);
+	
+   echo $arrencoded;
+	 }
+function markunpay() { 
+	 $f3=$this->f3;
+	 $members =	new Member($this->db);
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $members->getu3ayear()) ); 
+	$members->amtpaidthisyear=0;
+	$members->paidthisyear='N';	
+	$members->feewhere = $f3->get('POST.feewhere');
+	$members->update();
+	$xnum= $members->membnum;
+   
+   $xpaid= $members->paidthisyear;
+   $xpay= $members->amtpaidthisyear;
+ // add new total to the return
+ $fytotals = $members->gettotals(); // this will return an assoc array
+ 
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
 	$arrencoded= json_encode($arr);
 	
    echo $arrencoded;

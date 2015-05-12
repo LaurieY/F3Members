@@ -1,0 +1,239 @@
+<script type="text/javascript">
+$(function () {
+	  getColumnIndexByName = function(grid,columnName) {
+                    var cm = grid.jqGrid('getGridParam','colModel');
+                    for (var i=0,l=cm.length; i<l; i++) {
+                        if (cm[i].name===columnName) {
+                            return i; // return the index
+                        }
+                    }
+                    return -1;
+                },
+    $("#list").jqGrid({ 
+        url: "/membergrid",
+		editurl:"/editmember",
+        datatype: "xml",
+		ignoreCase: true,
+        mtype: "GET",
+        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", 
+		//"Joined",
+		" FeeWhere?",
+		"Pay","WillPay"],//],
+        colModel: [
+            
+			{ name: "surname", width: 120,editable: true, edittype:"text",sortable:true,sorttype:'string',firstsortorder:'asc',searchoptions : {
+                            // show search options
+                            sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  							
+						}},
+             {name: "forename", width: 120,editable: true, edittype:"text"},
+			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] } ,sorttype:'number'}, //  eq = equal to  	
+			{ name: "phone", width: 85, align: "right",editable: true, edittype:"text" },
+            { name: "mobile", width: 85, align: "right",editable: true, edittype:"text" }, 
+            { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
+			 { name: "membtype", width: 90, align: "right",editable: true, },
+             { name: "location", width: 65, align: "right" },
+			 { name: "paidthisyear", width: 80, align: "right" ,editable: true,		  edittype:"text", }, 
+			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
+			// { name: "datejoined", width: 100, align: "right",search:false , hidden:true}, 
+			 { name: "feewhere", width: 80, align: "left",search:true,},
+			 // { name: 'act', formatter: 'actions', sortable: false,search:false, width: 54 },
+			   
+			  { name: 'pay', width: 40, sortable: false, search: false,
+                      formatter:function(){
+                         // return "<span class='ui-icon ui-icon-pencil'></span>"
+						 return  "<span class='member-icons  money_euro'></span>"
+                      }},
+ { name: 'willpay', width: 65, sortable: false, search: false,
+                      formatter:function(){
+                         // return "<span class='ui-icon ui-icon-pencil'></span>"
+						  return  "<span class='member-icons  money_promise'></span>"
+                      }},					  
+			
+        ],
+        pager: "#pager",
+		//onSelectRow: editRow,
+        rowNum: 10,
+        rowList: [10, 20, 30],multiSort: false,
+        sortname: "paidthisyear",
+	
+        sortorder: "asc",
+		
+        viewrecords: true,
+        gridview: true,
+        autoencode: true,
+        caption: "Members Payments.  Click on the Gold Euro symbol to mark a member as paid",
+		 height:'auto',
+		 altRows: false,
+		 footerrow : true,
+		 userDataOnFooter : true,
+	 multiselect: false,
+	 loadonce:true,
+																		 data:leydata=new Array(),
+	 
+								//	 ajaxRowOptions: { async: true },
+	// multikey: "ctrlKey",
+/*loadComplete: function () { // change the edit icon into a Euro sign
+                   // $(this).find("div.ui-inline-del>span")
+				   $(this).find("span.ui-icon.ui-icon-pencil")
+                        .removeClass("ui-icon ui-icon-pencil")
+                        .addClass("member-icons  money_euro"); 
+		},*/
+		
+		/***********  Mark Clicked Euro icon  as Paid  , W Icon as will pay
+		if Will pay empty feewhere, if marking as paid prompt for where the fees are**********/
+onCellSelect: function (rowid,iCol,cellcontent,e) { 
+ var grid = $("#list");
+				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
+                willpayColumnIndex = getColumnIndexByName( $("#list"),'willpay');    
+                       // alert("rowid="+rowid+"\n");
+						//xnum="601";
+						xnum= $("#list").jqGrid('getCell',rowid,'membnum');
+						//xtype="M";
+						xtype=$("#list").jqGrid('getCell',rowid,'membtype');
+						//alert("member = "+xnum+" type= "+xtype);
+						//$.post("\markpaid",{membnum:xnum,membtype:xtype});
+						if (iCol == payColumnIndex) { // clicked on to pay icon
+						$.post("\markpaid",{membnum:xnum,membtype:xtype},function(data) {
+						$showit=$.parseJSON(data);
+						  $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
+						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
+						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+						grid.jqGrid('setCell', rowid, 'feewhere', 'Treasurer');
+						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
+						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
+						grid.jqGrid('getLocalRow', rowid).feewhere = 'Trasurer';
+						
+						});  
+						
+	//$("#list").trigger("reloadGrid", [{ page: 1}]);
+						}
+						if (iCol == willpayColumnIndex) { // might be will-pay
+						$.post("\markwillpay",{membnum:xnum,membtype:xtype,feewhere:' '},function(data) {
+						$showit=$.parseJSON(data);
+						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
+						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+						grid.jqGrid('setCell', rowid, 'feewhere', ' ');
+						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
+						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
+						grid.jqGrid('getLocalRow', rowid).feewhere = ' ';
+						});  
+						}
+					},
+	/*			onSelectRow: function(id) {
+				return true;
+				}***************/
+	
+    }); 
+$('#list').jqGrid('filterToolbar',{searchOperators: true,	})
+var lastSelection;
+	function editRow(id) { var grid = $("#list");
+                if (id && id !== lastSelection) {
+                grid.jqGrid('restoreRow',lastSelection);
+                  //  grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
+				 } grid.jqGrid('editRow',id, true,  '','','','',reload);
+                    lastSelection = id;
+              }
+			
+			
+	function reload(rowid, result) {
+		$("#list").trigger("reloadGrid", [{ page: 1}]);
+		}
+		
+	$('#list').navGrid('#pager',
+                { edit: true, add: true, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
+				{
+                    closeAfterAdd: true,
+                    recreateForm: true,});
+			//LEY $('#list').jqGrid('filterToolbar',{searchOperators: false,	});
+			
+	
+ var grid = $("#list");
+
+//***************  REFRESH BUTTON **********/
+$("#cm1").click( function() { //Refresh
+		var grid = $("#list");
+		//$('grid').jqGrid('clearGridData');
+		//$('grid').jqGrid('setGridParam', {data: dataToLoad});
+		//
+		  var text = $("#searchText").val();
+    var postdata = grid.jqGrid('getGridParam', 'postData');
+    // build up the filter
+    // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
+    // ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+    var myfilter =  '{"groupOp":"AND","rules":[{"field":"paidthisyear","op":"ne","data":"\'A\'"}]}';         
+ 
+
+      $.extend(postdata, { filters: myfilter });
+    grid.jqGrid('setGridParam', { search: false, postData: postdata,datatype:'xml' });        
+    grid.trigger("reloadGrid", [{ page: 1,datatype:'xml'}]);
+ 
+});
+ //***** SHOW only UNPAIDS ***********
+	$("#cm2").click( function() { //show only unpaid
+   var text = $("#searchText").val();
+    var postdata = grid.jqGrid('getGridParam', 'postData');
+    // build up the filter
+    // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
+    // ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+    var myfilter =  '{"groupOp":"AND","rules":[{"field":"paidthisyear","op":"eq","data":"\'N\'"}]}';         
+ 
+
+    $.extend(postdata, { filters: myfilter });
+    grid.jqGrid('setGridParam', { search: text.length > 0, postData: postdata });        
+    grid.trigger("reloadGrid", [{ page: 1}]);}); 
+
+$("#cm3").click( function() { 
+	var s;
+	s = $("#list").jqGrid('getGridParam','selarrrow');
+	alert(s);
+	 
+	for(i=0;i <s.length; i++){
+		$("#list").jqGrid('resetSelection');
+//		$("#list").jqGrid('setCell',s[i],'paidthisyear',"Y");
+	//	$("#list").jqGrid('editRow',s[i]);
+	rowId=s[i];
+	$("#" + rowId).find('td').eq('9').html('Y')
+		//$("#list").jqGrid('saveRow',s[i],false,'/editmember');
+		$("#list").jqGrid('editRow',s[i]);
+		$("#list").jqGrid('saveRow',s[i],false,'/editmember');
+	}
+	// s is list of id's, try changing it to member  numbers
+	//z= $("#list").jqGrid('getCell',s[i],'membnum');
+	//alert(z);}
+	x= "membnum=2";
+	 $.post("\markpaid",        x);
+
+}
+);
+
+$("#cm4").click(function () {
+var postdata = grid.jqGrid('getGridParam', 'leydata');
+});
+ // Add Search
+$("#mySearch").button().click(function () {
+    var text = $("#searchText").val();
+    var postdata = grid.jqGrid('getGridParam', 'postData');
+    // build up the filter
+    // ['equal','not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']
+    // ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
+    var myfilter =  '{"groupOp":"AND","rules":[{"field":"surname","op":"bw","data":"'.concat(text).concat('"}]}');         
+  //  myfilter.rules.push({ field: "surname", op: "cn", data: text });
+  //  myfilter.rules.push({ field: "forename", op: "cn", data: text });
+ //   myfilter.rules.push({ field: "email", op: "cn", data: text });
+
+    $.extend(postdata, { filters: myfilter });
+    grid.jqGrid('setGridParam', { search: text.length > 1, postData: postdata });        
+    grid.trigger("reloadGrid", [{ page: 1}]);
+});
+ 
+	}			); 
+</script>
+ 
+
+    <table id="list"><tr><td></td></tr></table> 
+    <div id="pager"></div> 
+	<div id="postresult" ></div>
+	
+	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
+	<br>
+

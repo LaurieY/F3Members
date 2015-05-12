@@ -3,6 +3,7 @@
 class MemberController extends Controller {
 	function beforeroute() {
 	$f3=$this->f3;
+	$f3=$this->f3;
 	 $f3->set('message','');
 	$auth_logger = new Log('auth.log');
 	$auth_logger->write( 'Entering MemberController beforeroute URI= '.$f3->get('URI'  ) );
@@ -108,6 +109,8 @@ function exports(){
 public function payments ()
 		{
 	$f3=$this->f3;
+		$auth_logger = new Log('auth.log');
+	$auth_logger->write( 'Entering payments'  );
 		   $member = new Member($this->db);
     $f3->set('members',$member->all());
 	$f3->set('page_head','Update Payments');

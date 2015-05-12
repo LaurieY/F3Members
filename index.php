@@ -18,6 +18,7 @@ $f3->route('POST /editmember [ajax]','AjaxController->editmember');
 
 $f3->route('POST /app/views/markpaid [ajax]','AjaxController->markpaid'); 
 $f3->route('POST /app/views/markwillpay [ajax]','AjaxController->markwillpay'); 
+$f3->route('POST /app/views/markunpay [ajax]','AjaxController->markunpay'); 
 
 $f3->route('GET /email1','EmailController->email1');
 $f3->route('GET /subscribe1','EmailController->subscribe1'); 

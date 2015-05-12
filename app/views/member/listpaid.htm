@@ -1,5 +1,46 @@
 <script type="text/javascript">
 $(function () {
+// **************  functions for the custom elements in the add and edit forms for the feewhere element  **********
+
+function myelem (value, options) { 
+// var el = document.createElement("input");
+ // el.type="radio";
+ // el.value = value;
+ // return el;
+//}
+var treaschecked =" ";
+var otherchecked =" ";
+if (value=='Treasurer'||value=='' ) {
+treaschecked ='checked';
+otherchecked =" ";
+}
+else {
+otherchecked ='checked';}
+
+
+
+//********  get current value of feewhere , if not selected set to Treasurer, otherwise set to existng value
+
+//var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
+var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
+						'<input id="'+options.id + '_other' +
+                        '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
+						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" value=	"'+value+'" ></div>';
+          // return DOM element from jQuery object
+          return $(elemStr)[0];
+		  }
+ 
+function myvalue(elem, operation, value) {
+    if(operation === 'get') {
+      // return $(elem).val();
+	  var fred=$('input[id*="amtpaid"]').val();
+	  var fred=$('input[id*="feewhere_text"]').val();
+	 if( $('input:radio[name="fee"]:checked').val() =='other') return  fred;
+		  else return $('input:radio[name="fee"]:checked').val();
+    } else if(operation === 'set') {
+       $('input',elem).val(value);
+    }
+}
 	  getColumnIndexByName = function(grid,columnName) {
                     var cm = grid.jqGrid('getGridParam','colModel');
                     for (var i=0,l=cm.length; i<l; i++) {
@@ -18,40 +59,48 @@ $(function () {
         colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", 
 		//"Joined",
 		" FeeWhere?",
-		"Pay","WillPay"],//],
+		"Pay","WillPay","NotPaid"],//],
         colModel: [
             
-			{ name: "surname", width: 120,editable: true, edittype:"text",sortable:true,sorttype:'string',firstsortorder:'asc',searchoptions : {
+			{ name: "surname", width: 120,editable: false, edittype:"text",sortable:true,sorttype:'string',firstsortorder:'asc',searchoptions : {
                             // show search options
                             sopt: ["bw","eq"] // ge = greater or equal to, le = less or equal to, eq = equal to  							
 						}},
-             {name: "forename", width: 120,editable: true, edittype:"text"},
+             {name: "forename", width: 120,editable: false, edittype:"text"},
 			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] } ,sorttype:'number'}, //  eq = equal to  	
-			{ name: "phone", width: 85, align: "right",editable: true, edittype:"text" },
-            { name: "mobile", width: 85, align: "right",editable: true, edittype:"text" }, 
-            { name: "email", width: 210, align: "right",editable: true, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
-			 { name: "membtype", width: 90, align: "right",editable: true, },
+			{ name: "phone", width: 85, align: "right",editable: false, edittype:"text" },
+            { name: "mobile", width: 85, align: "right",editable: false, edittype:"text" }, 
+            { name: "email", width: 210, align: "right",editable: false, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
+			 { name: "membtype", width: 90, align: "right",editable: false, 
+			// edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member late 1st year;MJL2:Member late 2nd year;GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}
+			},
              { name: "location", width: 65, align: "right" },
-			 { name: "paidthisyear", width: 80, align: "right" ,editable: true,		  edittype:"text", }, 
+			 { name: "paidthisyear", width: 80, align: "right" ,editable: false,		  edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
 			// { name: "datejoined", width: 100, align: "right",search:false , hidden:true}, 
-			 { name: "feewhere", width: 80, align: "left",search:true,},
-			 // { name: 'act', formatter: 'actions', sortable: false,search:false, width: 54 },
+			// { name: "feewhere", width: 80, align: "left",search:true,edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue}},
+			{ name: "feewhere", width: 80, align: "left",search:true,hidden: false , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
+			 searchoptions : {sopt: ["bw","eq"] },editable: true, editrules: {edithidden:false}   },
 			   
 			  { name: 'pay', width: 40, sortable: false, search: false,
                       formatter:function(){
                          // return "<span class='ui-icon ui-icon-pencil'></span>"
 						 return  "<span class='member-icons  money_euro'></span>"
                       }},
- { name: 'willpay', width: 65, sortable: false, search: false,
+				{ name: 'willpay', width: 65, sortable: false, search: false,
                       formatter:function(){
                          // return "<span class='ui-icon ui-icon-pencil'></span>"
 						  return  "<span class='member-icons  money_promise'></span>"
+                      }},	
+				{ name: 'unpay', width: 65, sortable: false, search: false,
+                      formatter:function(){
+                         // return "<span class='ui-icon ui-icon-pencil'></span>"
+						  return  "<span class='member-icons  money_unpay'></span>"
                       }},					  
 			
         ],
         pager: "#pager",
-		//onSelectRow: editRow,
+		onSelectRow: editRow,
         rowNum: 10,
         rowList: [10, 20, 30],multiSort: false,
         sortname: "paidthisyear",
@@ -85,14 +134,19 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
  var grid = $("#list");
 				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
                 willpayColumnIndex = getColumnIndexByName( $("#list"),'willpay');    
+                unpayColumnIndex = getColumnIndexByName( $("#list"),'unpay');    
+				phoneColumnIndex = getColumnIndexByName( $("#list"),'phone');
+				locationColumnIndex = getColumnIndexByName( $("#list"),'location');
                        // alert("rowid="+rowid+"\n");
 						//xnum="601";
 						xnum= $("#list").jqGrid('getCell',rowid,'membnum');
 						//xtype="M";
 						xtype=$("#list").jqGrid('getCell',rowid,'membtype');
+
+
 						//alert("member = "+xnum+" type= "+xtype);
 						//$.post("\markpaid",{membnum:xnum,membtype:xtype});
-						if (iCol == payColumnIndex) { // clicked on to pay icon
+				if (iCol == payColumnIndex) { // clicked on to pay icon
 						$.post("\markpaid",{membnum:xnum,membtype:xtype},function(data) {
 						$showit=$.parseJSON(data);
 						  $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
@@ -102,12 +156,18 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
 						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
 						grid.jqGrid('getLocalRow', rowid).feewhere = 'Trasurer';
+						grid.jqGrid('saveRow',rowid, false,'clientArray');  // ensure the changed amount is saved locally
+						
+						$("#list").jqGrid('footerData',	'set',{phone:$showit.lastfytotal})
+						$("#list").jqGrid('footerData',	'set',{location:$showit.thisfytotal})
+						
+
 						
 						});  
 						
 	//$("#list").trigger("reloadGrid", [{ page: 1}]);
 						}
-						if (iCol == willpayColumnIndex) { // might be will-pay
+				if (iCol == willpayColumnIndex) { // might be will-pay
 						$.post("\markwillpay",{membnum:xnum,membtype:xtype,feewhere:' '},function(data) {
 						$showit=$.parseJSON(data);
 						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
@@ -116,6 +176,25 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
 						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
 						grid.jqGrid('getLocalRow', rowid).feewhere = ' ';
+						grid.jqGrid('saveRow',rowid, false,'clientArray');  // ensure the changed amount is saved locally
+						
+						$("#list").jqGrid('footerData',	'set',{phone:$showit.lastfytotal})
+						$("#list").jqGrid('footerData',	'set',{location:$showit.thisfytotal})
+						});  
+						}
+				if (iCol == unpayColumnIndex) { // clear payments and feewhere
+						$.post("\markunpay",{membnum:xnum,membtype:xtype,feewhere:' '},function(data) {
+						$showit=$.parseJSON(data);
+						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
+						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+						grid.jqGrid('setCell', rowid, 'feewhere', ' ');
+						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
+						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
+						grid.jqGrid('getLocalRow', rowid).feewhere = ' ';
+						grid.jqGrid('saveRow',rowid, false,'clientArray');  // ensure the changed amount is saved locally
+
+						$("#list").jqGrid('footerData',	'set',{phone:$showit.lastfytotal})
+						$("#list").jqGrid('footerData',	'set',{location:$showit.thisfytotal})
 						});  
 						}
 					},
@@ -128,16 +207,27 @@ $('#list').jqGrid('filterToolbar',{searchOperators: true,	})
 var lastSelection;
 	function editRow(id) { var grid = $("#list");
                 if (id && id !== lastSelection) {
+				grid.jqGrid('getLocalRow', lastSelection).amtpaidthisyear
                 grid.jqGrid('restoreRow',lastSelection);
                   //  grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
-				 } grid.jqGrid('editRow',id, true,  '','','','',reload);
+				 } grid.jqGrid('editRow',id, true,  '','','','',editreload);
                     lastSelection = id;
               }
-			
-			
-	function reload(rowid, result) {
+function editreload(rowid, result) {
+			//get response and update the local grid for those values that are computed i.e. amtpaidthisyear
+			$showit=$.parseJSON(result.responseText);
+			grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+		$curpg=$('#list').getGridParam('page'); // current page
+		//$("#list").trigger("reloadGrid", [{ page: $curpg}]); 
+		reloadpage($curpg);
+		}		
+function reload(rowid, result) {
 		$("#list").trigger("reloadGrid", [{ page: 1}]);
 		}
+function reloadpage(relpage) {
+		$("#list").trigger("reloadGrid", [{ page: relpage}]);
+		}			
+
 		
 	$('#list').navGrid('#pager',
                 { edit: true, add: true, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
@@ -233,7 +323,9 @@ $("#mySearch").button().click(function () {
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
 	<div id="postresult" ></div>
-	
+		<br>
+	<br>
+
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 	<br>
 
