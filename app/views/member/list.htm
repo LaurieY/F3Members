@@ -71,7 +71,7 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: paideditability,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false,hidden: hidemoney },
 			  			 // { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'select',editoptions:{value:"Treasurer:Treasurer;Inland:Inland"} ,searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
 			 { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
-			 searchoptions : {sopt: ["bw","eq"] },editable: paideditability, editrules: {edithidden:false}   },
+			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
 			 { name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
         ],
@@ -131,7 +131,7 @@ $('#list').jqGrid('navGrid','#pager',
 		//},		
 		 beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }  // for edit
 		}, // use default settings for edit
-		{dataheight:'350px',beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show(); }}, // use default settings for add
+		{dataheight:'350px',beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).show();$('#tr_paidthisyear', form).show(); }}, // use default settings for add
 		{},  // refresh   //for delete
 		{closeAfterAdd: true, 
                     recreateForm: true
@@ -192,7 +192,10 @@ function afterFormEdit(response, postdata)  // Form edit doesn't allow amtpaid o
  /**************  ADD BUTTON ****/
 $("#badd").click(function(){
 $( "#addeditdel" ).val( "" );
-	jQuery("#list").jqGrid('editGridRow','new',{dataheight:320,height:440,width:500,closeAfterAdd:true,afterSubmit:afterFormAdd,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
+	jQuery("#list").jqGrid('editGridRow','new',{dataheight:320,height:440,width:500,closeAfterAdd:true,afterSubmit:afterFormAdd,
+						onclickSubmit: function (options,postData) {
+						return{paidthisyear:'Y'}},
+						beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide();$('#tr_paidthisyear', form).show(); }});
 	
 });	
 function afterFormAdd(response, postdata) 

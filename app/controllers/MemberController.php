@@ -5,7 +5,7 @@ class MemberController extends Controller {
 	$f3=$this->f3;
 	$f3=$this->f3;
 	 $f3->set('message','');
-	$auth_logger = new Log('auth.log');
+	$auth_logger = new MyLog('auth.log');
 	$auth_logger->write( 'Entering MemberController beforeroute URI= '.$f3->get('URI'  ) );
 	
 	if (!$f3->get('COOKIE.PHPSESSID')){
@@ -45,7 +45,7 @@ class MemberController extends Controller {
 //debug_backtrace();	
 }
 function check_cookie()
-{$auth_logger = new Log('auth.log');
+{$auth_logger = new MyLog('auth.log');
 $f3=$this->f3;
 	$auth_logger->write( 'Entering check_cookie URI= '.$f3->get('URI'  ) );
 	
@@ -72,7 +72,7 @@ $this->f3->set('view','member/session.htm');
 public function index()	
 	{
 	$f3=$this->f3;
-	$auth_logger = new Log('auth.log');
+	$auth_logger = new MyLog('auth.log');
 	$auth_logger->write( 'Entering index'  );	       
 		   $member = new Member($this->db);
         $f3->set('members',$member->all());
@@ -88,7 +88,7 @@ public function index()
 	}
 function exports(){
 	$f3=$this->f3;	
-	$admin_logger = new Log('admin.log');
+	$admin_logger = new MyLog('admin.log');
 	$f3->set('message', $f3->get('PARAMS.message'));
 	if($f3->exists('POST.exporttype'))
 	{// analyze the export type and produce the list and download it
@@ -109,7 +109,7 @@ function exports(){
 public function payments ()
 		{
 	$f3=$this->f3;
-		$auth_logger = new Log('auth.log');
+		$auth_logger = new MyLog('auth.log');
 	$auth_logger->write( 'Entering payments'  );
 		   $member = new Member($this->db);
     $f3->set('members',$member->all());
@@ -126,7 +126,7 @@ public function payments ()
 
 public function trail() {
 $f3=$this->f3;
-	$auth_logger = new Log('auth.log');
+	$auth_logger = new MyLog('auth.log');
 	$auth_logger->write( 'Entering trail'  );	
 if ($f3->get('SESSION.user_role')==="admin"){
 		   $trail = new Trail($this->db);
