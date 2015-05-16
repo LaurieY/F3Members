@@ -1,7 +1,10 @@
 <script type="text/javascript">
 $(function () {
 // **************  functions for the custom elements in the add and edit forms for the feewhere element  **********
- 
+ function focusOther() {  $('input:radio[id=feewhere_other]').prop('checked', true);
+ }
+ window.focusOther = focusOther; //to allow testing from console
+ //$("input#feewhere_text").click(function(e) {$('input:radio[id=feewhere_other]').prop('checked', true);})
 function myelem (value, options) { 
 // var el = document.createElement("input");
  // el.type="radio";
@@ -26,11 +29,13 @@ xnum =$("#list").jqGrid('getCell',rowid,'membnum');
 var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
 						'<input id="'+options.id + '_other' +
                         '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
-						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" value=	"'+value+'" ></div>';
+						'<input id="'+options.id +'_text" type="text" size="20" onfocus="focusOther()" name="feewhere" value=	"'+value+'" ></div>';
           // return DOM element from jQuery object
           return $(elemStr)[0];
 		  }
- 
+
+
+
 function myvalue(elem, operation, value) {
     if(operation === 'get') {
       // return $(elem).val();
@@ -201,16 +206,21 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
                 alert(data);
             }
 			*/
-			/******************  ADD additional fields to POST markpaid  *****************/
-			jQuery("#list").jqGrid('editGridRow',rowid,{dataheight:390,height:490,width:500,closeAfterEdit:true,
-						onclickSubmit: function (options,postData) {
+			/******************  ADD additional fields then POST markpaid  *****************/
+			grid.jqGrid('editGridRow',rowid,{dataheight:390,height:490,width:500,closeAfterEdit:true,
+					onclickSubmit: function (options,postData) {
 						return{membnum:xnum,membtype:xtype}},
 						//editData: {membnum: $("#list").val()},
-						afterSubmit:afterPaidFormEdit,reloadAfterSubmit:false,beforeShowForm: beforeShowForm/**(form) function(form) { $('#tr_membnum', form).show();$('#tr_amtpaidthisyear', form).show(); } **/ });
-					/*******	
-					$.post("\markpaid",{membnum:xnum,membtype:xtype},function(data) {
-					$showit=$.parseJSON(data);
-						  $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
+					afterSubmit:function (response, postdata)  {
+						$showit=$.parseJSON(response.responseText);
+						var grid = $("#list");
+						var rowid = jQuery("#list").jqGrid('getGridParam','selrow');
+						grid.jqGrid('setRowData',rowid,$showit);
+						grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);// only works if reloadaftersubmit is true
+						/**** BUT that means all the other values will have to be put back into the grid */
+						$('#tr_amtpaidthisyear').value=$showit.amtpaidthisyear;
+						$( "#addeditdel" ).val( "edit actioned" );
+						 $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
 						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
 						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
 						grid.jqGrid('setCell', rowid, 'feewhere', 'Treasurer');
@@ -221,11 +231,36 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						
 						$("#list").jqGrid('footerData',	'set',{phone:$showit.lastfytotal})
 						$("#list").jqGrid('footerData',	'set',{location:$showit.thisfytotal})
+						return [true];
+						},
+					reloadAfterSubmit:false,
+					beforeInitData: function(formid) { // Allows the Membership number etc to appear in the Edit Form
+							grid.jqGrid('setColProp','membnum',{editable:true});
+							grid.jqGrid('setColProp','forename',{editable:true});
+							grid.jqGrid('setColProp','surname',{editable:true});
+						//	grid.jqGrid('setColProp','memnum',{readonly:true});
+						//	grid.jqGrid('setColProp','forename',{readonly:true});
+						//	grid.jqGrid('setColProp','surname',{readonly:true});
+							//$("#surname").prop("readonly", true);
+							},
+					beforeShowForm: function (formid) { // can change the contents of the form
+						$("#forename").prop("readonly", true); //so they cant be changed
+						$("#surname").prop("readonly", true);
+						$("#membnum").prop("readonly", true);
 						
 
+						//grid.jqGrid('setColProp','membnum',{editable:false});
+						//grid.jqGrid('setColProp','amtpaidthisyear',{editable:false});
 						
-						});  
-						******/
+						},
+						afterComplete: function(formid){
+							grid.jqGrid('setColProp','membnum',{editable:false});
+							grid.jqGrid('setColProp','forename',{editable:false});
+							grid.jqGrid('setColProp','surname',{editable:false});						
+						}
+						/**(form) function(form) { $('#tr_membnum', form).show();$('#tr_amtpaidthisyear', form).show(); } **/ 
+						});
+
 	//$("#list").trigger("reloadGrid", [{ page: 1}]);
 						}
 				if (iCol == willpayColumnIndex) { // might be will-pay
@@ -275,30 +310,7 @@ $( "#addeditdel" ).val( "" );
 });	
 
 
-function afterPaidFormEdit(response, postdata)  
- { 			$showit=$.parseJSON(response.responseText);
-			var grid = $("#list");
-			var rowid = jQuery("#list").jqGrid('getGridParam','selrow');
-			grid.jqGrid('setRowData',rowid,$showit);
-			grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);// only works if reloadaftersubmit is true
-			/**** BUT that means all the other values will have to be put back into the grid */
-			$('#tr_amtpaidthisyear').value=$showit.amtpaidthisyear;
-	
-			$( "#addeditdel" ).val( "edit actioned" );
-			 $( "#postresult" ).html( $showit.amtpaidthisyear );  //pop response from /markpaid into an html area at the bottom for diagnostics
-						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
-						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
-						grid.jqGrid('setCell', rowid, 'feewhere', 'Treasurer');
-						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
-						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
-						grid.jqGrid('getLocalRow', rowid).feewhere = 'Trasurer';
-						grid.jqGrid('saveRow',rowid, false,'clientArray');  // ensure the changed amount is saved locally
-						
-						$("#list").jqGrid('footerData',	'set',{phone:$showit.lastfytotal})
-						$("#list").jqGrid('footerData',	'set',{location:$showit.thisfytotal})
-			return [true];
 
- }
 $('#list').jqGrid('filterToolbar',{searchOperators: true,	})
 var lastSelection;
 	function editRow(id) { var grid = $("#list");
@@ -324,15 +336,12 @@ function reloadpage(relpage) {
 		$("#list").trigger("reloadGrid", [{ page: relpage}]);
 		}			
 
-function beforeShowForm(formid) {
-                $("#list").jqGrid('setColProp','membnum',{editable:true});
-				$("#list").jqGrid('setColProp','amtpaidthisyear',{editable:false});
-            }		
+		
 	$('#list').navGrid('#pager',
-                { edit: false, add: false, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
+                { edit: true, add: false, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
 				{// for edit
-				beforeInitData: function(formid) {
-                $("#list").jqGrid('setColProp','membnum',{editable:true});
+			beforeInitData: function(formid) { // Allows the Membership number to appear in the Edit Form
+               $("#list").jqGrid('setColProp','membnum',{editable:true});
             },
 			beforeShowForm: function (formid) {
                 $("#list").jqGrid('setColProp','membnum',{editable:false});
