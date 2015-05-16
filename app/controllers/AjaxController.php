@@ -620,30 +620,18 @@ public function editmember()
 		$members->add();
 		$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
 		
-		$trail->change="add";
-		$trail->editor=$f3->get('SESSION.user_id'  );
-		$trail->membnum=$members->membnum;  //new number was calculated for the $member sql
-		$trail->amtpaidthisyear=$members->amtpaidthisyear;
-		$trail->datepaid=$members->datepaid;
-		$trail->datejoined=$members->datejoined;
-		$admin_logger->write('in addmember trail editor now  '.$trail->editor);
-		$trail->id='';
-		$trail->created_at=date("Y-m-d H:i:s");
-		$trail->save();
+		$this->logtrail($members,$trail,"add");
+		
     break;
     case "edit":   //************************************ EDIT **//
 	$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) ); //this did work but its not the same as the paid code
 		$temptrail= array();
 		$members->copyto('temptrail');
 		$trail->copyfrom('temptrail');	
-		$trail->change="editfrom";
-		
-		$trail->editor=$f3->get('SESSION.user_id'  );
-		$trail->id='';
-		$trail->created_at=date("Y-m-d H:i:s");
-		$trail->save();
+
+		$this->logtrail($members,$trail,"editfrom");
 		$trail->reset();
-	$uselog=true;	
+		$uselog=true;	
 		$admin_logger->write('in editmember before get_amt_paid membnum '.$members->membnum.' paidthis year '.$members->paidthisyear,$uselog);
 		
 		
@@ -660,25 +648,20 @@ public function editmember()
 		$temptrail= array();
 		$members->copyto('temptrail');
 		$trail->copyfrom('temptrail');	
-		$trail->change="editto";
-		$trail->editor=$f3->get('SESSION.user_id'  );
+		$this->logtrail($members,$trail,"editto");
+		
 		$members->update();
-		$trail->created_at=date("Y-m-d H:i:s");
-		$trail->membnum=$members->membnum;  //new number was calculated for the $member sql
-		$trail->amtpaidthisyear=$members->amtpaidthisyear;
-		$trail->datepaid=$members->datepaid;
-		$trail->datejoined=$members->datejoined;
-		$trail->id='';
-		$trail->save();
-	$xnum= $members->membnum;
-								$admin_logger->write('In editrow xnum is '.$xnum. ' and of type '.gettype($xnum));
-   $xpaid= $members->paidthisyear;
-   $xpay= $members->amtpaidthisyear;
+		
+	//$xnum= $members->membnum;
+	//$admin_logger->write('In editrow xnum is '.$xnum. ' and of type '.gettype($xnum),$uselog);
+
+		//xpaid= $members->paidthisyear;
+		//$xpay= $members->amtpaidthisyear;
    //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
-	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
-	 $arr=$members->cast();
-	 $arrencoded= json_encode($arr);
-	
+	// $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
+		$arr=$members->cast();
+		$arrencoded= json_encode($arr);
+		$admin_logger->write('In editrow echo '.$arrencoded,$uselog);
 	//$admin_logger->write('in editmember after jsonencode '.$arrencoded);
    echo $arrencoded;
         // do mysql update statement here
@@ -692,14 +675,11 @@ public function editmember()
 		$trail->copyfrom('temptrail');	
 		$admin_logger->write('in delmember trail Surname '.$trail->surname);
 		$admin_logger->write('in delmember trail editor/user_id will be'.$f3->get('SESSION.user_id'  ));
-		$trail->change="del";
-		$trail->editor=$f3->get('SESSION.user_id'  );
+		$this->logtrail($members,$trail,"del");
+		//$trail->editor=$f3->get('SESSION.user_id'  );
 		/*  now get alll the details of the members entry into the trail entry  */
 		$members->erase();
-		$trail->id='';
-		$trail->created_at=date("Y-m-d H:i:s");
 		
-		$trail->save();
     break;
 }
 	// echo $f3->get('POST.oper');
@@ -789,20 +769,18 @@ function markpaid() {
 		//$thismember= $members->membnum;
 		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear );
 		//$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
+		$members->datepaid=date("Y-m-d H:i:s");
 		$members->update();
-	//echo('Done that');	
-	//echo $this->getresult_where("where 1");// No only return the changed contents of that	one row?
-   $xnum= $members->membnum;
-   //$admin_logger->write('In markpaid xnum is '.$xnum. ' and of type '.gettype($xnum));
-   $xpaid= $members->paidthisyear;
-   $xpay= $members->amtpaidthisyear;
-   //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
-   // add total to the return
-   $fytotals = $members->gettotals();
-	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
+
+		$xnum= $members->membnum;
+		//$admin_logger->write('In markpaid xnum is '.$xnum. ' and of type '.gettype($xnum));
+		$xpaid= $members->paidthisyear;
+		$xpay= $members->amtpaidthisyear;
+		$fytotals = $members->gettotals();
+		$arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
 	 	 $arrencoded= json_encode($arr);
 	 //$admin_logger->write('in editmember after jsonencode '.$arrencoded);
-   echo $arrencoded;
+		echo $arrencoded;
    //echo json_encode($arr);
 	}
 	
@@ -846,4 +824,21 @@ function markunpay() {
 	
    echo $arrencoded;
 	 }
+function logtrail($members,$trail,$action) {
+		$f3=$this->f3;
+		$temptrail= array();
+		$members->copyto('temptrail');
+		$trail->copyfrom('temptrail');	
+		$trail->change=$action;
+		$trail->editor=$f3->get('SESSION.user_id'  );
+		//$trail->membnum=$members->membnum;  //new number was calculated for the $member sql when an add
+		//$trail->amtpaidthisyear=$members->amtpaidthisyear;
+		//$trail->datepaid=$members->datepaid;
+		//$trail->datejoined=$members->datejoined;
+		//$admin_logger->write('in logtrail trail editor now  '.$trail->editor);
+		$trail->id='';
+		$trail->created_at=date("Y-m-d H:i:s");
+		$trail->save();
+
+}
 } // end of class
