@@ -33,17 +33,18 @@ public static function getu3ayear(){
 		else
 		return $thisyear.'-'.$nextyear;
 }
-/***************  fetch the totals for this and last financial years return an associative array of the two ******/
+/***************  fetch the totals for this and last financial years return an associative array of the two
+******************* include only status='Active' records ******/
 public function gettotals(){
 	 $today = getdate();
 	 $thisfy = $today['year'];
 	$lastfy = $thisfy-1;
 	$fytotals=array("lastfy"=>0,"thisfy"=>0);
 	
-	$this->paidlastfy='select sum(amtpaidthisyear) from members where fyear = "'.$lastfy.'"';
+	$this->paidlastfy='select sum(amtpaidthisyear) from members where fyear = "'.$lastfy.'" and status="Active"';
 	$this->load();
 	$fytotals["lastfy"]=$this->paidlastfy;
-	$this->paidthisfy='select sum(amtpaidthisyear) from members where fyear = "'.$thisfy.'"';
+	$this->paidthisfy='select sum(amtpaidthisyear) from members where fyear = "'.$thisfy.'" and status="Active"';
 	$this->load();
 	$fytotals["thisfy"]=$this->paidthisfy;
 	//$fytotals["lastfy"] = 23;

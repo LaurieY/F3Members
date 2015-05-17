@@ -220,7 +220,7 @@ public function members() //for POST membergrid
 if ($f3->get('GET._search')=='true'){
 // set up filters
 $filters = $f3->get('GET.filters');
-$admin_logger->write('in fn members filters= '.$filters."\n");
+$admin_logger->write('in fn members filters= '.$filters,$uselog);
 
 $where = "";
     /****    if (isset($filters)) { // ********************filters NO LONGER USED with local grid
@@ -312,7 +312,7 @@ echo $whh;
 }
 else {
 $u3ayear = $members->getu3ayear();
-echo $this->getresult_where("where u3ayear='".$u3ayear."'");
+echo $this->getresult_where("where u3ayear='".$u3ayear."' and status='Active'");
 }  //end of else of _search
 } // end of function  members
 
@@ -321,6 +321,8 @@ private function getresult_where( $where_to_use)
 {
  $f3=$this->f3;
   $admin_logger = new MyLog('admin.log');
+	$uselog=$f3->get('uselog');
+  $admin_logger->write('in getresult_where $where_to_use = '.$where_to_use,$uselog);
 header("Content-type: text/xml;charset=utf-8");
  $page = $_GET['page']; 
  
@@ -416,7 +418,7 @@ $s .= "</row>";
 	} 
 $s .= "</rows>"; 
 
-$admin_logger->write('in getresult_where result = '.$s."\n");
+$admin_logger->write('in getresult_where result = '.$s,$uselog);
 	return $s;
 
 	
@@ -469,8 +471,7 @@ $s .= "<page>".$page."</page>";
 $s .= "<total>".$total_pages."</total>";
 $s .= "<records>".$count."</records>";
 
-//$s .= '<userdata name="email">Total</userdata>';   # name = target column's name
-//$s .= '<userdata name="amtpaidthisyear">1b2b3b</userdata>';
+
    
  
 // be sure to put text data in CDATA
@@ -678,8 +679,8 @@ public function editmember()
 		$this->logtrail($members,$trail,"del");
 		//$trail->editor=$f3->get('SESSION.user_id'  );
 		/*  now get alll the details of the members entry into the trail entry  */
-		$members->erase();
-		
+		$members->status='Deleted';
+		$members->update();
     break;
 }
 	// echo $f3->get('POST.oper');
@@ -774,6 +775,7 @@ function markpaid() {
 		//$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 		$members->datepaid=date("Y-m-d H:i:s");
 		$members->update();
+		$this->logtrail($members,new Trail($this->db),"paid");
 
 		$xnum= $members->membnum;
 		//$admin_logger->write('In markpaid xnum is '.$xnum. ' and of type '.gettype($xnum));
@@ -795,6 +797,7 @@ function markwillpay() {
 	$members->paidthisyear='W';	
 	$members->feewhere = $f3->get('POST.feewhere');
 	$members->update();
+	$this->logtrail($members,new Trail($this->db),"willpay");
 	$xnum= $members->membnum;
    
    $xpaid= $members->paidthisyear;
@@ -815,6 +818,7 @@ function markunpay() {
 	$members->paidthisyear='N';	
 	$members->feewhere = $f3->get('POST.feewhere');
 	$members->update();
+	$this->logtrail($members,new Trail($this->db),"unpay");
 	$xnum= $members->membnum;
    
    $xpaid= $members->paidthisyear;
