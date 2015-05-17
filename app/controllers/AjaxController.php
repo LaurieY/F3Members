@@ -631,7 +631,7 @@ public function editmember()
 
 		$this->logtrail($members,$trail,"editfrom");
 		$trail->reset();
-		$uselog=true;	
+		$uselog=$f3->get('uselog');	
 		$admin_logger->write('in editmember before get_amt_paid membnum '.$members->membnum.' paidthis year '.$members->paidthisyear,$uselog);
 		
 		
@@ -663,7 +663,7 @@ public function editmember()
 		$arrencoded= json_encode($arr);
 		$admin_logger->write('In editrow echo '.$arrencoded,$uselog);
 	//$admin_logger->write('in editmember after jsonencode '.$arrencoded);
-   echo $arrencoded;
+		echo $arrencoded;
         // do mysql update statement here
 	//	/
     break;
@@ -686,8 +686,9 @@ public function editmember()
 	}
 	/**************** get_amt_paid ******/
  function  get_amt_paid($members,$topay) {
-$uselog=true;
+
 		$f3=$this->f3; 
+		$uselog=$f3->get('uselog');
 		$admin_logger=$f3->get('admin_log');
 		$wasnotpaid=false;
 		if ($members->paidthisyear!="Y")	{$wasnotpaid=true;}
@@ -753,8 +754,10 @@ function feewhere() {
 }	
 function markpaid() { 
 	 $f3=$this->f3; 
-	$uselog=true;
+	$uselog=$f3->get('uselog');
+	
 	 	$admin_logger = new MyLog('admin.log');
+		$admin_logger->write('In markpaid uselog ='.$uselog.' variable uselog= '.$f3->get('uselog'),$uselog);
 		$f3->set('admin_log',$admin_logger);
 		//$admin_logger->write('in markpaid membnum='.$this->f3->get('POST.membnum') );
 		$members =	new Member($this->db);
@@ -767,7 +770,7 @@ function markpaid() {
 		$members->amtpaidthisyear=$this->get_amt_paid($members,true);
 		$members->paidthisyear='Y';
 		//$thismember= $members->membnum;
-		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear );
+		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear ,$uselog);
 		//$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 		$members->datepaid=date("Y-m-d H:i:s");
 		$members->update();
@@ -779,7 +782,7 @@ function markpaid() {
 		$fytotals = $members->gettotals();
 		$arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
 	 	 $arrencoded= json_encode($arr);
-	 //$admin_logger->write('in editmember after jsonencode '.$arrencoded);
+	 $admin_logger->write('in editmember after jsonencode '.$arrencoded,$uselog);
 		echo $arrencoded;
    //echo json_encode($arr);
 	}
@@ -839,6 +842,35 @@ function logtrail($members,$trail,$action) {
 		$trail->id='';
 		$trail->created_at=date("Y-m-d H:i:s");
 		$trail->save();
+
+}
+function getfeespertypes() { //return all the contents of the table feespertypes in json format for localstorage to use
+		$f3=$this->f3;
+		$uselog=$f3->get('uselog');
+		$admin_logger = new MyLog('admin.log');
+		$admin_logger->write('in getfeespertypes uselog= '.$uselog,true);
+		$feefields='membtype,feetopay,firstyearfee,acyear';
+		$thisacyear = Member::getu3ayear();
+		$admin_logger->write('in getfeespertypes uselog= '.$uselog. ' academic year = '.$thisacyear,true);
+		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes',$feefields);
+		$feespertypes->load(array('acyear =:acyear',array(':acyear'=> $thisacyear) ), array('limit'=>100) );
+		
+		$arr=  array();
+		while (!$feespertypes->dry ()) {// gets dry when we passed the last record
+		$arr1 = $feespertypes->cast();
+		$arr[$arr1["membtype"]]=$arr1;
+		//array_push($arr,$arr1);
+		//$admin_logger->write('in getfeespertypes arr1 = '.var_export($arr1,true),$uselog);
+		//$admin_logger->write('in getfeespertypes arr = '.var_export($arr,true),$uselog);
+		$feespertypes->next();
+		}
+		
+		//$fees = $feespertypes->paginate(0,100,array('acyear=?','2014-2015'));
+		//$fees = $feespertypes->paginate(1,10,NULL,array());
+		//$arr = $feespertypes->cast();
+		$admin_logger->write('in getfeespertypes result = '.json_encode($arr),$uselog);
+		//$admin_logger->write('in getfeespertypes result = '.json_encode($fees),true);
+		echo json_encode($arr);
 
 }
 } // end of class

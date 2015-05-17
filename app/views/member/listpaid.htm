@@ -1,11 +1,52 @@
 <script type="text/javascript">
 $(function () {
-// **************  functions for the custom elements in the add and edit forms for the feewhere element  **********
+
  function focusOther() {  $('input:radio[id=feewhere_other]').prop('checked', true);
  }
  window.focusOther = focusOther; //to allow testing from console
- //$("input#feewhere_text").click(function(e) {$('input:radio[id=feewhere_other]').prop('checked', true);})
-function myelem (value, options) { 
+/*** localstorage setup for contents of current feespertype table ****************/
+storage=$.localStorage;
+if(storage.isEmpty('feespertypes')) { // if localstorage of feespertypes not set then 
+
+
+$.get('feespertypes','',function (data)  {
+$showit=$.parseJSON(data);
+$dec=$showit["M"];
+$dec=$showit["M"].firstyearfee;
+storage.set('feespertypes',$showit);
+/**  tests that it worked 
+$mtype='M';
+firstM = storage.get('feespertypes')[$mtype];
+firstM = storage.get('feespertypes')[$mtype].firstyearfee;
+***/
+});
+};
+
+function myamtelem (value, options) { 
+//Use rowid to get membertype
+var rowid= options.rowId;
+$mtype =$("#list").jqGrid('getCell',rowid,'membtype');
+$feetopay = storage.get('feespertypes')[$mtype].feetopay;
+var elemStr = '<input id="'+options.id +'_text" type="text" size="20"  name="feeexpected" readonly value=	"'+$feetopay+'" >';
+//var elemStr = '<tr rowpos="5" class="FormData" id=<td  class="CaptionTD"> Amount Expected</td><td class="DataTD"> 99.88 </td>';
+          // return DOM element from jQuery object
+          return $(elemStr)[0];
+}
+function myamtvalue(elem, operation, value) {
+//var rowid= options.rowId;
+//$mtype =$("#list").jqGrid('getCell',rowid,'membtype');
+//return  storage.get('feespertypes')[$mtype].feetopay;
+    if(operation === 'get') {
+	
+return parseInt($('#TblGrid_list #amtpaidthisyear').val());	
+	} else if(operation === 'set') {
+       //$('input',elem).val(value);
+    }
+
+
+}
+// **************  functions for the custom elements in the add and edit forms for the feewhere element  ********** 
+ function myelem (value, options) { 
 // var el = document.createElement("input");
  // el.type="radio";
  // el.value = value;
@@ -124,7 +165,8 @@ function myvalue(elem, operation, value) {
 			},
              { name: "location", width: 65, align: "right" },
 			 { name: "paidthisyear", width: 80, align: "right" ,editable: false,		  edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
-			  { name: "amtpaidthisyear", width: 80, align: "right",editable: false,searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
+			  { name: "amtpaidthisyear", width: 80, align: "right",editable: false,edittype:'custom',editoptions:{custom_element: myamtelem, custom_value:myamtvalue},
+						searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
 			// { name: "datejoined", width: 100, align: "right",search:false , hidden:true}, 
 			// { name: "feewhere", width: 80, align: "left",search:true,edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue}},
 			{ name: "feewhere", width: 80, align: "left",search:true,hidden: false , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
@@ -206,7 +248,7 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
                 alert(data);
             }
 			*/
-			/******************  ADD additional fields then POST markpaid  *****************/
+			/******************CLICKED EURO to mark as paid  ADD additional fields then POST markpaid  *****************/
 			grid.jqGrid('editGridRow',rowid,{dataheight:390,height:490,width:500,closeAfterEdit:true,
 					onclickSubmit: function (options,postData) {
 						return{membnum:xnum,membtype:xtype}},
@@ -226,7 +268,7 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						grid.jqGrid('setCell', rowid, 'feewhere', 'Treasurer');
 						grid.jqGrid('getLocalRow', rowid).paidthisyear = $showit.paidthisyear;
 						grid.jqGrid('getLocalRow', rowid).amtpaidthisyear = $showit.amtpaidthisyear;
-						grid.jqGrid('getLocalRow', rowid).feewhere = 'Trasurer';
+						grid.jqGrid('getLocalRow', rowid).feewhere = 'Treasurer';
 						grid.jqGrid('saveRow',rowid, false,'clientArray');  // ensure the changed amount is saved locally
 						
 						$("#list").jqGrid('footerData',	'set',{phone:$showit.lastfytotal})
@@ -238,7 +280,12 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 							grid.jqGrid('setColProp','membnum',{editable:true});
 							grid.jqGrid('setColProp','forename',{editable:true});
 							grid.jqGrid('setColProp','surname',{editable:true});
-						//	grid.jqGrid('setColProp','memnum',{readonly:true});
+							grid.jqGrid('setColProp','amtpaidthisyear',{editable:true});
+							grid.jqGrid('setColProp','amtpaidthisyear',{readonly:true});
+							
+							$mtype =$("#list").jqGrid('getCell',rowid,'membtype');
+							$feetopay = storage.get('feespertypes')[$mtype].feetopay;
+							grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $feetopay);
 						//	grid.jqGrid('setColProp','forename',{readonly:true});
 						//	grid.jqGrid('setColProp','surname',{readonly:true});
 							//$("#surname").prop("readonly", true);
@@ -247,18 +294,20 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 						$("#forename").prop("readonly", true); //so they cant be changed
 						$("#surname").prop("readonly", true);
 						$("#membnum").prop("readonly", true);
-						
-
-						//grid.jqGrid('setColProp','membnum',{editable:false});
-						//grid.jqGrid('setColProp','amtpaidthisyear',{editable:false});
+						$("#amtpaidthisyear").prop("readonly", true);
+						$('#tr_amtpaidthisyear td.CaptionTD').html('Amount Expected to Pay.');
+						 //reset to zero now that the expected amount is in the for -** in case form is cancelled
+						 grid.jqGrid('setCell', rowid, 'amtpaidthisyear', 0);
 						
 						},
+
 						afterComplete: function(formid){
 							grid.jqGrid('setColProp','membnum',{editable:false});
 							grid.jqGrid('setColProp','forename',{editable:false});
-							grid.jqGrid('setColProp','surname',{editable:false});						
+							grid.jqGrid('setColProp','surname',{editable:false});	
+							grid.jqGrid('setColProp','amtpaidthisyear',{editable:false});					
 						}
-						/**(form) function(form) { $('#tr_membnum', form).show();$('#tr_amtpaidthisyear', form).show(); } **/ 
+		
 						});
 
 	//$("#list").trigger("reloadGrid", [{ page: 1}]);
@@ -338,7 +387,7 @@ function reloadpage(relpage) {
 
 		
 	$('#list').navGrid('#pager',
-                { edit: true, add: false, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
+                { edit: false, add: false, del: false, search: false, refresh: true, view: false, position: "left", cloneToTop: true },
 				{// for edit
 			beforeInitData: function(formid) { // Allows the Membership number to appear in the Edit Form
                $("#list").jqGrid('setColProp','membnum',{editable:true});

@@ -2,6 +2,8 @@
 <div class="main">
 <script type="text/javascript">
 $(function () {
+storage=$.localStorage;  // clear out localstorage at the start of a session
+storage.removeAll() 
 user_id.focus();
 });
 </script>

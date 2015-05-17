@@ -6,6 +6,7 @@ $f3 = require('lib/base.php');
 $f3->set('CACHE',FALSE);
 $f3->config('config/config.ini');
 
+$f3->route('GET /app/views/feespertypes [ajax]','AjaxController->getfeespertypes');
 $f3->route('GET /membergrid [ajax]','AjaxController->members');
 //$f3->route('GET /membergrid','MyAjax->members');
 $f3->route('GET /usergrid [ajax]','AjaxController->users');

@@ -22,7 +22,7 @@ class Member extends DB\SQL\Mapper {
 		$this->created_at=date("Y-m-d H:i:s");
         $this->save();
     }
-public function getu3ayear(){
+public static function getu3ayear(){
   $today = getdate();
 	  $thismon= $today['mon'];
 	  $thisyear = (string) $today['year'];
