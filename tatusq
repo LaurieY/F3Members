@@ -1,0 +1,263 @@
+[33mcommit 242d9e397edb1ff987705297b59501e3daa789a3[m
+Author: Laurie Yates <laurie.lyates@gmail.com>
+Date:   Tue May 12 18:34:08 2015 +0200
+
+    V 0.55
+
+[33mcommit bb3055fad776172ae520891b96c1676d82b10bf4[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Fri May 1 12:24:30 2015 +0000
+
+    v0.51
+
+[33mcommit b70fc1e353c157723a3474708996c841257799e2[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Fri May 1 11:46:39 2015 +0000
+
+    extended members table
+
+[33mcommit 0420e3ed8f2a75256e0dd790daa660a2c308a4d9[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Wed Apr 29 21:13:23 2015 +0000
+
+    new LoginController and fixes to 0.50
+
+[33mcommit 29a1e5bbd2ff3921b240044fc0857ffd6d49aef8[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Wed Apr 29 20:50:54 2015 +0000
+
+    new LoginController
+
+[33mcommit 6e9b4f462cb3a3665085edaf77f0d3e175b81716[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Wed Apr 29 12:23:52 2015 +0000
+
+    moved to LoginController
+
+[33mcommit a3124ab28e05d93f59e8352ffa351cc570d829aa[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Tue Apr 28 21:02:08 2015 +0000
+
+    3rd cookie fix
+
+[33mcommit a820f9ea88a2abbac9b406519411a21419e1b30f[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Tue Apr 28 20:35:26 2015 +0000
+
+    fix to cookie fix
+
+[33mcommit 45b14d5c919cdd83d6ec68cb66e005a980a76a28[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Mon Apr 27 22:18:30 2015 +0000
+
+    Change Cookie handling
+
+[33mcommit fca03eec1c61ba1cb08be7e5fb7fb4e01777f11d[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Sun Apr 26 18:05:31 2015 +0000
+
+    added favicon
+
+[33mcommit e8184e2272c347ca7c525411df3ff4b240d41dba[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Sun Apr 26 17:29:18 2015 +0000
+
+    version change
+
+[33mcommit 15aa82627f1eb2c3a56d75354d0f9597f124f102[m
+Author: Laurie Yates <laurie@lyates.com>
+Date:   Sun Apr 26 17:25:17 2015 +0000
+
+    V0.45 (validations and audit trail and pwd change)
+
+[33mcommit 6afdf2e4d4713db6d1c18919ae568adb4c34b256[m
+Author: vagrant <vagrant@precise64.(none)>
+Date:   Sun Apr 26 17:19:06 2015 +0000
+
+    V0.45 (validations and audit trail and pwd change)
+
+[33mcommit 0dbe6ec63280b9d2185fef8627ebbd47db06a352[m
+Author: vagrant <vagrant@precise64.(none)>
+Date:   Sun Apr 26 17:14:48 2015 +0000
+
+    V0.45 (validations and audit trail and pwd change)
+
+[33mcommit c514a48605778adaf93730ea3739c2413a2843f8[m
+Author: Laurie Yates <laurie2@lyates.com>
+Date:   Tue Apr 14 11:17:51 2015 +0200
+
+    fixed trail created at
+
+[33mcommit 31cba048cfa1ae9e5bee8c0ea939e5e28ff3503a[m
+Author: Laurie Yates <laurie2@lyates.com>
+Date:   Mon Apr 13 19:29:48 2015 +0200
+
+     as released V 0.41 to allan & aine
+
+[33mcommit 640e13d0933e2140dad6c1c9227770c3d8f2adf7[m
+Author: Laurie Yates <laurie2@lyates.com>
+Date:   Mon Apr 13 18:48:21 2015 +0200
+
+     as released V 0.4 to allan & aine
+
+[33mcommit feb0fc816fdf2245e25b453f551781dab905191c[m
+Author: Laurie Yates <laurie2@lyates.com>
+Date:   Sun Apr 12 22:57:58 2015 +0200
+
+    audit trail now OK
+
+[33mcommit 7779db7b8d846ec2bc1f688d0896316bc3decc92[m
+Author: Laurie Yates <laurie2@lyates.com>
+Date:   Sun Apr 12 00:21:28 2015 +0200
+
+    edits adds delss OK, trail working OK
+
+[33mcommit 58b3b0dc1be2015dceaf3bef6339b9e66cde8429[m
+Author: Laurie Yates <laurie2@lyates.com>
+Date:   Fri Apr 10 00:04:09 2015 +0200
+
+    buttons for edit and add now working ok with loadonce mode
+
+[33mcommit 3aa05b65a91d19c0bf2accc275d6c9d7626a9a25[m
+Author: vagrant <vagrant@precise64.(none)>
+Date:   Tue Apr 7 21:45:12 2015 +0000
+
+    selects from Inland etc and refresh forces a server reload
+
+[33mcommit 3259c6c0257f8347cd75391d133a663e0b0896cb[m
+Author: vagrant <vagrant@precise64.(none)>
+Date:   Fri Apr 3 22:31:13 2015 +0000
+
+    migrate to vagrant now using mysqli in MyAjax.php
+
+[33mcommit b2691f6dbd96945330ac64d72861d3cb2d885a0e[m
+Author: = <=>
+Date:   Thu Apr 2 08:11:56 2015 -0500
+
+    V0.2 with loadonce working on both pages
+
+[33mcommit 03b5130229320ad9abd699375ab869d5ea4f486d[m
+Author: = <=>
+Date:   Tue Mar 31 18:47:53 2015 -0500
+
+    copied across to u3a.es and some cosmetic changes made to fonts
+
+[33mcommit 7b510624da185ba0e90a59c3e98db8f2364514ad[m
+Author: = <=>
+Date:   Tue Mar 31 17:46:02 2015 -0500
+
+    working, payments page is better and can select within it
+
+[33mcommit b27033f532a80bdb0cbc6bdfde2d5e3816222afe[m
+Author: = <=>
+Date:   Tue Mar 31 10:59:45 2015 -0500
+
+    working, mark as paid working with fixed membernumber but double clicking the rpow also triggers?
+
+[33mcommit 9aad49ce32d2996afa51f0b8cadbe09259b23e19[m
+Author: = <=>
+Date:   Mon Mar 30 16:37:45 2015 -0500
+
+    Working and simple implememtation of marking paid using Euro Icon
+
+[33mcommit a14bdfc3366c5991736b14e20a5598a6c5c33e11[m
+Author: = <=>
+Date:   Sat Mar 28 17:03:10 2015 -0500
+
+    working member table partly working mark as paid just for membnum2
+
+[33mcommit bf0b6e17abb762626cdb3d3125924ab6353183ab[m
+Author: = <=>
+Date:   Thu Mar 26 17:40:38 2015 -0500
+
+    working member table can edit/add/delete a member, add now calcs membership number,working calc of payment per member partly in
+
+[33mcommit 74c32a7fcb30ed1a93af3a32392195bd79a7e9b6[m
+Author: = <=>
+Date:   Wed Mar 25 18:53:15 2015 -0500
+
+    working member table can edit/add/delete a member, filters also now working, multiselect added & highlighting ok filter by button working calc of payment per member partly in
+
+[33mcommit 20b275ac022e684d937333adc6b88384d924da61[m
+Author: = <=>
+Date:   Wed Mar 25 10:04:53 2015 -0500
+
+    working member table can edit/add/delete a member, filters also now working, multiselect added & highlighting ok filter by button working
+
+[33mcommit 78e6a59f8729e3986632ddf85ab4faf3ccf5bf75[m
+Author: = <=>
+Date:   Wed Mar 25 05:22:49 2015 -0500
+
+    working member table can edit/add/delete a member, filters also now working, multiselect added & highlighting ok
+
+[33mcommit c1006041ae3158b6586bb8aa429ce0bae0cfc77f[m
+Author: = <=>
+Date:   Tue Mar 24 17:45:38 2015 -0500
+
+    working member table can edit/add/delete a member, filters also now working, checkbox edits not working
+
+[33mcommit 6ef9bce29dbe2482da66c88256ae0666a6e53631[m
+Author: = <=>
+Date:   Mon Mar 23 16:52:23 2015 -0500
+
+    working member table can edit/add/delete a member
+
+[33mcommit 5db0c3bafb476bd4e8f392f6e1a0d666235dc1af[m
+Author: = <=>
+Date:   Mon Mar 23 16:26:11 2015 -0500
+
+    working admin table can add a user and can log it in
+
+[33mcommit aef16be8468dc70af6739441f2e63400506f164c[m
+Author: = <=>
+Date:   Mon Mar 23 13:21:18 2015 -0500
+
+    working admin table can edit email and role
+
+[33mcommit a08d6160947820918f3bfeb9f528dab109c338bd[m
+Author: = <=>
+Date:   Mon Mar 23 06:50:19 2015 -0500
+
+    working login and logout using encrypted  and captcha, timeout and admin menus
+
+[33mcommit 7d01c3e76c55a5d8a6e3ff9cb48bf35c7d5cd97b[m
+Author: = <=>
+Date:   Sun Mar 22 18:55:22 2015 -0500
+
+    working login and logout using encrypted  and captcha, working on admin / user edit
+
+[33mcommit 7066efdb75fc6aa98982ad9f3d7c65d20232b4d2[m
+Author: = <=>
+Date:   Fri Mar 20 06:41:26 2015 -0500
+
+    working but with V 3.05.  Captcha not working nneed to upgrade to 3.4.0
+
+[33mcommit d6856485806ba0461dc36fb1946c47a6bcd9578d[m
+Author: = <=>
+Date:   Wed Mar 18 11:56:33 2015 -0500
+
+    working with blue seek buttons and extra summary row, renames and admin option in bar giving user list
+
+[33mcommit d34e0ec62cf8ef7722a09806d372ee163c3337e0[m
+Author: = <=>
+Date:   Tue Mar 17 17:55:18 2015 -0500
+
+    working with blue seek buttons and extra summary row
+
+[33mcommit b5869de441210b554d98563238da2b34bf9b3200[m
+Author: = <=>
+Date:   Tue Mar 17 06:43:40 2015 -0500
+
+    working with orange seek buttons'
+
+[33mcommit ef19f41523f917d27a03622d96cc10dd804016fb[m
+Author: = <=>
+Date:   Sun Mar 15 16:27:25 2015 -0500
+
+    working xml with auto height and full columns,Paid still as a bool 1 & 0'
+
+[33mcommit 7b080e6ca9378e56c7cc4202e22c4a23b3dd4fc7[m
+Author: = <=>
+Date:   Sun Mar 15 07:07:31 2015 -0500
+
+    initial commit

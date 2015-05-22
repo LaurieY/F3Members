@@ -14,6 +14,7 @@ class Member extends DB\SQL\Mapper {
 		
         return $this->query;
     }
+   
 
     public function add() {
       //  $this->copyFrom('POST');
@@ -34,7 +35,7 @@ public static function getu3ayear(){
 		return $thisyear.'-'.$nextyear;
 }
 /***************  fetch the totals for this and last financial years return an associative array of the two
-******************* include only status='Active' records ******/
+******************* include only status='Active' records	 ******/
 public function gettotals(){
 	 $today = getdate();
 	 $thisfy = $today['year'];

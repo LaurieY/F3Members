@@ -1,7 +1,9 @@
 <script type="text/javascript">
 $(function () {
 // **************  functions for the custom elements in the add and edit forms for the feewhere element  **********
-
+function focusOther() {  $('input:radio[id=feewhere_other]').prop('checked', true);
+ }
+ window.focusOther = focusOther; //to allow testing from console
 function myelem (value, options) { 
 // var el = document.createElement("input");
  // el.type="radio";
@@ -25,7 +27,7 @@ otherchecked ='checked';}
 var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
 						'<input id="'+options.id + '_other' +
                         '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
-						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" value=	"'+value+'" ></div>';
+						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" onfocus="focusOther()" value=	"'+value+'" ></div>';
           // return DOM element from jQuery object
           return $(elemStr)[0];
 		  }

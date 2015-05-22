@@ -6,7 +6,6 @@ $f3 = require('lib/base.php');
 $f3->set('CACHE',FALSE);
 $f3->config('config/config.ini');
 
-$f3->route('GET /app/views/feespertypes [ajax]','AjaxController->getfeespertypes');
 $f3->route('GET /membergrid [ajax]','AjaxController->members');
 //$f3->route('GET /membergrid','MyAjax->members');
 $f3->route('GET /usergrid [ajax]','AjaxController->users');
@@ -17,11 +16,8 @@ $f3->route('GET /payments','MemberController->payments');
 
 $f3->route('POST /editmember [ajax]','AjaxController->editmember');
 
-$f3->route('POST /app/views/amtpaid [ajax]','AjaxController->amtpaid'); 
-$f3->route('POST /app/views/feewhere [ajax]','AjaxController->feewhere');
 $f3->route('POST /app/views/markpaid [ajax]','AjaxController->markpaid'); 
 $f3->route('POST /app/views/markwillpay [ajax]','AjaxController->markwillpay'); 
-$f3->route('POST /app/views/markunpay [ajax]','AjaxController->markunpay'); 
 
 $f3->route('GET /email1','EmailController->email1');
 $f3->route('GET /subscribe1','EmailController->subscribe1'); 
@@ -44,23 +40,9 @@ $f3->route('POST /changeme','UserController->changeme');
 
 $f3->route('GET /nocookie','AdminController->nocookie');
 
-$f3->route('GET /exports','MemberController->exports'); // generates all required email lists on page load
-/**$f3->route('POST /app/views/export[ajax]','AjaxController->export');
-$f3->route('POST /app/views/export','AjaxController->export');
-$f3->route('POST /app/views/downloads [ajax]','Downloads->index');
-//$f3->route('POST /app/views/downloads [ajax]','AjaxController->markpaid');
-$f3->route('POST /exports','AjaxController->exports');  */
-
-$f3->route('GET /downloads/@filename',
-    function($f3,$args) {
- $dlfilename='downloads/email_list_'.$args['filename'].'.csv';
-        // send() method returns FALSE if file doesn't exist
-        if (!Web::instance()->send($dlfilename,NULL,512,TRUE))
-                  // Generate an HTTP 404
-        $f3->error(404);
-    }
-);
-
-
-
+$f3->route('GET /exports','MemberController->exports');
+$f3->route('POST /exports','MemberController->exports');
+//$f3->route('GET /1','MemberController->index1');
+//$f3->route('GET /2','MemberController->index2');
+//$f3->config('config/routes.ini');
 $f3->run();

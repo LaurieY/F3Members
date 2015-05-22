@@ -16,7 +16,7 @@ class Controller {
 	$auth_logger = new Log('auth.log');
 	$f3=$this->f3;
 	//$f3->set('page_head','Login');
-	$auth_logger->write( 'Entering Controller afterroute URI= '.$f3->get('URI'  ) );
+	//$auth_logger->write( 'Entering Controller afterroute URI= '.$f3->get('URI'  ) );
 		echo Template::instance()->render('layout.htm');	
 	}
 

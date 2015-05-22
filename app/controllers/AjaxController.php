@@ -22,14 +22,7 @@ class AjaxController extends Controller {
 	*/
 	
 	
-	//$auth_logger->write( "AjaxController beforeroute  Session user_id = ".$f3->get('SESSION.user_id')); 
-	
-	//$auth_logger->write( 'AjaxController beforeroute  $_Session user_id = '.$_SESSION['user_id']);
-	//$auth_logger->write( "AjaxController beforeroute $_SESSION = ".
-	//var_export($_SESSION);
-	//$auth_logger->write( "AjaxController beforeroute SESSION = ".var_export($f3->get('SESSION')));
-	//$auth_logger->write( "AjaxController beforeroute $this = ".var_export($this->f3,true));
-	//var_export($f3->get('SESSION'));
+
 	}
 
 	function afterroute() {
@@ -863,18 +856,45 @@ function getfeespertypes() { //return all the contents of the table feespertypes
 		while (!$feespertypes->dry ()) {// gets dry when we passed the last record
 		$arr1 = $feespertypes->cast();
 		$arr[$arr1["membtype"]]=$arr1;
-		//array_push($arr,$arr1);
-		//$admin_logger->write('in getfeespertypes arr1 = '.var_export($arr1,true),$uselog);
-		//$admin_logger->write('in getfeespertypes arr = '.var_export($arr,true),$uselog);
+
 		$feespertypes->next();
 		}
-		
-		//$fees = $feespertypes->paginate(0,100,array('acyear=?','2014-2015'));
-		//$fees = $feespertypes->paginate(1,10,NULL,array());
-		//$arr = $feespertypes->cast();
-		$admin_logger->write('in getfeespertypes result = '.json_encode($arr),$uselog);
-		//$admin_logger->write('in getfeespertypes result = '.json_encode($fees),true);
+		//$admin_logger->write('in getfeespertypes result = '.json_encode($arr),$uselog);
+
+
 		echo json_encode($arr);
 
 }
+
+function export(){  // actually output the pre received dataset (in setofmembers:)
+	$f3=$this->f3;	
+	$admin_logger = new MyLog('admin.log');
+	$uselog=$f3->get('uselog');
+	$setofmembers=$f3->get('setofmembers');
+	
+	$f3->set('view','member/exports.htm'); 
+	$f3->set('page_head','Export Mailing Lists');
+	$f3->set('page_role',$f3->get('SESSION.user_role'));
+	$setofmembers=$f3->get('POST.setofmembers');
+		$admin_logger->write('in export WITH POST '.$setofmembers,$uselog);	
+		switch($setofmembers){
+		case 'all':
+		$result=$this->emails('all');
+		//$admin_logger->write('in AjaxrController exports resultset = '.var_export($result,true),$uselog);
+		echo json_encode($result);
+		break;
+		case 'cm':
+		
+		break;
+		case 'gl':
+		break;
+		default:
+		$admin_logger->write('in Ajax Controller at default!!',$uselog);
+		break;
+		}
+	    
+	
+		
+}
+
 } // end of class

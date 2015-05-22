@@ -86,24 +86,6 @@ public function index()
 	$f3->set('view','member/list.htm');
 		$f3->set('SESSION.lastseen',time()); 
 	}
-function exports(){
-	$f3=$this->f3;	
-	$admin_logger = new MyLog('admin.log');
-	$f3->set('message', $f3->get('PARAMS.message'));
-	if($f3->exists('POST.exporttype'))
-	{// analyze the export type and produce the list and download it
-	$admin_logger->write('in MemberController  exports WITH POST');
-	}
-	else { // NOT a POST so setup the forms
-	$admin_logger->write('in MemberController  exports NOT POST');
-        $f3->set('view','member/exports.htm'); 
-		$f3->set('page_head','Export Mailing Lists');
-		$f3->set('page_role',$f3->get('SESSION.user_role'));
-	}
-	
-	
-	}
-
 
 
 public function payments ()
@@ -141,6 +123,89 @@ if ($f3->get('SESSION.user_role')==="admin"){
 
 }
 }
+function exports(){// generate all the likely export files for downloading
+	$f3=$this->f3;	
+	$admin_logger = new MyLog('admin.log');
+	$uselog=$f3->get('uselog');
+	//$uselog =false;
+	//$f3->set('message', $f3->get('PARAMS.message'));
+	$u3ayear= Member::getu3ayear();
+	
+	//$admin_logger->write('in MemberController $u3ayear='.$u3ayear,$uselog);
+	// Now fetch the required data sets-  all, Committee Members , GL's
+	//$result=$this->emails('all');
+$dldir=$f3->get('downloads');
+$admin_logger->write('in exports dldir = '.$dldir,$uselog);
+		$result=$this->emails('all');
+		$resp=$this->writeemails($result,'all');
+
+		$result=$this->emails('cm');
+		$resp=$this->writeemails($result,'cm');
+		
+		$result=$this->emails('gl');
+		$resp=$this->writeemails($result,'gl');
+		//$admin_logger->write('in exports written emails gl resp=  '.$resp,$uselog);
+		$result=$this->emails('all',"('N')");
+		$resp=$this->writeemails($result,'unpaid');
+		$result=$this->emails('all',"('W')");
+		$resp=$this->writeemails($result,'willpay');
+
+		$f3->set('view','member/exports.htm'); 
+		$f3->set('page_head','Email Lists');
+		$f3->set('page_role',$f3->get('SESSION.user_role'))		;
+	
+	}
+function writeemails($data,$theset) {
+		$f3=$this->f3;
+		$dldir=$f3->get('BASE').$f3->get('downloads');
+		$resp=99;
+		
+		//$resp=$f3->write($dldir.'/email_list_'.$theset.'.csv',var_export($data,TRUE));
+		
+			$out = "";
+		foreach($data as $arr) {
+		
+		$out .= implode(",", $arr)."\n" ;
+		
+}
+		$resp=$f3->write($dldir.'/email_list_'.$theset.'.csv',$out);
+		return $resp;
+	
+	
+}
+function emails($setofmembers='all',$paidstatus="('Y','N','W')") {
+    	$f3=$this->f3;       
+		$db=new DB\SQL(
+            $f3->get('db_dns') . $f3->get('db_name'),
+            $f3->get('db_user'),
+            $f3->get('db_pass')
+        );	
+
+   $u3ayear= Member::getu3ayear();
+   $emailfilename='membersemails-'.$setofmembers.'.csv';
+	switch($setofmembers){
+		case 'all':
+		$thesql="select forename,surname,membnum,email from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus;
+		
+		break;
+		case 'cm':
+		$thesql="select forename,surname,email from members where u3ayear='".$u3ayear."' and status='Active' and membtype in ('CM','CMGL')";
+		
+		break;
+		case 'gl':
+		$thesql="select forename,surname,email from members where u3ayear='".$u3ayear."' and status='Active' and membtype in ('GL','CMGL')";
+		
+		break;
 
 
+		default:
+		$thesql="select forename,surname,email from members where u3ayear='never'";
+		break;
+		}
+			
+		return $db->exec($thesql);
+
+		
+        
+    }
 } // end of Class MemberController

@@ -1,0 +1,44 @@
+  require "faker"
+  require 'watir-webdriver'
+  require 'minitest/autorun'
+   require 'minitest/unit'
+  b = Watir::Browser.new :chrome
+  
+  b = Watir::Browser.new :"phantomjs"
+b.goto '192.168.1.10/'
+
+ b.text_field(:id => 'user_id').exists?
+    b.text_field(:id => 'user_id').set 'laurie'
+  b.text_field(:id => 'password').set 'laurie12'
+  b.text_field(:id => 'captcha').set 'fe7o1'
+  b. button(:name => 'submit').click
+ 
+  b.text_field(:id => 'entry_99').exists? 
+ # assert(b.text_field(:id => 'entry_99').exists? )
+  @memsurname=Faker::Name.last_name
+@memforename=Faker::Name.first_name 
+  b.button(:id=>'badd').exists?
+
+ p "surname forename = "+ @memsurname + " " + @memforename
+  b.button(:id=>'badd').click
+ b.text_field(:id=>'surname').set @memsurname
+  b.text_field(:id=>'forename').set @memforename
+  b.select_list(:id=>'location').select 'Inland'
+ 
+  b.a(:id=>'sData').exists?
+   b.a(:id=>'sData').click
+   Watir::Wait.until {b.input(:id=>'addeditdel').value.eql? 'add actioned' }
+   #b.input(:id=>'addeditdel').exists?
+   
+   
+  # b.input(:id=>'addeditdel').value
+  #  b.input(:id=>'addeditdel').value.eql? 'add actioned'
+	p " expecting firstname "+@memforename
+	p b.element(xpath: ".//table[@id='list']//tr[2]/td[2]").text
+	Watir::Wait.until{b.element(xpath: ".//table[@id='list']//tr[2]/td[2]").text.eql? @memforename}
+	
+	
+b.element(xpath: ".//table[@id='list']//tr[2]/td[2][@title='"+'Kole'+"']").click
+
+
+b.input(:id, "gs_forename")"
