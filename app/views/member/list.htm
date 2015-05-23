@@ -67,13 +67,13 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
             { name: "mobile", width: 85, align: "right",editable: myeditability, edittype:"text" }, 
             { name: "email", width: 210, align: "right",editable: myeditability, edittype:"text" ,searchoptions : {sopt: ["cn"] },editrules: { email: true, required: false},}, 
 			{ name: "membtype", width: 90, align: "right",editable: myeditability,
-			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member late 1st year;MJL2:Member late 2nd year;GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"},},
+			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"},},
              { name: "location", width: 65, align: "right" ,editable: myeditability,edittype:'select',editoptions:{value:"C:Coast;I:Inland"},},
 			 { name: "paidthisyear", width: 80, align: "right" ,editable: paideditability, edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: paideditability,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false,hidden: hidemoney },
 			  			 // { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'select',editoptions:{value:"Treasurer:Treasurer;Inland:Inland"} ,searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
 			 { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
-			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
+			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false,required:true}   },
 			 { name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
         ],
@@ -107,7 +107,8 @@ function editRow(id) { var grid = $("#list");
                    
                     grid.jqGrid('restoreRow',lastSelection);
                   //  grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
-				 } grid.jqGrid('FormToGrid', id,'#FormPost');
+				 } 
+				 grid.jqGrid('FormToGrid', id,'#FormPost');
 				 grid.jqGrid('editRow',id, true,  '','','','',editreload); //rowid, keys, oneditfunc, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc
                     lastSelection = id;
                 
@@ -117,6 +118,7 @@ function editreload(rowid, result) {
 			//get response and update the local grid for those values that are computed i.e. amtpaidthisyear
 			$showit=$.parseJSON(result.responseText);
 			grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+			grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
 		$curpg=$('#list').getGridParam('page'); // current page
 		//$("#list").trigger("reloadGrid", [{ page: $curpg}]); 
 		reloadpage($curpg);
@@ -174,7 +176,7 @@ $("#cm1").click( function() { //Refresh
 $("#bedit").click(function(){
 $( "#addeditdel" ).val( "" );
 	var gr = jQuery("#list").jqGrid('getGridParam','selrow');
-	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:390,height:490,width:500,closeAfterEdit:true,afterSubmit:afterFormEdit,reloadAfterSubmit:true,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
+	if( gr != null ) jQuery("#list").jqGrid('editGridRow',gr,{dataheight:390,height:490,width:500,closeAfterEdit:true,beforeSubmit:beforeSubmitAdd,afterSubmit:afterFormEdit,reloadAfterSubmit:true,beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }});
 	/**  hide amtpaid this year so that it doesn't get erroneously overwritten.  Can edit in inline mode */
 	else alert("Please Select Row");
 });	
@@ -193,15 +195,33 @@ function afterFormEdit(response, postdata)  // Form edit doesn't allow amtpaid o
  } 	
  /**************  ADD BUTTON ****/
 $("#badd").click(function(){
+var grid = $("#list");
+grid.jqGrid('setColProp','membtype', // remove MJL2 from otions available
+	{editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}});
+
 $( "#addeditdel" ).val( "" );
 	jQuery("#list").jqGrid('editGridRow','new',{dataheight:320,height:440,width:500,closeAfterAdd:true,afterSubmit:afterFormAdd,
 						onclickSubmit: function (options,postData) {
 						return{paidthisyear:'Y'}},
-						beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide();$('#tr_paidthisyear', form).show(); }});
-	
+						//beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide();$('#tr_paidthisyear', form).show(); }
+						beforeShowForm: beforeShowAdd,
+						beforeSubmit:beforeSubmitAdd,
+		});
 });	
+function beforeShowAdd(form) {  
+$('#tr_amtpaidthisyear', form).hide();$('#tr_paidthisyear', form).show();
+var grid = $("#list");
+grid.jqGrid('setColProp','membtype',  //Reinstate MJL2 once form has been contructed, in case form cancelled
+	{editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}});
+}
+function beforeSubmitAdd(postdata,formid) {
+var success=true;message='';
+if (postdata.feewhere=='' ) {success=false;message="'Other' field should not be blank\n Please Supply a name";}
+return[success,message]
+}
 function afterFormAdd(response, postdata) 
  { var grid = $("#list");
+ 
  			//$showit=$.parseJSON(response.responseText);
 			//grid.jqGrid('setCell', postdata.id, 'amtpaidthisyear', $showit.amtpaidthisyear);
 if (response.statusText==="OK") {

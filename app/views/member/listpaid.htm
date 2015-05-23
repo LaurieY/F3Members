@@ -22,13 +22,16 @@ firstM = storage.get('feespertypes')[$mtype].firstyearfee;
 });
 };
 
-function myamtelem (value, options) { 
+function myamtelem (value, options) { // for feeexpected
 //Use rowid to get membertype
 var rowid= options.rowId;
 $mtype =$("#list").jqGrid('getCell',rowid,'membtype');
-$feetopay = storage.get('feespertypes')[$mtype].feetopay;
-//var elemStr = '<input id="'+options.id +'_text" type="text" size="20"  name="feeexpected" readonly value=	"'+$feetopay+'" >';
-var elemStr = '<input id="'+options.id +'_text" type="text" size="20"  name="feeexpected"  value=	"'+$feetopay+'" >';
+//Need to identify the joined date & use the relevant fee amount
+//$feetopay = storage.get('feespertypes')[$mtype].feetopay;
+$feetopay = value;
+var elemStr = '<input id="'+options.id +'_text" type="text" size="1"  name="feeexpected" readonly hidden value=	"'+$feetopay+'" >';
+//var elemStr = '<input id="'+options.id +'_text" type="text" size="20"  name="feeexpected"  value=	"'+$feetopay+'" >';
+//var elemStr =' '+$feetopay+' ';
 
           // return DOM element from jQuery object
           return $(elemStr)[0];
@@ -147,9 +150,8 @@ function myvalue(elem, operation, value) {
 		ignoreCase: true,
         mtype: "GET",
         colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", 
-		//"Joined",
-		" FeeWhere?",
-		"Pay","WillPay","NotPaid"],//],
+				" FeeWhere?",
+		"Pay","WillPay","NotPaid","Joined"],//],
         colModel: [
             
 			{ name: "surname", width: 120,editable: false, edittype:"text",sortable:true,sorttype:'string',firstsortorder:'asc',searchoptions : {
@@ -162,16 +164,16 @@ function myvalue(elem, operation, value) {
             { name: "mobile", width: 85, align: "right",editable: false, edittype:"text" }, 
             { name: "email", width: 210, align: "right",editable: false, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
 			 { name: "membtype", width: 90, align: "right",editable: false, 
-			// edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member late 1st year;MJL2:Member late 2nd year;GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}
+			// edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}
 			},
              { name: "location", width: 65, align: "right" },
 			 { name: "paidthisyear", width: 80, align: "right" ,editable: false,		  edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,edittype:'custom',editoptions:{custom_element: myamtelem, custom_value:myamtvalue},
 						searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
-			// { name: "datejoined", width: 100, align: "right",search:false , hidden:true}, 
+			 
 			// { name: "feewhere", width: 80, align: "left",search:true,edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue}},
 			{ name: "feewhere", width: 80, align: "left",search:true,hidden: false , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
-			 searchoptions : {sopt: ["bw","eq"] },editable: true, editrules: {edithidden:false}   },
+			 searchoptions : {sopt: ["bw","eq"] },editable: true, editrules: {edithidden:false,required:true}    },
 			   
 			  { name: 'pay', width: 40, sortable: false, search: false,
                       formatter:function(){
@@ -187,7 +189,8 @@ function myvalue(elem, operation, value) {
                       formatter:function(){
                          // return "<span class='ui-icon ui-icon-pencil'></span>"
 						  return  "<span class='member-icons  money_unpay'></span>"
-                      }},					  
+                      }},
+{ name: "datejoined", width: 100, align: "right",search:false , hidden:true}, 					  
 			
         ],
         pager: "#pager",
@@ -283,20 +286,52 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 							grid.jqGrid('setColProp','surname',{editable:true});
 							grid.jqGrid('setColProp','amtpaidthisyear',{editable:true});
 							//grid.jqGrid('setColProp','amtpaidthisyear',{readonly:true});
+							$rowd = grid.jqGrid('getRowData',rowid);
+							$mtype =grid.jqGrid('getCell',rowid,'membtype');
+							$djoined=grid.jqGrid('getCell',rowid,'datejoined').split("-");
+							$djoinedD= new Date($djoined[0],$djoined[1],$djoined[2]);
+							todayDate=new Date();
+							dtest= new Date(todayDate.getFullYear(), todayDate.getMonth() + 8, todayDate.getDate() +1);
+							if (todayDate.getMonth() >5) { // currently after June
+							dtest2= new Date(todayDate.getFullYear(), 6, 1); // set to the recent July 1st
+							}
+							else { // before June so select July last year as the test date
+							dtest2= new Date(todayDate.getFullYear()-1, 6, 1);// 1st half of year so subtract 1 from year and specify start of calc to be July1
+							}
+							if ($djoinedD>dtest2) { 
+							$feetopay = storage.get('feespertypes')[$mtype].firstyearfee;
+							}
+							else {$feetopay = storage.get('feespertypes')[$mtype].feetopay;
+							}
+							//dStart = new Date(
+							//is this the 1st u3a year for this member
+							// check if date joined is between the past July1 and now
 							
-							$mtype =$("#list").jqGrid('getCell',rowid,'membtype');
-							$feetopay = storage.get('feespertypes')[$mtype].feetopay;
+							//if(grid.jqGrid('getCell',rowid,'membtype')
+							
+							
 							grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $feetopay);
 						//	grid.jqGrid('setColProp','forename',{readonly:true});
 						//	grid.jqGrid('setColProp','surname',{readonly:true});
 							//$("#surname").prop("readonly", true);
+							if (grid.jqGrid('getCell',rowid,'paidthisyear')=='Y') return false;
 							},
 					beforeShowForm: function (formid) { // can change the contents of the form
-						$("#forename").prop("readonly", true); //so they cant be changed
-						$("#surname").prop("readonly", true);
-						$("#membnum").prop("readonly", true);
+					
+						$("#forename").attr('style','color:red;');
+						//$("#forename").trigger('blur');
+						$("#surname").attr('style','color:red;');
+						$("#membnum").attr('style','color:red;');
+						$("#amtpaidthisyear").attr('style','color:red;');
+						$("#forename").prop("hidden", true); //so they cant be changed
+						$("#surname").prop("hidden", true);
+						$("#membnum").prop("hidden", true);
 						$("#amtpaidthisyear").prop("readonly", true);
-						$('#tr_amtpaidthisyear td.CaptionTD').html('Amount Expected to Pay.');
+						$('#tr_surname td.DataTD').html(' '+$('#surname').val());
+						$('#tr_forename td.DataTD').html('  '+$('#forename').val());
+						$('#tr_membnum td.DataTD').html('  '+$('#membnum').val());
+						$('#tr_amtpaidthisyear td.CaptionTD').html('Amount Expected to Pay&nbsp;&nbsp;&nbsp;&nbsp; ');
+						$('#tr_amtpaidthisyear td.DataTD').html('  '+$('#amtpaidthisyear').val());
 						 //reset to zero now that the expected amount is in the for -** in case form is cancelled
 						 grid.jqGrid('setCell', rowid, 'amtpaidthisyear', 0);
 						
@@ -376,6 +411,7 @@ function editreload(rowid, result) {
 			//get response and update the local grid for those values that are computed i.e. amtpaidthisyear
 			$showit=$.parseJSON(result.responseText);
 			grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
+			grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
 		$curpg=$('#list').getGridParam('page'); // current page
 		//$("#list").trigger("reloadGrid", [{ page: $curpg}]); 
 		reloadpage($curpg);

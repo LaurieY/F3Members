@@ -366,7 +366,7 @@ header("Content-type: text/xml;charset=utf-8");
  $amt_total_thisfy = $fytotals['thisfy'];
  // the actual query for the grid data 
  // Fetch extra columns to allow for the icons columns in the payments grid
- $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,feewhere,datejoined,1,2 FROM members  ".$where_to_use." ORDER BY $sidx $sord ". $extrasort. " LIMIT $start , $limit"; 
+ $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,feewhere,1,2,3,datejoined FROM members  ".$where_to_use." ORDER BY $sidx $sord ". $extrasort. " LIMIT $start , $limit"; 
 //$admin_logger->write('in getresult_where SQL = '. $SQL."\n");
  $result = mysqli_query( $db,$SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
@@ -627,12 +627,28 @@ public function editmember()
 		$trail->reset();
 		$uselog=$f3->get('uselog');	
 		$admin_logger->write('in editmember before get_amt_paid membnum '.$members->membnum.' paidthis year '.$members->paidthisyear,$uselog);
-		
-		
-		/*********IF the field paidthisyear has been changed from N or W  to Y then also update the amtpaidthisyear using feespertypes table *****/
 
+		/*********IF the field paidthisyear has been changed from N or W  to Y then also update the amtpaidthisyear using feespertypes table *****/
+		$oldmembtype=$members->membtype;
 		$members->amtpaidthisyear=$this->get_amt_paid($members,($f3->get('POST.paidthisyear')=="Y"));
-	
+		/*****  if member type changed to M or MJLx then set Paid to N amd amt paid to zero ***/
+		if ($oldmembtype!=$f3->get('POST.membtype')) { // change of membertype
+		/*********IF the field membtype has changed to a paying one then change the payment status to N and amtpaid to zero ***/
+		$admin_logger->write('in editmember with change of membtype from  '.$oldmembtype .' to  '.$members->membtype,$uselog);
+						
+			if (strpos($members->membtype,'M', 0) === 0) { //new membtype starts with M so should be some fees so zeroise and set not paid for safety 
+			$admin_logger->write('in editmember new membtype starts with M  '.$members->membtype,$uselog);
+
+			$members->amtpaidthisyear=0;
+			$members->paidthisyear='N';
+			
+				}
+				else { //if  to a non paying ie not start with M se paid ='Y' and amtpaid to zero
+				$members->amtpaidthisyear=0;
+			$members->paidthisyear='Y';
+				
+				}
+		}	
 
 		$admin_logger->write('in editmember after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear,$uselog);
 		$admin_logger->write('In editmember membnum is '.$members->membnum. ' and of type '.gettype($members->membnum),$uselog);
@@ -700,8 +716,21 @@ public function editmember()
 	$admin_logger->write('in get_amt_paid /feespertype ='.$feespertypes->membtype.'  and feetopay '.$feespertypes->feetopay,$uselog);
 	$admin_logger->write('In get_amt_paid2 membnum is '.$members->membnum ,$uselog);
 		//$feetopay = $feespertypes->feetopay;
-		if($wasnotpaid && $topay)  return($feespertypes->feetopay);
-		else return($members->amtpaidthisyear); //i.e. do not change amtpaidthis year
+		if($wasnotpaid && $topay)  {
+		//**********************look to see if its 1st year or not, i.e. if joined date since last July 1
+		$djoined = explode('-',$members->datejoined); // yyyy-mm-dd
+		$djoinedmk=mktime(0,0,0,$djoined[1],$djoined[2],$djoined[0]);  //mm dd yyy
+		//$dnow = date();
+		if( date("m") >6) { $dtest = mktime(0,0,0,6,1,date("Y")); } // recent July
+		else {$dtest = mktime(0,0,0,6,1,date("Y")-1);
+		}
+		if($djoinedmk>$dtest) return($feespertypes->firstyearfee);
+		else return($feespertypes->feetopay);
+		
+		}
+		// if Changing from a non paying to a paying set paid status to N?? and value is already zero
+		
+		else return($members->amtpaidthisyear); //
 		
 		
 		//if(!$wasnotpaid && ($members->paidthisyear=="N")) { return(0);}
@@ -711,10 +740,17 @@ public function editmember()
 function amtpaid() {
  $f3=$this->f3; 
  	$members =	new Member($this->db);
+	$trail = new Trail($this->db);  // audit trail
 		$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+		$temptrail= array();
+		$members->copyto('temptrail');
+		$trail->copyfrom('temptrail');	
+		$this->logtrail($members,$trail,"amtpaidfrom");
 		$members->amtpaidthisyear=$f3->get('POST.amtpaidthisyear');
 		$members->paidthisyear=$f3->get('POST.paidthisyear');
 		$members->feewhere=$f3->get('POST.feewhere');
+		$trail->reset();
+		$this->logtrail($members,$trail,"amtpaidto");
 		$members->update();
 		$xnum= $members->membnum;
 		$xpay= $members->amtpaidthisyear;
@@ -723,6 +759,8 @@ function amtpaid() {
 		$fytotals = $members->gettotals();
 		$arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'feewhere' => $xwhere,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
 	 	$arrencoded= json_encode($arr);
+		
+		
 	 //$admin_logger->write('in editmember after jsonencode '.$arrencoded);
    echo $arrencoded;
 }	
