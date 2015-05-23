@@ -54,7 +54,7 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
         datatype: "xml",
 		ignoreCase: true,
         mtype: "GET",
-        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", " FeeWhere?","Joined",],//],
+        colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", " FeeWhere?","","","","Joined",],//],
         colModel: [
            
 			{ name: "surname", width: 120,editable: myeditability, edittype:"text",searchoptions : {
@@ -74,7 +74,10 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
 			  			 // { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'select',editoptions:{value:"Treasurer:Treasurer;Inland:Inland"} ,searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
 			 { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
 			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false,required:true}   },
-			 { name: "datejoined", width: 100, align: "right",search:false }, /**/
+			{ name:"",hidden:true},
+			{ name:"",hidden:true},
+			{ name:"",hidden:true},
+			{ name: "datejoined", width: 100, align: "right",search:false }, /**/
 			
         ],
 			pager: "#pager",
