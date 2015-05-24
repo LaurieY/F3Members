@@ -29,7 +29,7 @@ $mtype =$("#list").jqGrid('getCell',rowid,'membtype');
 //Need to identify the joined date & use the relevant fee amount
 //$feetopay = storage.get('feespertypes')[$mtype].feetopay;
 $feetopay = value;
-var elemStr = '<input id="'+options.id +'_text" type="text" size="1"  name="feeexpected" readonly hidden value=	"'+$feetopay+'" >';
+var elemStr = '<input id="'+options.id +'_text" type="text" size="20"  name="feeexpected"   value=	"'+$feetopay+'" >';
 //var elemStr = '<input id="'+options.id +'_text" type="text" size="20"  name="feeexpected"  value=	"'+$feetopay+'" >';
 //var elemStr =' '+$feetopay+' ';
 
@@ -291,7 +291,7 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 							$djoined=grid.jqGrid('getCell',rowid,'datejoined').split("-");
 							$djoinedD= new Date($djoined[0],$djoined[1],$djoined[2]);
 							todayDate=new Date();
-							dtest= new Date(todayDate.getFullYear(), todayDate.getMonth() + 8, todayDate.getDate() +1);
+							
 							if (todayDate.getMonth() >5) { // currently after June
 							dtest2= new Date(todayDate.getFullYear(), 6, 1); // set to the recent July 1st
 							}
