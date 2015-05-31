@@ -41,7 +41,7 @@ function myamtvalue(elem, operation, value) {
 //$mtype =$("#list").jqGrid('getCell',rowid,'membtype');
 //return  storage.get('feespertypes')[$mtype].feetopay;
     if(operation === 'get') {
-	
+	return parseInt(elem[0].value);
 return parseInt($('#TblGrid_list #amtpaidthisyear').val());	
 	} else if(operation === 'set') {
        //$('input',elem).val(value);
@@ -105,10 +105,11 @@ function myvalue(elem, operation, value) {
         url: "/membergrid",
 		editurl:"/app/views/markpaid",
         datatype: "xml",
-			cellEdit:true,
+			cellEdit:true, //LEY
 			cellsubmit: 'clientArray',
 		afterEditCell: function (id,name,val,iRow,iCol){
 			if(name=='amtpaidthisyear') {
+	
 			$("#"+iRow+"_amtpaidthisyear","#list").val();
 		}
 	},				
@@ -194,7 +195,7 @@ function myvalue(elem, operation, value) {
 			
         ],
         pager: "#pager",
-		//onSelectRow: editRow,
+		//onSelectRow: editRow,  // LEY
         rowNum: 10,
         rowList: [10, 20, 30],multiSort: false,
         sortname: "paidthisyear",
@@ -230,20 +231,25 @@ var a=postdata;
 
 onCellSelect: function (rowid,iCol,cellcontent,e) { 
  var grid = $("#list");
+ 
 				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
                 willpayColumnIndex = getColumnIndexByName( $("#list"),'willpay');    
                 unpayColumnIndex = getColumnIndexByName( $("#list"),'unpay');    
-				phoneColumnIndex = getColumnIndexByName( $("#list"),'phone');
-				locationColumnIndex = getColumnIndexByName( $("#list"),'location');
-                       // alert("rowid="+rowid+"\n");
-						//xnum="601";
-						xnum= $("#list").jqGrid('getCell',rowid,'membnum');
-						//xtype="M";
+				//phoneColumnIndex = getColumnIndexByName( $("#list"),'phone');
+				//locationColumnIndex = getColumnIndexByName( $("#list"),'location');
+				amtpaidColumnIndex = getColumnIndexByName( $("#list"),'amtpaidthisyear');
+                		xnum= $("#list").jqGrid('getCell',rowid,'membnum');
+						
 						xtype=$("#list").jqGrid('getCell',rowid,'membtype');
 
-
-						//alert("member = "+xnum+" type= "+xtype);
-						//$.post("\markpaid",{membnum:xnum,membtype:xtype});
+				if (iCol == amtpaidColumnIndex) { 
+					//rowNum= grid.jqGrid('getInd');
+					// grid.jqGrid('editRow',rowid, {keys:true, focusField: iCol});
+					//xfee= grid.jqGrid('getCell',rowid,'amtpaidthisyear').val();
+					xfee= $("#"+rowid+"_amtpaidthisyear").val();
+					$("#"+rowid+"_amtpaidthisyear").val(xfee);
+					//
+					}
 				if (iCol == payColumnIndex) { // clicked on to pay icon
 				           // var rowdata = $("#list").jqGrid('getGridParam',rowid);
 		/**		if(rowid){
@@ -403,8 +409,10 @@ var lastSelection;
                 if (id && id !== lastSelection) {
 				grid.jqGrid('getLocalRow', lastSelection).amtpaidthisyear
                 grid.jqGrid('restoreRow',lastSelection);
+				
                   //  grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
 				 } grid.jqGrid('editRow',id, true,  '','','','',editreload);
+				// $("#"+id+"_formattedvalue").focus();
                     lastSelection = id;
               }
 function editreload(rowid, result) {

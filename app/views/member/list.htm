@@ -109,11 +109,12 @@ function editRow(id) { var grid = $("#list");
                 if (id && id !== lastSelection) {
                    
                     grid.jqGrid('restoreRow',lastSelection);
-                  //  grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
+                  //grid.jqGrid('editRow',id, {keys:true, focusField: 4}); 
 				 } 
 				 grid.jqGrid('FormToGrid', id,'#FormPost');
 				 grid.jqGrid('editRow',id, true,  '','','','',editreload); //rowid, keys, oneditfunc, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc
                     lastSelection = id;
+					//$("#"+id+"_formattedvalue").focus();
                 
             }
 			

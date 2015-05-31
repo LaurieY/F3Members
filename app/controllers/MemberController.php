@@ -150,6 +150,11 @@ $admin_logger->write('in exports dldir = '.$dldir,$uselog);
 		$result=$this->emails('all',"('W')");
 		$resp=$this->writeemails($result,'willpay');
 
+		$lastu3ayear = Member::getlastu3ayear(); //Last year's members
+		$result=$this->emails('all',"('Y')",$lastu3ayear);
+		$resp=$this->writeemails($result,'lastyear');
+		
+		
 		$f3->set('view','member/exports.htm'); 
 		$f3->set('page_head','Email Lists');
 		$f3->set('page_role',$f3->get('SESSION.user_role'))		;
@@ -164,45 +169,44 @@ function writeemails($data,$theset) {
 		
 			$out = "";
 		foreach($data as $arr) {
-		
-		$out .= implode(",", $arr)."\n" ;
-		
-}
-		$resp=$f3->write($dldir.'/email_list_'.$theset.'.csv',$out);
+				$out .= implode(",", $arr)."\n" ;
+				}
+		$resp=$f3->write($dldir.'/email_list_'.$theset.'.csv',$out.",,,,");
 		return $resp;
 	
 	
-}
-function emails($setofmembers='all',$paidstatus="('Y','N','W')") {
+		}
+function emails($setofmembers='all',$paidstatus="('Y','N','W')",$u3ayear=NULL ) {
     	$f3=$this->f3;       
 		$db=new DB\SQL(
             $f3->get('db_dns') . $f3->get('db_name'),
             $f3->get('db_user'),
             $f3->get('db_pass')
         );	
+	 $u3ayear = isset($u3ayear) ? $u3ayear : Member::getu3ayear();;
 
-   $u3ayear= Member::getu3ayear();
+  // $u3ayear= Member::getu3ayear();
    $emailfilename='membersemails-'.$setofmembers.'.csv';
 	switch($setofmembers){
 		case 'all':
-		$thesql="select forename,surname,membnum,email from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus;
+		$thesql="select forename,surname,location,membtype,membnum,email from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus." order by membnum ASC";
 		
 		break;
 		case 'cm':
-		$thesql="select forename,surname,email from members where u3ayear='".$u3ayear."' and status='Active' and membtype in ('CM','CMGL')";
+		$thesql="select forename,surname,location,membtype,membnum,email from members where u3ayear='".$u3ayear."' and status='Active' and membtype in ('CM','CMGL')"." order by membnum ASC";
 		
 		break;
 		case 'gl':
-		$thesql="select forename,surname,email from members where u3ayear='".$u3ayear."' and status='Active' and membtype in ('GL','CMGL')";
+		$thesql="select forename,surname,location,membtype,membnum,email from members where u3ayear='".$u3ayear."' and status='Active' and membtype in ('GL','CMGL')"." order by membnum ASC";
 		
 		break;
 
 
 		default:
-		$thesql="select forename,surname,email from members where u3ayear='never'";
+		$thesql="select forename,surname,location,membtype,membnum,email from members where u3ayear='never'"." order by membnum ASC";
 		break;
 		}
-			
+		
 		return $db->exec($thesql);
 
 		

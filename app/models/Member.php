@@ -34,6 +34,17 @@ public static function getu3ayear(){
 		else
 		return $thisyear.'-'.$nextyear;
 }
+public static function getlastu3ayear(){
+  $today = getdate();
+	  $thismon= $today['mon'];
+	  $thisyear = (string) $today['year'];
+	  $lastyear = (string) $today['year'] -1;
+	  $lastbutoneyear = (string) $today['year'] -2;
+	  if ($thismon <7)
+		return $lastbutoneyear.'-'.$lastyear;
+		else
+		return $lastyear.'-'.$thisyear;
+}
 /***************  fetch the totals for this and last financial years return an associative array of the two
 ******************* include only status='Active' records	 ******/
 public function gettotals(){
