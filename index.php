@@ -53,13 +53,24 @@ $f3->route('POST /exports','AjaxController->exports');  */
 
 $f3->route('GET /downloads/@filename',
     function($f3,$args) {
- $dlfilename='downloads/email_list_'.$args['filename'].'.csv';
+	$mypdf= new MyClass();
+	
+ $dlfilename='downloads/email_list_'.$args['filename'].'.pdf';
+$mypdf->writeemailpdf($dlfilename,$args['filename']);
+ // now generate the pdf file appropriate
+ //MemberController::writeemailpdf1($args['filename']);
         // send() method returns FALSE if file doesn't exist
         if (!Web::instance()->send($dlfilename,NULL,512,TRUE))
                   // Generate an HTTP 404
         $f3->error(404);
     }
 );
+//$f3->route('GET /downloads2/@filename','MemberController->downloads2');
+$f3->route('POST /downloads2 [ajax]','AjaxController->downloads2');
+//$f3->route("POST /downloads3/@filename",'MemberController->downloads3');
+    
+   
+
 
 
 

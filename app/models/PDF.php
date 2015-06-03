@@ -8,7 +8,7 @@
 
 
 // Include the FPDF library. Alter for your system
-require('vendor/fpdf.php');
+require_once('vendor/fpdf.php');
 
 class PDF extends FPDF {
 
@@ -71,13 +71,14 @@ function Header()
 		$this->cellFontSize = $this->FontSizePt ;
 		$this->SetFont('Arial','',( ( $this->titleFontSize) ? $this->titleFontSize : $this->FontSizePt ));
 		$this->Cell(0,$this->FontSizePt,$this->titleText,0,1,'C');
+		
 		$l = ($this->lMargin);
 		$this->SetFont('Arial','',$this->cellFontSize);
 		foreach($this->colTitles as $col => $txt) {
 			$this->SetXY($l,($this->tMargin));
 			$this->MultiCell($this->tablewidths[$col], $this->FontSizePt,$txt);
 			$l += $this->tablewidths[$col] ;
-			$maxY = ($maxY < $this->getY()) ? $this->getY() : $maxY ;
+			$maxY = ($maxY < $this->getY()) ? $this->getY() : $maxY;
 		}
 		$this->SetXY($this->lMargin,$this->tMargin);
 		$this->setFillColor(200,200,200);
@@ -95,6 +96,7 @@ function Header()
 	}
 
 	$this->SetY($maxY);
+
 }
 
 function Footer() {
@@ -224,12 +226,12 @@ function mysql_report($query, $dump=false, $attr=array()){
 
         // starting col width
 		$this->sColWidth = (($this->w-$this->lMargin-$this->rMargin))/$this->numFields;
-        
+// var_dump($this->sColWidth); //LEY
 		// loop through results header and set initial col widths/ titles/ alignment
 		// if a col title is less than the starting col width / reduce that column size
         for($i=0;$i<$this->numFields;$i++){
             $_mysqli_obj = mysqli_fetch_field_direct($this->results, $i) ;
-			$stringWidth = $this->getstringwidth( $_mysqli_obj->name ) + 6 ;
+			$stringWidth = $this->getstringwidth( $_mysqli_obj->name ) + 0; //6 ;LEY
             if( ($stringWidth) < $this->sColWidth){
 				$colFits[$i] = $stringWidth ;
 				// set any column titles less than the start width to the column title width
@@ -245,17 +247,21 @@ function mysql_report($query, $dump=false, $attr=array()){
 					$this->colAlign[$i] = 'L';
 			}
 		}
+		// var_dump($colFits); //LEY
+		
 
         if(!isset($colFits)){
             $colFits = array();
         }
-
+//$maxcolfits = array(); //LEY retain the width of the maximum needed for columns greater than the start value ** NOT USED
+		//for($i=0;$i<$this->numFields;$i++){$maxcolfits[$i]=0;} //LEY
         // loop through the data, any column whose contents is bigger that the col size is
 		// resized
     		while( $row=mysqli_fetch_row($this->results) ){
 			foreach($colFits as $key=>$val){
 				$stringWidth = $this->getstringwidth($row[$key]) + 6 ;
 				if( ($stringWidth) > $this->sColWidth ){
+				//if ($stringWidth >$maxcolfits[$key])  $maxcolfits[$key] = $stringWidth; //LEY
 					// any col where row is bigger than the start width is now discarded
 					unset($colFits[$key]);
 				}else{
@@ -266,6 +272,8 @@ function mysql_report($query, $dump=false, $attr=array()){
 				}
 			}
             }
+//print_r("******\n"); //LEY
+// var_dump($colFits); //LEY	
 
 
 
@@ -283,14 +291,21 @@ function mysql_report($query, $dump=false, $attr=array()){
 
         
 		$surplus = (sizeof($colFits)*$this->sColWidth) - ($totAlreadyFitted);
+//("surplus***\n"); //LEY
+//print_r($surplus); //LEY
+		// var_dump($this->tablewidths); //LEY	
+				// var_dump($maxcolfits); //LEY	
+
 		for($i=0;$i<$this->numFields;$i++){
 			if(!in_array($i,array_keys($colFits))){
-				$this->tablewidths[$i] = $this->sColWidth + ($surplus/(($this->numFields)-sizeof($colFits)));
+				 $this->tablewidths[$i] = $this->sColWidth + ($surplus/(($this->numFields)-sizeof($colFits)));
+			// LEY 	$this->tablewidths[$i]  = $maxcolfits[$i]; //Doesn't work properly
 			}
 		}
 
+		// var_dump($this->tablewidths); //LEY	
         ksort($this->tablewidths);
-
+//	 var_dump($this->tablewidths); //LEY	
         if( !isset($flength) ) 
             $flength = 0 ;
         

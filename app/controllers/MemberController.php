@@ -125,7 +125,7 @@ if ($f3->get('SESSION.user_role')==="admin"){
 }
 function exports(){// generate all the likely export files for downloading
 	$f3=$this->f3;	
-
+//require('vendor/fpdf.php');
 	$admin_logger = new MyLog('admin.log');
 	$uselog=$f3->get('uselog');
 	//$uselog =false;
@@ -137,9 +137,12 @@ function exports(){// generate all the likely export files for downloading
 	//$result=$this->emails('all');
 $dldir=$f3->get('downloads');
 $admin_logger->write('in exports dldir = '.$dldir,$uselog);
-		$result=$this->emails('all');
+	/***********   all these replaced by similar finctions for PDFs in AjaxController ***************
+	
+	$result=$this->emails('all');
 		$resp=$this->writeemails($result,'all');
-			$this->writeemailpdf($result,'all');
+			//$this->writeemailpdf($result,'all');
+			//$this->writeemailpdf0($result,'all0');
 		$result=$this->emails('cm');
 		$resp=$this->writeemails($result,'cm');
 		
@@ -154,57 +157,16 @@ $admin_logger->write('in exports dldir = '.$dldir,$uselog);
 		$lastu3ayear = Member::getlastu3ayear(); //Last year's members
 		$result=$this->emails('all',"('Y')",$lastu3ayear);
 		$resp=$this->writeemails($result,'lastyear');
-		
+		************************************************************************/
 		
 		$f3->set('view','member/exports.htm'); 
-		$f3->set('page_head','Email Lists');
+		$f3->set('page_head','Primary Member Lists');
 		$f3->set('page_role',$f3->get('SESSION.user_role'))		;
 	
 	}
-	function writeemailpdf($data,$theset) { //based on http://www.fpdf.org/en/script/script21.php
-		$f3=$this->f3;
-		
-	$admin_logger = new MyLog('admin.log');
-	$uselog=$f3->get('uselog');
-	$admin_logger->write('in writeemailpdf',$uselog);
 
-	$u3ayear = isset($u3ayear) ? $u3ayear : Member::getu3ayear();
-	$paidstatus="('Y','N','W')";
-		$pdf = new PDF('L','pt','A4');
-		$pdf->SetFont('Arial','',10);
-
-
-		// change the below to establish the database connection.
-		$host = 'localhost';
-		$username = $f3->get('db_user');
-		$password = $f3->get('db_pass');
-		$database = $f3->get('db_name');
-		$connok=$pdf->connect($host, $username, $password, $database);
-			$admin_logger->write('in writeemailpdf after connect = '.$connok,$uselog);
-		// attributes for the page titles
-		//$attr = array('titleFontSize'=>18, 'titleText'=>'First Example Title.');
-		$sql_statement ="select surname as 'Surname',forename as 'Forename',membnum as 'Member Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email' ,membtype as 'Member Type',location as 'Location' from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus." order by membnum ASC";
-		// Generate report
-		$admin_logger->write('in writeemailpdf sql  = '.$sql_statement,$uselog);
-		$attr = array('titleFontSize'=>18, 'titleText'=>'U3A Marbella and Inland - Membership List '.$u3ayear,'tablewidths'=>array(
-					128, /* surname */
-					128, /* forename */
-					53.23, /* membnum */
-					61.6, /* phone */
-					56.04, /* mobile */
-					227.585, /* email */
-					52.68, /* membtype */
-					48 /* location */
-					
-				));
-		$pdf->mysql_report($sql_statement, false, $attr );
-		
-		$dldir=$f3->get('BASE').$f3->get('downloads');
-		$pdf->Output($dldir.'/email_list_'.$theset.'.pdf',"F");
-
-			
-		
-	}
+	
+/*********  No longer used, its in AjaxController now
 function writeemailpdf0($data,$theset) {
 	$f3=$this->f3;
 	$u3ayear = isset($u3ayear) ? $u3ayear : Member::getu3ayear();
@@ -215,12 +177,21 @@ function writeemailpdf0($data,$theset) {
 			//$result = mysqli_query($db,"SELECT COUNT(*) AS count FROM trail"); 
 			$pdf=new Pdftable();
 			$pdf->AddPage();
-			$pdf->Table($db,"select forename,surname,location,membtype,membnum,email from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus." order by membnum ASC");
+			$pdf->AddCol($field='surname',$width=-1,$caption='Surname',$align='L');
+			$pdf->AddCol($field='forename',$width=-1,$caption='Forename',$align='L');
+			$pdf->AddCol($field='membnum',$width=-1,$caption='Number',$align='L');
+			$pdf->AddCol($field='phone',$width=-1,$caption='Phone',$align='L');
+			$pdf->AddCol($field='mobile',$width=-1,$caption='Mobile',$align='L');
+			$pdf->AddCol($field='email',$width=-1,$caption='Email',$align='L');
+			$pdf->Table($db,"select forename,surname,membnum,email,phone,mobile,email from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus." order by membnum ASC");
 			$pdf->AddPage();
 			
 			$dldir=$f3->get('BASE').$f3->get('downloads');
 			$pdf->Output($dldir.'/email_list_'.$theset.'.pdf',"F");
 }
+
+****/
+/********  Replaced by PDF functions in AjacController
 function writeemails($data,$theset) {
 		$f3=$this->f3;
 
@@ -274,4 +245,5 @@ function emails($setofmembers='all',$paidstatus="('Y','N','W')",$u3ayear=NULL ) 
 		
         
     }
+	************/
 } // end of Class MemberController

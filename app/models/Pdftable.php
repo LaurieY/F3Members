@@ -1,6 +1,6 @@
 <?php
-require('vendor/fpdf.php');
-
+//require('vendor/fpdf.php');
+//  Not actually used in U3A members app but left here in case
 class Pdftable extends FPDF
 {
 var $ProcessingTable=false;

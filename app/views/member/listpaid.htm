@@ -57,12 +57,15 @@ return parseInt($('#TblGrid_list #amtpaidthisyear').val());
  // return el;
 //}
 var treaschecked =" ";
+var preschecked= " ";
 var otherchecked =" ";
 if (value=='Treasurer'||!value.trim() ) {
 treaschecked ='checked';
 otherchecked =" ";
 }
-else {
+else if(value=='President'){
+	preschecked	='checked';}
+		else {
 otherchecked ='checked';}
 
 
@@ -72,6 +75,7 @@ xnum =$("#list").jqGrid('getCell',rowid,'membnum');
 
 //var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
 var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
+						'<input id="'+options.id +'_pres" type="radio" size="10" name="fee" value="President" '+preschecked+'  >President<br>'+
 						'<input id="'+options.id + '_other' +
                         '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
 						'<input id="'+options.id +'_text" type="text" size="20" onfocus="focusOther()" name="feewhere" value=	"'+value+'" ></div>';

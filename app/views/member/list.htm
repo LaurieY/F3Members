@@ -11,12 +11,15 @@ function myelem (value, options) {
  // return el;
 //}
 var treaschecked =" ";
+var preschecked= " ";
 var otherchecked =" ";
 if (value=='Treasurer'||value=='' ) {
 treaschecked ='checked';
 otherchecked =" ";
 }
-else {
+else if(value=='President'){
+	preschecked	='checked';}
+		else {
 otherchecked ='checked';}
 
 
@@ -25,6 +28,7 @@ otherchecked ='checked';}
 
 //var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
 var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
+						'<input id="'+options.id +'_pres" type="radio" size="10" name="fee" value="President" '+preschecked+'  >President<br>'+
 						'<input id="'+options.id + '_other' +
                         '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
 						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" onfocus="focusOther()" value=	"'+value+'" ></div>';
@@ -48,6 +52,8 @@ if (myrole == 'user') {myeditability=false;hidemoney=true;paideditability=false;
 $("#bedit").hide();$("#badd").hide();$("#bdel").hide();
 }
 else {myeditability=true; paideditability=false;hidemoney=false;}
+
+
     $("#list").jqGrid({ 
         url: "/membergrid",
 		editurl:"/editmember",
@@ -153,7 +159,8 @@ $('#list').jqGrid('navGrid','#pager',
 	
  var grid = $("#list");
 
-//***************  REFRESH BUTTON **********/
+
+		//***************  REFRESH BUTTON **********/
 $("#cm1").click( function() { //Refresh
 		var grid = $("#list");
 		//$('grid').jqGrid('clearGridData');
@@ -265,7 +272,10 @@ return [true];}
 else alert("Error on Delete Entry ");
 return (false,'Error on Delete Entry' );
  } 
- 
+
+
+			
+		
  
 }); 
 
@@ -279,6 +289,10 @@ return (false,'Error on Delete Entry' );
 	<input type="BUTTON" id="bedit" value="Edit Selected" /> &nbsp; &nbsp; &nbsp;<input type="BUTTON" id="badd" value="Add a Member" />&nbsp; &nbsp; &nbsp;<input type="BUTTON" id="bdel" value="Delete an Entry" />
 <br><br><br>
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
+
 	<br>
+	<div class="navbar">
+ 
+
 	<input type="hidden" id="addeditdel" value="a" />
 

@@ -4,18 +4,29 @@ $(function () {
 $("#ninja").click(function(){
 var theBtn = $(':focus');
 var theselection = theBtn[0].name;
-$("#ninja")[0].action     ="{{@BASE.'/downloads/"+theselection+"'}}";
+$("#ninja")[0].action     ="{{@BASE.'/downloads2/"+theselection+"'}}";
 $("#ninja").submit();
 });
-});
+//***************  PDF BUTTON **********/
+$("#pdf0 a,#pdf1 a").click( function() { //PDFs
+	var theBtn = $(':focus');
+	//var theselection = theBtn[0].name;	
+	var theselection = this.name;
+			//$.post("/downloads2",{theset:theselection},function(data) {
+			//var $showit=$.parseJSON(data);
+			//	})
+			//	$.get("{{ @BASE.'/downloads/all' }}");
+			window.location.href = "/downloads/"+theselection;
+		})
+		})
 </script>
 <div class="navbar">
 
     <div class="navbar-inner">
-			<ul class="nav">
-			<li class="active" ><a href="{{ @BASE.'/downloads/all' }}"><em class="icon-th icon-black"></em> Export All Members Emails</a></li>
-			<li class="active" ><a href="{{ @BASE.'/downloads/cm' }}"><em class="icon-th icon-black"></em>Export Committee Members Emails</a></li>
-			<li class="active" ><a href="{{ @BASE.'/downloads/gl' }}"><em class="icon-th icon-black"></em>Export Group Leaders Emails</a></li>
+			<ul class="nav" id="pdf0">
+			<li class="active" ><a class="pdf  href="javascript:void(0)" name='all'><em class="icon-th icon-black"></em>All Members PDF</a></li>
+			<li class="active" ><a class="pdf  href="javascript:void(0)" name='cm'><em class="icon-th icon-black"></em>Committee Members PDF</a></li>
+			<li class="active" ><a class="pdf  href="javascript:void(0)" name='gl'><em class="icon-th icon-black"></em>Group Leaders PDF</a></li>
 			</ul>
     </div>
     </div>
@@ -25,17 +36,17 @@ $("#ninja").submit();
 			<div class="navbar">
 
     <div class="navbar-inner">
-			<ul class="nav">
-			<li class="active" ><a href="{{ @BASE.'/downloads/unpaid' }}"><em class="icon-th icon-black"></em> Export Unpaid Members</a></li>
-			<li class="active" ><a href="{{ @BASE.'/downloads/willpay' }}"><em class="icon-th icon-black"></em>Export WillPay Members</a></li>
-			<li class="active" ><a href="{{ @BASE.'/downloads/lastyear' }}"><em class="icon-th icon-black"></em>Export Last Year's Members</a></li>
+			<ul class="nav" id="pdf1">
+			<li class="active" ><a href="javascript:void(0)" name='unpaid'><em class="icon-th icon-black"></em>  Unpaid Members PDF</a></li>
+			<li class="active" ><a href="javascript:void(0)" name='willpay'><em class="icon-th icon-black"></em> WillPay Members PDF</a></li>
+			<li class="active" ><a href="javascript:void(0)" name='lastyear'><em class="icon-th icon-black"></em> Last Year's Members PDF</a></li>
 		
 			</ul>
     </div>
     </div>
 <!-- No longer used so marked hidden, left in case I need the technique again -->			
 <form id="ninja" action="http://192.168.10.10/downloads1/all" method="GET">
-	<input type="BUTTON" id="expall" value="Export All Members Emails1" hidden  name="all"/> &nbsp; &nbsp; &nbsp;
+	<input type="BUTTON" id="expall" value="Export All Members Emails1"  hidden  name="all"/> &nbsp; &nbsp; &nbsp;
 	<input type="BUTTON" id="expcm" value="Export Committee Members Emails" hidden name="cm" />&nbsp; &nbsp; &nbsp;
 	<input type="BUTTON" id="expgl" value="Export Group Leaders Emails" hidden name="gl"/>
 
