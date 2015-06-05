@@ -8,8 +8,10 @@ class Member extends DB\SQL\Mapper {
 
     public function all() {
        // $this->load();
-		// need to filter by current u3ayear
-		$this->load(array('u3ayear =:u3ayear',array(':u3ayear'=> $this->getu3ayear()) ) );
+	   
+	   $fw=Base::instance();
+		//var_dump($fw);// need to filter by current u3ayear
+		$this->load(array('u3ayear =:u3ayear',array(':u3ayear'=> $fw->get('SESSION.u3ayear')) ) );
 		//$this->first();
 		
         return $this->query;
@@ -18,32 +20,19 @@ class Member extends DB\SQL\Mapper {
 
     public function add() {
       //  $this->copyFrom('POST');
-		$this->u3ayear=$this->getu3ayear();
+	    $fw=Base::instance();
+		$this->u3ayear=$fw->get('SESSION.u3ayear');
 		$this->fyear=(string) getdate()['year'];
 		$this->created_at=date("Y-m-d H:i:s");
         $this->save();
     }
-public static function getu3ayear(){
-  $today = getdate();
-	  $thismon= $today['mon'];
-	  $thisyear = (string) $today['year'];
-	  $lastyear = (string) $today['year'] -1;
-	  $nextyear = (string) $today['year'] +1;
-	  if ($thismon <7)
-		return $lastyear.'-'.$thisyear;
-		else
-		return $thisyear.'-'.$nextyear;
-}
+/*public static function getu3ayear(){
+
+		return $f3->get('SESSION.u3ayear');
+}*/
 public static function getlastu3ayear(){
-  $today = getdate();
-	  $thismon= $today['mon'];
-	  $thisyear = (string) $today['year'];
-	  $lastyear = (string) $today['year'] -1;
-	  $lastbutoneyear = (string) $today['year'] -2;
-	  if ($thismon <7)
-		return $lastbutoneyear.'-'.$lastyear;
-		else
-		return $lastyear.'-'.$thisyear;
+  
+		return $f3->get('SESSION.lastu3ayear');
 }
 /***************  fetch the totals for this and last financial years return an associative array of the two
 ******************* include only status='Active' records	 ******/
@@ -63,6 +52,9 @@ public function gettotals(){
 	
 return $fytotals	;
 }
+
+
+
 
     public function getById($id) {
         $this->load(array('id=?',$id));

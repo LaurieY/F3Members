@@ -10,6 +10,8 @@ class AjaxController extends Controller {
 	$auth_logger = new MyLog('auth.log');
 	$auth_logger->write( 'Entering AjaxController beforeroute URI= '.$f3->get('URI'  ) );
 	$auth_logger->write( 'Entering AjaxController beforeroute user role = '.$f3->get('SESSION.user_role' ));
+	$auth_logger->write( 'Entering AjaxController beforeroute u3ayear = '.$f3->get('SESSION.u3ayear' ),true);
+	$auth_logger->write( 'Entering AjaxController beforeroute u3ayear = '.var_export($f3,true ),true);
 	if (!$f3->get('SESSION.user_id') ) {
 		$this->f3->reroute('/login');
 	}
@@ -197,11 +199,12 @@ public function members() //for POST membergrid
 	 {
 	 $f3=$this->f3;
 		 $members =	new Member($this->db);
-	 
-	 $f3->set('page_head','User List');
+	 $uselog=$f3->get('uselog');
+	
 	 $admin_logger = new MyLog('admin.log');
-	$admin_logger->write('in fn members');
-	//$admin_logger->write('in fn members '.get_class($this->db)." Parent is ".get_parent_class($this->db)."\n");
+	$admin_logger->write('in fn members #203 u3ayear='.$f3->get('SESSION.u3ayear'),$uselog);
+	 $f3->set('page_head','User List');
+	 //$admin_logger->write('in fn members '.get_class($this->db)." Parent is ".get_parent_class($this->db)."\n");
 	//$admin_logger->write( "In Ajax POST membergrid fn members Session user_id = ".$f3->get('SESSION.user_id')); 
 
 /**	$class_methods = get_class_methods('DB\SQL');
@@ -296,7 +299,7 @@ $where = "";
 
 
         }     *************/
-	$admin_logger->write('in fn members where= '.$where."\n");
+	$admin_logger->write('in fn members where= '.$where,$uselog);
 	/**********************  Now get the resulting xml via SWL using this where selection ******/
 	$whh =	$this->getresult_where($where);
 	
@@ -304,7 +307,8 @@ $where = "";
 echo $whh;
 }
 else {
-$u3ayear = $members->getu3ayear();
+$u3ayear = $f3->get('SESSION.u3ayear');
+$admin_logger->write("in fn members where result #310 , u3ayear=".$u3ayear ,$uselog);
 echo $this->getresult_where("where u3ayear='".$u3ayear."' and status='Active'");
 }  //end of else of _search
 } // end of function  members
@@ -411,7 +415,7 @@ $s .= "</row>";
 	} 
 $s .= "</rows>"; 
 
-$admin_logger->write('in getresult_where result = '.$s,$uselog);
+$admin_logger->write('in getresult_where #415 result = '.$s,$uselog);
 	return $s;
 
 	
@@ -823,7 +827,7 @@ function markpaid() {
 function markwillpay() { 
 	 $f3=$this->f3;
 	 $members =	new Member($this->db);
-	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $members->getu3ayear()) ); 
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $f3->get('SESSION.u3ayear')) ); 
 	$members->amtpaidthisyear=0;
 	$members->paidthisyear='W';	
 	$members->feewhere = $f3->get('POST.feewhere');
@@ -844,7 +848,7 @@ function markwillpay() {
 function markunpay() { 
 	 $f3=$this->f3;
 	 $members =	new Member($this->db);
-	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $members->getu3ayear()) ); 
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $f3->get('SESSION.u3ayear') )); 
 	$members->amtpaidthisyear=0;
 	$members->paidthisyear='N';	
 	$members->feewhere = $f3->get('POST.feewhere');
@@ -885,7 +889,7 @@ function getfeespertypes() { //return all the contents of the table feespertypes
 		$admin_logger = new MyLog('admin.log');
 		$admin_logger->write('in getfeespertypes uselog= '.$uselog,true);
 		$feefields='membtype,feetopay,firstyearfee,acyear';
-		$thisacyear = Member::getu3ayear();
+		$thisacyear = $f3->get('SESSION.u3ayear');
 		$admin_logger->write('in getfeespertypes uselog= '.$uselog. ' academic year = '.$thisacyear,true);
 		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes',$feefields);
 		$feespertypes->load(array('acyear =:acyear',array(':acyear'=> $thisacyear) ), array('limit'=>100) );
@@ -958,8 +962,8 @@ $dldir=$f3->get('BASE').$f3->get('downloads');
 	$admin_logger = new MyLog('admin.log');
 	$uselog=$f3->get('uselog');
 	$admin_logger->write('in writeemailpdf',$uselog);
-		$u3ayear = Member::getu3ayear();
-		$lastu3ayear = Member::getlastu3ayear();
+		$u3ayear = $f3->get('SESSION.u3ayear' );
+		$lastu3ayear = $f3->get('SESSION.lastu3ayear' );
 	$paidstatus="('Y','N','W')";
 	$pdfselect = array('all'=>array('sqlselect'=>"select surname as 'Surname',forename as 'Forename',membnum as 'Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email' from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus." order by surname ASC "),
 					'cm'=>array('sqlselect'=>"select surname as 'Surname',forename as 'Forename',membnum as 'Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email' from members where u3ayear='".$u3ayear."' and status='Active' and membtype in ('CM','CMS','CMGL') order by surname ASC "),

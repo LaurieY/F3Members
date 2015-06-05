@@ -53,7 +53,7 @@ $f3->route('POST /exports','AjaxController->exports');  */
 
 $f3->route('GET /downloads/@filename',
     function($f3,$args) {
-	$mypdf= new MyClass();
+	$mypdf= new OptionsController();
 	
  $dlfilename='downloads/email_list_'.$args['filename'].'.pdf';
 $mypdf->writeemailpdf($dlfilename,$args['filename']);

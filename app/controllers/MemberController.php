@@ -6,7 +6,10 @@ class MemberController extends Controller {
 	$f3=$this->f3;
 	 $f3->set('message','');
 	$auth_logger = new MyLog('auth.log');
-	$auth_logger->write( 'Entering MemberController beforeroute URI= '.$f3->get('URI'  ) );
+	$uselog=$f3->get('uselog');
+	$auth_logger->write( 'Entering MemberController beforeroute URI= '.$f3->get('URI'  ),$uselog );
+	$auth_logger->write( 'Entering MemberController beforeroute u3ayear= '.$f3->get('SESSION.u3ayear') ,$uselog);
+	$auth_logger->write( 'Entering MemberController beforeroute u3ayear= '.$f3->get('SESSION.u3ayear' ) ,$uselog);
 	
 	if (!$f3->get('COOKIE.PHPSESSID')){
 			$f3->set('message','Cookies must be enabled to enter this area');
@@ -72,10 +75,20 @@ $this->f3->set('view','member/session.htm');
 public function index()	
 	{
 	$f3=$this->f3;
+	$uselog=$f3->get('uselog');
 	$auth_logger = new MyLog('auth.log');
-	$auth_logger->write( 'Entering index'  );	       
+	$auth_logger->write( 'Entering index'  );	  
+$options= new Options($this->db);
+		$options->initu3ayear();
+		
+		$options->initlastu3ayear();
+	//		$auth_logger->write( ' in Login and result from  initu3ayear = '.$u3ayear, true);
+	//		$auth_logger->write( ' in Login and result from  initu3ayear = '.$f3->get('SESSION.u3ayear'), true);	
+	$auth_logger->write( 'In MembersController index with u3ayear = '.$f3->get('SESSION.u3ayear'),$uselog  );	     
+	$auth_logger->write( 'In MembersController index with lastu3ayear = '.$f3->get('SESSION.lastu3ayear'),$uselog   );	       
 		   $member = new Member($this->db);
         $f3->set('members',$member->all());
+		$auth_logger->write( 'In MembersController index #88 with u3ayear = '.$f3->get('SESSION.u3ayear'),$uselog  );	 
 		$f3->set('page_head','Member List');
 		$f3->set('page_role',$f3->get('SESSION.user_role'));
         $f3->set('message', $f3->get('PARAMS.message'));
@@ -85,6 +98,7 @@ public function index()
 	  $f3->set('listnn','member/list.htm');
 	$f3->set('view','member/list.htm');
 		$f3->set('SESSION.lastseen',time()); 
+			$auth_logger->write( 'In MembersController index #98 with u3ayear = '.$f3->get('SESSION.u3ayear'),$uselog  );	
 	}
 
 
@@ -130,7 +144,7 @@ function exports(){// generate all the likely export files for downloading
 	$uselog=$f3->get('uselog');
 	//$uselog =false;
 	//$f3->set('message', $f3->get('PARAMS.message'));
-	$u3ayear= Member::getu3ayear();
+	$u3ayear= $f3->get('SESSION.u3ayear');
 	
 	//$admin_logger->write('in MemberController $u3ayear='.$u3ayear,$uselog);
 	// Now fetch the required data sets-  all, Committee Members , GL's
@@ -154,7 +168,7 @@ $admin_logger->write('in exports dldir = '.$dldir,$uselog);
 		$result=$this->emails('all',"('W')");
 		$resp=$this->writeemails($result,'willpay');
 
-		$lastu3ayear = Member::getlastu3ayear(); //Last year's members
+		$lastu3ayear = $f3->get('lastu3ayear'); //Last year's members
 		$result=$this->emails('all',"('Y')",$lastu3ayear);
 		$resp=$this->writeemails($result,'lastyear');
 		************************************************************************/
@@ -169,7 +183,7 @@ $admin_logger->write('in exports dldir = '.$dldir,$uselog);
 /*********  No longer used, its in AjaxController now
 function writeemailpdf0($data,$theset) {
 	$f3=$this->f3;
-	$u3ayear = isset($u3ayear) ? $u3ayear : Member::getu3ayear();
+	$u3ayear = isset($u3ayear) ? $u3ayear : $f3->get('u3ayear');
 	$paidstatus="('Y','N','W')";
 			//$pdfTable= new Pdftable;
 			$db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysqli_error()); 
@@ -216,9 +230,9 @@ function emails($setofmembers='all',$paidstatus="('Y','N','W')",$u3ayear=NULL ) 
             $f3->get('db_user'),
             $f3->get('db_pass')
         );	
-	 $u3ayear = isset($u3ayear) ? $u3ayear : Member::getu3ayear();;
+	 $u3ayear = isset($u3ayear) ? $u3ayear :$f3->get('u3ayear');
 
-  // $u3ayear= Member::getu3ayear();
+  // $u3ayear= $f3->get('u3ayear');
    $emailfilename='membersemails-'.$setofmembers.'.csv';
 	switch($setofmembers){
 		case 'all':
