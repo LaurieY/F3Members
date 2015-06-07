@@ -78,7 +78,7 @@ public function index()
 	$uselog=$f3->get('uselog');
 	$auth_logger = new MyLog('auth.log');
 	$auth_logger->write( 'Entering index'  );	  
-$options= new Options($this->db);
+$options= new Option($this->db);
 		$options->initu3ayear();
 		
 		$options->initlastu3ayear();
@@ -87,15 +87,15 @@ $options= new Options($this->db);
 	$auth_logger->write( 'In MembersController index with u3ayear = '.$f3->get('SESSION.u3ayear'),$uselog  );	     
 	$auth_logger->write( 'In MembersController index with lastu3ayear = '.$f3->get('SESSION.lastu3ayear'),$uselog   );	       
 		   $member = new Member($this->db);
-        $f3->set('members',$member->all());
+        $f3->set('members',$member->all());  //LEY is this needed
 		$auth_logger->write( 'In MembersController index #88 with u3ayear = '.$f3->get('SESSION.u3ayear'),$uselog  );	 
-		$f3->set('page_head','Member List');
+		$f3->set('page_head',"Member List ".$f3->get('SESSION.u3ayear'));
 		$f3->set('page_role',$f3->get('SESSION.user_role'));
         $f3->set('message', $f3->get('PARAMS.message'));
-		$f3->set('listn', $f3->get('PARAMS.mylist'));
+		//$f3->set('listn', $f3->get('PARAMS.mylist'));
 
 	
-	  $f3->set('listnn','member/list.htm');
+	 // $f3->set('listnn','member/list.htm');
 	$f3->set('view','member/list.htm');
 		$f3->set('SESSION.lastseen',time()); 
 			$auth_logger->write( 'In MembersController index #98 with u3ayear = '.$f3->get('SESSION.u3ayear'),$uselog  );	
@@ -260,4 +260,90 @@ function emails($setofmembers='all',$paidstatus="('Y','N','W')",$u3ayear=NULL ) 
         
     }
 	************/
+	function reverserollover () {
+		$f3=$this->f3;
+		$uselog=$f3->get('uselog');
+		$admin_logger = new MyLog('admin.log');
+		$admin_logger->write( 'Entering reverseRollover' ,$uselog );
+		
+		$db=$this->db;
+		//$member = new Member($this->db);
+		$thisnewu3ayear= $f3->get('SESSION.u3ayear');
+		$theoldu3ayear= $f3->get('SESSION.lastu3ayear');
+			$db->begin();
+$delsql = <<<EOT
+	delete from members  where u3ayear ="$thisnewu3ayear" and status ="Active"
+
+EOT;
+
+		$admin_logger->write( 'In ReverseRollover Pt1 delsql='.$delsql ,$uselog );	
+		$copyresult=$db->exec($delsql);
+		$db->commit();
+		$admin_logger->write( 'In ReverseRollover Pt1 copyresult='.$copyresult ,$uselog );		
+		$f3->set('page_head',"Member List ".$f3->get('SESSION.u3ayear'));
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+		$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
+		$f3->set('view','member/list.htm');
+		$f3->set('SESSION.lastseen',time()); 		
+	
+	}
+function rollover () {
+		$f3=$this->f3;
+		$uselog=$f3->get('uselog');
+		$admin_logger = new MyLog('admin.log');
+		$admin_logger->write( 'Entering Rollover' ,$uselog );
+		
+		$db=$this->db;
+		//$member = new Member($this->db);
+		$thisnewu3ayear= $f3->get('SESSION.u3ayear');
+		$theoldu3ayear= $f3->get('SESSION.lastu3ayear');
+		$db->begin();
+		$copysql = <<<EOT
+				INSERT INTO members(surname, forename, membnum, 
+				phone, mobile, email, membtype, location, paidthisyear, 
+				amtpaidthisyear, datejoined, datepaid, feewhere, fyear, 
+				u3ayear, status, created_at, updated_at) select surname, forename, membnum, 
+				phone, mobile, email, membtype, location, 'N', 
+				0, datejoined, datepaid, feewhere, fyear, "$thisnewu3ayear",
+				status, created_at, updated_at from members m2 where m2.u3ayear ="$theoldu3ayear" and status ='Active'
+EOT;
+
+
+		//$admin_logger->write( 'In Rollover Pt1 copysql='.$copysql ,$uselog );	
+		$copyresult=$db->exec($copysql);
+		
+	
+	//$admin_logger->write( 'In Rollover Pt1 copyresult='.$copyresult ,$uselog );
+	//$admin_logger->write( 'In Rollover Pt1 log '.$db->log() ,$uselog );
+/**  Now make non payer type Paid with today's date  *****/
+
+		$pt2sql = <<<EOT
+		UPDATE members set paidthisyear='Y', datepaid =CURDATE() where u3ayear ="$thisnewu3ayear" and status ='Active' and membtype in ('CM','CMS','GL','GLS','CMGL')
+EOT;
+//$admin_logger->write( 'In Rollover Pt2sql='.$pt2sql ,$uselog );	
+		$pt2result=$db->exec($pt2sql);
+	
+		//$admin_logger->write( 'In Rollover Pt2 pt1result='.$pt2result ,$uselog );
+		//$admin_logger->write( 'In Rollover Pt2 log '.$db->log() ,$uselog );
+/**  Now migrate  MJL2 to M *****/
+
+		$pt3sql = <<<EOT
+		UPDATE members set membtype='M',paidthisyear='N',amtpaidthisyear=0  where u3ayear ="$thisnewu3ayear" and status ='Active' and membtype = 'MJL2'
+EOT;
+		$pt3result=$db->exec($pt3sql);
+
+/**  Now migrate  MJL1 to MJL2 and paid with amt 0 *****/
+		$pt4sql = <<<EOT
+		UPDATE members set membtype='MJL2',paidthisyear='Y',amtpaidthisyear=0  where u3ayear ="$thisnewu3ayear" and status ='Active' and membtype ='MJL1'
+EOT;
+		$pt4result=$db->exec($pt4sql);
+$db->commit();
+		
+		$f3->set('page_head',"Member List ".$f3->get('SESSION.u3ayear'));
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+		$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
+		$f3->set('view','member/list.htm');
+		$f3->set('SESSION.lastseen',time()); 
+
+	}
 } // end of Class MemberController

@@ -114,6 +114,8 @@ public function login() {
 	//$mysession = http_build_query($f3->get('SESSION'));
 	//$f3->dump($mysession   );
 		//$f3->clear('SESSION');
+		if($f3->exists('SESSION.u3ayear'  ) ) {$f3->clear('SESSION.u3ayear');
+		$f3->clear('SESSION.lastu3ayear');}
 		if ($f3->get('eurocookie')) {
 		$login_logger->write( 'IN login IN Eurocookie'  );
 		/*	$loc=Web\Geo::instance()->location(); // innecessary because we ARE in the EU

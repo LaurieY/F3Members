@@ -55,7 +55,7 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
 
 
     $("#list").jqGrid({ 
-        url: "/membergrid",
+        url: "/optiongrid",
 		editurl:"/editmember",
         datatype: "xml",
 		ignoreCase: true,
@@ -107,27 +107,7 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
 			ajaxRowOptions: { async: true },
 			//cellEdit:true,
 			// multikey: "ctrlKey", 
-			loadComplete:function() {
-			//var count = $("#list").jqGrid('getGridParam','reccount');
-			var count = $('#list').jqGrid('getGridParam','data').length;
-			if (count === 0){
-             var retval = confirm("Members list is Empty \n The rollover date has passed\nPerform Rollover action to new U3A Year ?");
-   			if( retval == true ){//alert("User wants to perform Rollover!");
-			var retval2 = confirm("Are you sure you want to perform the Rollover action to the new U3A Year?");
-				if (retval2==true) {
-				//perform rollover action 
-				window.location.href = "/rollover";
-				return true;
-				}
-				else{
-				}
-			return false;
-			}else{
-				alert("User does not want to Perform Rollover\n ");
-				return false;
-			}
-			}
-			},
+	
 	 
     }); 
             var lastSelection;

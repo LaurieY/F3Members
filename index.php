@@ -6,13 +6,18 @@ $f3 = require('lib/base.php');
 $f3->set('CACHE',FALSE);
 $f3->config('config/config.ini');
 
+
+
+
+
 $f3->route('GET /app/views/feespertypes [ajax]','AjaxController->getfeespertypes');
-$f3->route('GET /membergrid [ajax]','AjaxController->members');
-//$f3->route('GET /membergrid','MyAjax->members');
+
+
 $f3->route('GET /usergrid [ajax]','AjaxController->users');
 $f3->route('POST /edituser [ajax]','AjaxController->edituser');
 
 $f3->route('GET /members','MemberController->index');
+$f3->route('GET /membergrid [ajax]','AjaxController->members');
 $f3->route('GET /payments','MemberController->payments'); 
 
 $f3->route('POST /editmember [ajax]','AjaxController->editmember');
@@ -53,7 +58,7 @@ $f3->route('POST /exports','AjaxController->exports');  */
 
 $f3->route('GET /downloads/@filename',
     function($f3,$args) {
-	$mypdf= new OptionsController();
+	$mypdf= new OptionController();
 	
  $dlfilename='downloads/email_list_'.$args['filename'].'.pdf';
 $mypdf->writeemailpdf($dlfilename,$args['filename']);
@@ -65,13 +70,14 @@ $mypdf->writeemailpdf($dlfilename,$args['filename']);
         $f3->error(404);
     }
 );
-//$f3->route('GET /downloads2/@filename','MemberController->downloads2');
-$f3->route('POST /downloads2 [ajax]','AjaxController->downloads2');
-//$f3->route("POST /downloads3/@filename",'MemberController->downloads3');
-    
+
+$f3->route('GET /options','OptionController->index');
+$f3->route('GET /optiongrid','OptionAjaxController->optiongrid');
+$f3->route('POST /editoption','OptionAjaxController->editoption');
    
 
-
+$f3->route('GET /rollover','MemberController->rollover');
+$f3->route('GET /reverserollover','MemberController->reverserollover');
 
 
 $f3->run();
