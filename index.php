@@ -77,7 +77,8 @@ $f3->route('POST /editoption','OptionAjaxController->editoption');
    
 
 $f3->route('GET /rollover','MemberController->rollover');
-$f3->route('GET /reverserollover','MemberController->reverserollover');
+$f3->route('GET /reverserollover','MemberController->reverserollover1');
+$f3->route('GET /reverserollover2','MemberController->reverserollover2');
 
 
 $f3->run();

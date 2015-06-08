@@ -109,8 +109,9 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
 			// multikey: "ctrlKey", 
 			loadComplete:function() {
 			//var count = $("#list").jqGrid('getGridParam','reccount');
+			var myrole= $('#myrole').text();
 			var count = $('#list').jqGrid('getGridParam','data').length;
-			if (count === 0){
+			if (count === 0&& myrole != 'user'){
              var retval = confirm("Members list is Empty \n The rollover date has passed\nPerform Rollover action to new U3A Year ?");
    			if( retval == true ){//alert("User wants to perform Rollover!");
 			var retval2 = confirm("Are you sure you want to perform the Rollover action to the new U3A Year?");

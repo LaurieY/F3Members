@@ -260,11 +260,33 @@ function emails($setofmembers='all',$paidstatus="('Y','N','W')",$u3ayear=NULL ) 
         
     }
 	************/
-	function reverserollover () {
+	function reverserollover1 () {
+	$f3=$this->f3;
+		$uselog=$f3->get('uselog');
+		$admin_logger = new MyLog('admin.log');
+		$admin_logger->write( 'Entering reverseRollover1' ,$uselog );
+	if ($f3->get('SESSION.user_role')=='editor'||$f3->get('SESSION.user_role')=='admin') {
+		$f3->set('page_head',"Reverse Rollover ".$f3->get('SESSION.u3ayear'));
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+		$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
+		$f3->set('view','member/reverse1.htm');
+		$f3->set('SESSION.lastseen',time()); 
+		$f3->set('revu3ayear',$f3->get('SESSION.u3ayear')); 
+	
+	} else{
+			$f3->set('page_head',"Member List ".$f3->get('SESSION.u3ayear'));
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+		$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
+		$f3->set('view','member/list.htm');
+		$f3->set('SESSION.lastseen',time()); 
+	}
+	}
+	function reverserollover2 () {
 		$f3=$this->f3;
 		$uselog=$f3->get('uselog');
 		$admin_logger = new MyLog('admin.log');
-		$admin_logger->write( 'Entering reverseRollover' ,$uselog );
+		if ($f3->get('SESSION.user_role')=='editor'||$f3->get('SESSION.user_role')=='admin') {
+		$admin_logger->write( 'Entering reverseRollover2' ,$uselog );
 		
 		$db=$this->db;
 		//$member = new Member($this->db);
@@ -279,7 +301,8 @@ EOT;
 		$admin_logger->write( 'In ReverseRollover Pt1 delsql='.$delsql ,$uselog );	
 		$copyresult=$db->exec($delsql);
 		$db->commit();
-		$admin_logger->write( 'In ReverseRollover Pt1 copyresult='.$copyresult ,$uselog );		
+		$admin_logger->write( 'In ReverseRollover Pt1 copyresult='.$copyresult ,$uselog );	
+}		
 		$f3->set('page_head',"Member List ".$f3->get('SESSION.u3ayear'));
 		$f3->set('page_role',$f3->get('SESSION.user_role'));
 		$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
