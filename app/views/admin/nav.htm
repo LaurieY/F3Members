@@ -5,12 +5,12 @@
 
 
 			<li class="active"><a href="{{ @BASE.'/members' }}"><i class="icon-plus-sign icon-black"></i>Back to Members</a></li>
-            <check if="{{ @page_head == 'Admin' }}">
+            <check if="{{ @page_role == 'admin'}}">
+			<true>
 			<li class="active"> <a href="{{ @BASE.'/users' }}"><i class="icon-th icon-black"></i>Users</a></li>
 			<li class="active"> <a href="{{ @BASE.'/fees' }}"><i class="icon-th icon-black"></i>Edit This Years Fees</a></li>
 			<li class="active"> <a href="{{ @BASE.'/trail' }}"><i class="icon-th icon-black"></i>Audit Trail</a></li>
-           
-
+           </true>
             </check>
         </ul>
     </div>

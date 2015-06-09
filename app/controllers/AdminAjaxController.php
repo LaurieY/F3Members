@@ -58,17 +58,17 @@ public function editfees() {
 	 	$admin_logger = new MyLog('admin.log');
 		$uselog=$f3->get('uselog');
 		$admin_logger->write('in editfees');	
-		$fees =	new fees($this->db);
+		$fees =	new Fees($this->db);
  
 	 switch ($f3->get('POST.oper')) {
     case "add":  //**********************   ADD an fees
 	
-		$feess->copyfrom('POST');
+		$fees->copyfrom('POST');
 	
 		$admin_logger->write('in editfees membtype '.$fees->membtype,$uselog);
 		//$admin_logger->write('in editfees feesvalue '.$feess->feesvalue,$uselog);
 		
-		$feess->save();
+		$fees->save();
 		
     break;
     case "edit":

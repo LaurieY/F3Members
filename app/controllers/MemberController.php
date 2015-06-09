@@ -336,7 +336,7 @@ function rollover () {
 				amtpaidthisyear, datejoined, datepaid, feewhere, fyear, 
 				u3ayear, status, created_at, updated_at) select surname, forename, membnum, 
 				phone, mobile, email, membtype, location, 'N', 
-				0, datejoined, datepaid, feewhere, "$fyear", "$thisnewu3ayear",
+				0, datejoined, " ", " ", "$fyear", "$thisnewu3ayear",
 				status, now(), now() from members m2 where m2.u3ayear ="$theoldu3ayear" and status ='Active'
 EOT;
 
