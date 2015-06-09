@@ -80,8 +80,9 @@ public function index()
 	$auth_logger->write( 'Entering index'  );	  
 $options= new Option($this->db);
 		$options->initu3ayear();
-		
 		$options->initlastu3ayear();
+	//	$options->inituselog();
+		
 	//		$auth_logger->write( ' in Login and result from  initu3ayear = '.$u3ayear, true);
 	//		$auth_logger->write( ' in Login and result from  initu3ayear = '.$f3->get('SESSION.u3ayear'), true);	
 	$auth_logger->write( 'In MembersController index with u3ayear = '.$f3->get('SESSION.u3ayear'),$uselog  );	     
@@ -117,6 +118,7 @@ public function payments ()
 	$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
 	$f3->set('view','member/listpaid.htm');
 	$f3->set('SESSION.lastseen',time()); 
+	$f3->set('u3astartmonth', $f3->get('SESSION.u3astartmonth'));
 	}
 /**********  show a grid for the audit trail table IFF logged in with role admin ******/
 
@@ -285,8 +287,9 @@ function emails($setofmembers='all',$paidstatus="('Y','N','W')",$u3ayear=NULL ) 
 		$f3=$this->f3;
 		$uselog=$f3->get('uselog');
 		$admin_logger = new MyLog('admin.log');
-		if ($f3->get('SESSION.user_role')=='editor'||$f3->get('SESSION.user_role')=='admin') {
 		$admin_logger->write( 'Entering reverseRollover2' ,$uselog );
+		if ($f3->get('SESSION.user_role')=='editor'||$f3->get('SESSION.user_role')=='admin') {
+		$admin_logger->write( 'Entering reverseRollover2 B' ,$uselog );
 		
 		$db=$this->db;
 		//$member = new Member($this->db);
@@ -297,9 +300,14 @@ $delsql = <<<EOT
 	delete from members  where u3ayear ="$thisnewu3ayear" and status ="Active"
 
 EOT;
+$del2sql = <<<EOT
+	delete from feespertypes  where acyear ="$thisnewu3ayear"
+
+EOT;
 
 		$admin_logger->write( 'In ReverseRollover Pt1 delsql='.$delsql ,$uselog );	
 		$copyresult=$db->exec($delsql);
+		$copyresult=$db->exec($del2sql);
 		$db->commit();
 		$admin_logger->write( 'In ReverseRollover Pt1 copyresult='.$copyresult ,$uselog );	
 }		
@@ -320,6 +328,7 @@ function rollover () {
 		//$member = new Member($this->db);
 		$thisnewu3ayear= $f3->get('SESSION.u3ayear');
 		$theoldu3ayear= $f3->get('SESSION.lastu3ayear');
+		$fyear = date("Y-m-d H:i:s");
 		$db->begin();
 		$copysql = <<<EOT
 				INSERT INTO members(surname, forename, membnum, 
@@ -327,8 +336,8 @@ function rollover () {
 				amtpaidthisyear, datejoined, datepaid, feewhere, fyear, 
 				u3ayear, status, created_at, updated_at) select surname, forename, membnum, 
 				phone, mobile, email, membtype, location, 'N', 
-				0, datejoined, datepaid, feewhere, fyear, "$thisnewu3ayear",
-				status, created_at, updated_at from members m2 where m2.u3ayear ="$theoldu3ayear" and status ='Active'
+				0, datejoined, datepaid, feewhere, "$fyear", "$thisnewu3ayear",
+				status, now(), now() from members m2 where m2.u3ayear ="$theoldu3ayear" and status ='Active'
 EOT;
 
 
@@ -341,7 +350,7 @@ EOT;
 /**  Now make non payer type Paid with today's date  *****/
 
 		$pt2sql = <<<EOT
-		UPDATE members set paidthisyear='Y', datepaid =CURDATE() where u3ayear ="$thisnewu3ayear" and status ='Active' and membtype in ('CM','CMS','GL','GLS','CMGL')
+		UPDATE members set paidthisyear='Y', datepaid =CURDATE()  where u3ayear ="$thisnewu3ayear" and status ='Active' and membtype in ('CM','CMS','GL','GLS','CMGL')
 EOT;
 //$admin_logger->write( 'In Rollover Pt2sql='.$pt2sql ,$uselog );	
 		$pt2result=$db->exec($pt2sql);
@@ -360,12 +369,18 @@ EOT;
 		UPDATE members set membtype='MJL2',paidthisyear='Y',amtpaidthisyear=0  where u3ayear ="$thisnewu3ayear" and status ='Active' and membtype ='MJL1'
 EOT;
 		$pt4result=$db->exec($pt4sql);
+		/**  Now migrate  MJL1 to MJL2 and paid with amt 0 *****/
+		$pt5sql = <<<EOT
+		insert into feespertypes (membtype ,feetopay ,firstyearfee,acyear) 
+		select membtype ,feetopay ,firstyearfee,"$thisnewu3ayear" from feespertypes f2 where f2.acyear ="$theoldu3ayear"
+EOT;
+		$pt5result=$db->exec($pt5sql);
 $db->commit();
 		
-		$f3->set('page_head',"Member List ".$f3->get('SESSION.u3ayear'));
+		$f3->set('page_head',"Fees Table ".$f3->get('SESSION.u3ayear'));
 		$f3->set('page_role',$f3->get('SESSION.user_role'));
 		$f3->set('message', $f3->get('PARAMS.message'));	//NEEDED in Header 
-		$f3->set('view','member/list.htm');
+		$f3->set('view','admin/fees.htm'); //Reroute to show the fees table automatically to allow edits
 		$f3->set('SESSION.lastseen',time()); 
 
 	}

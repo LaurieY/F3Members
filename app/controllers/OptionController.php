@@ -42,10 +42,10 @@ public function index(){
 
 }
 
-	public   function initu3ayear(){
+	/*public   function initu3ayear(){
 	$fw=Base::instance();
 	//var_export($fw->get('SESSION',false)); //LEY
-	if(!$fw->exists('SESSION.u3ayear')) {
+	
   $today = getdate();
 	  $thismon= $today['mon'];
 	  $thisyear = (string) $today['year'];
@@ -53,6 +53,8 @@ public function index(){
 	  $nextyear = (string) $today['year'] +1;
 	  $this->load('optionname="u3a_year_start_month"');
 	$whichmonth = $this->optionvalue;
+	$fw->set('SESSION.u3astartmonth', $whichmonth);
+	if(!$fw->exists('SESSION.u3ayear')) {
 	  //'select optionvalue from options where optionname ="u3a_year_start_month" ';
 	  if ($thismon <$whichmonth)
 		$fw->set('SESSION.u3ayear', $lastyear.'-'.$thisyear);
@@ -77,7 +79,7 @@ public  function initlastu3ayear(){
 		$fw->set('SESSION.lastu3ayear',  $lastyear.'-'.$thisyear);
 		}
 			return $fw->get('SESSION.lastu3ayear');
-}	
+}	*****/
 	function writeemailpdf($thefile,$theset) {
 //require 'vendor/autoload.php';
 //$f3 = require('lib/base.php');	//based on http://www.fpdf.org/en/script/script21.php

@@ -37,7 +37,10 @@ $f3->route('GET /','LoginController->startup');
 $f3->route('GET /login','LoginController->login');
 $f3->route('GET /logout','LoginController->logout');
 $f3->route('POST /login','LoginController->auth');
-$f3->route('GET /admin','AdminController->index'); // not currently used
+$f3->route('GET /admin','AdminController->index'); //
+$f3->route('GET /fees','AdminController->fees'); //
+$f3->route('GET /feesgrid','AdminAjaxController->feesgrid');
+$f3->route('POST /editfees','AdminAjaxController->editfees');
 
 $f3->route('GET /trail','MemberController->trail');
 

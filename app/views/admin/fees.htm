@@ -1,20 +1,23 @@
 <script type="text/javascript">
 $(function () {
-  $("#optionlist").jqGrid({ 
-        url: "/optiongrid",
-		editurl:"/editoption",
+  $("#feeslist").jqGrid({ 
+        url: "/feesgrid",
+		editurl:"/editfees",
         datatype: "json",
 		ignoreCase: true,
         mtype: "GET",
-        colNames: ["Option Name", "Option Value"],
+        colNames: ["Member Type", "Recurring Fee", "First Year Fee", "Academic Year"],
         colModel: [
            
-			{ name: "optionname", width: 220,editable: true, edittype:"text",editrules: { number: false, required: true}},
-             {name: "optionvalue", width: 220,editable: true, edittype:"text", editrules: { required: true}},
+			{ name: "membtype", width: 220,editable: true, edittype:"text",editrules: { number: false, required: true}},
+             {name: "feetopay", width: 220,editable: true, edittype:"text", editrules: { required: true}},
+             {name: "firstyearfee", width: 220,editable: true, edittype:"text", editrules: { required: true}},
+             {name: "acyear", width: 220,editable: true, edittype:"text", editrules: { required: true}},
+			 
 		
 			
         ],
-			pager: "#pager",
+					pager: "#pager",
 			page:1, //LEY
 
 			onSelectRow: editRow,
@@ -26,7 +29,7 @@ $(function () {
 			loadonce:false,//true,  //LEY
 			gridview: true,
 			autoencode: true,
-			caption: "Options Table",
+			caption: "Fees Table",
 			height:'auto',
 			altRows: false,
 			footerrow : false,
@@ -39,7 +42,7 @@ $(function () {
 	 
     }); 
             var lastSelection;
-function editRow(id) { var grid = $("option#list");
+function editRow(id) { var grid = $("fees#list");
                 if (id && id !== lastSelection) {
                    
                     grid.jqGrid('restoreRow',lastSelection);
@@ -51,9 +54,9 @@ function editRow(id) { var grid = $("option#list");
 					//$("#"+id+"_formattedvalue").focus();
                 
             }
-$('#optionlist').jqGrid('navGrid','#pager',
+$('#feeslist').jqGrid('navGrid','#pager',
 		{ edit: true, add: true, del: true, search: false, refresh: true, view: false, position: "left", cloneToTop: false, },
-		{afterSubmit: function(response, postdata) { $("#optionlist").trigger("reloadGrid");return true;},
+		{afterSubmit: function(response, postdata) { $("#feeslist").trigger("reloadGrid");return true;},
 		//},		
 		 beforeShowForm: function(form) { $('#tr_amtpaidthisyear', form).hide(); }  // for edit
 		}, // use default settings for edit
@@ -66,7 +69,7 @@ $('#optionlist').jqGrid('navGrid','#pager',
 	
 
                   );
-		//$('#optionlist').jqGrid('filterToolbar',{searchOperators: true,	});
+		//$('#feeslist').jqGrid('filterToolbar',{searchOperators: true,	});
 			
 
 });
@@ -74,6 +77,6 @@ $('#optionlist').jqGrid('navGrid','#pager',
 </script>
  
 
-    <table id="optionlist"><tr><td></td></tr></table> 
+    <table id="feeslist"><tr><td></td></tr></table> 
     <div id="pager"></div> 
 	<br>

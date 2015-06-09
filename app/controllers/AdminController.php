@@ -19,9 +19,9 @@ class AdminController extends Controller {
 	$f3=$this->f3;
 	$admin_logger = new Log('admin.log');
 	//$admin_logger->write('in admin index');
-	    $user = new User($this->db);
+	   // $user = new User($this->db);
 			
-        $this->f3->set('mem_users',$user->all());
+       // $this->f3->set('mem_users',$user->all());
 	
 		//$admin_logger->write('mem_users are '.'');
         $this->f3->set('page_head','Admin');
@@ -43,7 +43,15 @@ $f3=$this->f3;
 		//$f3->set('SESSION.lastseen',time()); 
 
 }
-	
+	public function fees()
+	{	$f3=$this->f3;
+		$admin_logger = new Log('admin.log');
+		$uselog=$f3->get('uselog');
+        $this->f3->set('page_head','Manage This Year\'s Fees ');
+        $this->f3->set('message', $this->f3->get('PARAMS.message'));
+		$admin_logger->write('in admin fees ',$uselog);
+        $this->f3->set('view','admin/fees.htm');	
+	}
 
 	
 	}

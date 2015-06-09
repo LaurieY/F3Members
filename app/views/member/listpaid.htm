@@ -299,14 +299,14 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
 							$rowd = grid.jqGrid('getRowData',rowid);
 							$mtype =grid.jqGrid('getCell',rowid,'membtype');
 							$djoined=grid.jqGrid('getCell',rowid,'datejoined').split("-");
-							$djoinedD= new Date($djoined[0],$djoined[1],$djoined[2]);
+							$djoinedD= new Date($djoined[0],$djoined[1]-1,$djoined[2]);
 							todayDate=new Date();
-							
-							if (todayDate.getMonth() >5) { // currently after June
-							dtest2= new Date(todayDate.getFullYear(), 6, 1); // set to the recent July 1st
+							$startmonth="{{@u3astartmonth}}";
+							if (todayDate.getMonth() >=$startmonth-1) { // currently after June
+							dtest2= new Date(todayDate.getFullYear(), $startmonth-1, 1); // set to the recent July 1st
 							}
 							else { // before June so select July last year as the test date
-							dtest2= new Date(todayDate.getFullYear()-1, 6, 1);// 1st half of year so subtract 1 from year and specify start of calc to be July1
+							dtest2= new Date(todayDate.getFullYear()-1, $startmonth-1, 1);// 1st half of year so subtract 1 from year and specify start of calc to be July1
 							}
 							if ($djoinedD>dtest2) { 
 							$feetopay = storage.get('feespertypes')[$mtype].firstyearfee;

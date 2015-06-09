@@ -91,13 +91,7 @@ public function editoption()
 	$response->total = $total_pages;
 	$response->records = $count;
 	
-/*	$i=0;
-	while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-		$responce->rows[$i]['id']=$row[id];
-		$responce->rows[$i]['cell']=array($row[no],$row[title],$row[author],$row[publisher],$row[year_published]);
-		$i++;
-}
-*/
+
 
 $options->load();  // by default, loads the 1st record
 $i=0;
@@ -130,6 +124,7 @@ public function index(){
 
 }
 
+	/***
 	public   function initu3ayear(){
 	$fw=Base::instance();
 	//var_export($fw->get('SESSION',false)); //LEY
@@ -166,6 +161,7 @@ public  function initlastu3ayear(){
 		}
 			return $fw->get('SESSION.lastu3ayear');
 }	
+***/
 	function writeemailpdf($thefile,$theset) {
 //require 'vendor/autoload.php';
 //$f3 = require('lib/base.php');	//based on http://www.fpdf.org/en/script/script21.php

@@ -570,19 +570,14 @@ public function editmember()
 	$trail = new Trail($this->db);  // audit trail
  $f3->set('members',$members);
 	 switch ($f3->get('POST.oper')) {
-    case "add":
+case "add":
     
 		
 		/******  Find the next membership number as the highest+1**/
 	
-	
-	
 	$result=$this->db->exec('SELECT membnum FROM members order by membnum DESC LIMIT 1'); 
-	
 
 	$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
-
-
 	$admin_logger->write('in addmember maxmembnum row = '.$result[0]['membnum']."\n");
 
 	$max_membnum = ((int) $result[0]['membnum'])+1;
@@ -597,12 +592,12 @@ public function editmember()
 		$thismember= $members->membnum;
 		/***  calculate the amount paid  if added as zero ******/
 		if ($members->amtpaidthisyear> 0) {$admin_logger->write('in addmember amountpaid = '.$members->amtpaidthisyear);
-			}	//amount specified to use that
+			}	//amount specified so use that
 		
 		else { // no amount specified use reference table amount
 		$admin_logger->write('in addmember NO amount paidthisyear ');
 		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
-		$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
+		$feespertypes->load(array('membtype =:membtype and acyear=:acyear',array(':membtype'=> $f3->get('POST.membtype'),':acyear'=>$f3->get('SESSION.u3ayear')) ) );
 		$feetopay = $feespertypes->firstyearfee;
 		$members->amtpaidthisyear = $feetopay;
 		$admin_logger->write('in addmember amount paidthisyear ='. $feetopay);
@@ -622,7 +617,8 @@ public function editmember()
 		$this->logtrail($members,$trail,"add");
 		
     break;
-    case "edit":   //************************************ EDIT **//
+case "edit":   //************************************ EDIT **//
+
 	$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) ); //this did work but its not the same as the paid code
 		$temptrail= array();
 		$members->copyto('temptrail');
@@ -667,13 +663,7 @@ public function editmember()
 		
 		$members->update();
 		
-	//$xnum= $members->membnum;
-	//$admin_logger->write('In editrow xnum is '.$xnum. ' and of type '.gettype($xnum),$uselog);
 
-		//xpaid= $members->paidthisyear;
-		//$xpay= $members->amtpaidthisyear;
-   //echo "membnum:".$xnum.",paidthisyear:".$xpaid.",amtpaidthisyear:".$xpay;
-	// $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay);
 		$arr=$members->cast();
 		$arrencoded= json_encode($arr);
 		$admin_logger->write('In editrow echo '.$arrencoded,$uselog);
@@ -706,6 +696,7 @@ public function editmember()
 		$uselog=$f3->get('uselog');
 		$admin_logger=$f3->get('admin_log');
 		$wasnotpaid=false;
+		$admin_logger->write('in get_amt_paid for paidthisyear = '.$members->paidthisyear,$uselog);
 		if ($members->paidthisyear!="Y")	{$wasnotpaid=true;}
 	/**** now fetch the existing row to check if paidthisyear is about to change ****/
 	$admin_logger->write('in get_amt_paid for paidthisyear = '.$members->paidthisyear,$uselog);
@@ -726,9 +717,12 @@ public function editmember()
 		$djoined = explode('-',$members->datejoined); // yyyy-mm-dd
 		$djoinedmk=mktime(0,0,0,$djoined[1],$djoined[2],$djoined[0]);  //mm dd yyy
 		//$dnow = date();
-		if( date("m") >6) { $dtest = mktime(0,0,0,6,1,date("Y")); } // recent July
-		else {$dtest = mktime(0,0,0,6,1,date("Y")-1);
+		$startmonth=$f3->get('SESSION.u3astartmonth');
+		$admin_logger->write('In get_amt_paid2 #731 startmonth is  '.$startmonth,$uselog);
+		if( date("m") >$startmonth-1) { $dtest = mktime(0,0,0,6,1,date("Y")); } // recent July
+		else {$dtest = mktime(0,0,0,$startmonth-1,1,date("Y")-1);
 		}
+		$admin_logger->write('In get_amt_paid2 #735 djoined is  '.$members->datejoined.' djoined mk='.$djoinedmk.' dtest='.$dtest,$uselog);
 		if($djoinedmk>$dtest) return($feespertypes->firstyearfee);
 		else return($feespertypes->feetopay);
 		
@@ -794,11 +788,12 @@ function markpaid() {
 	$uselog=$f3->get('uselog');
 	
 	 	$admin_logger = new MyLog('admin.log');
-		$admin_logger->write('In markpaid uselog ='.$uselog.' variable uselog= '.$f3->get('uselog'),$uselog);
+		//$admin_logger->write('In markpaid uselog ='.$uselog.' variable uselog= '.$f3->get('uselog'),$uselog);
 		$f3->set('admin_log',$admin_logger);
 		//$admin_logger->write('in markpaid membnum='.$this->f3->get('POST.membnum') );
 		$members =	new Member($this->db);
-		$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+		//$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+		$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ));
 		$admin_logger->write('in markpaid after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' paidthis year '.$members->paidthisyear,$uselog);
 		$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum),$uselog);
 	
@@ -810,6 +805,9 @@ function markpaid() {
 		$admin_logger->write('end of markpaid membnum='.$members->membnum." paid= ".$members->paidthisyear." amtpaid = ".$members->amtpaidthisyear ,$uselog);
 		//$admin_logger->write('In markpaid membnum is '.$members->membnum. ' and of type '.gettype($members->membnum));
 		$members->datepaid=date("Y-m-d H:i:s");
+		$today = getdate();
+		$thisfy = $today['year'];
+		$members->fyear=$thisfy;
 		$members->update();
 		$this->logtrail($members,new Trail($this->db),"paid");
 
@@ -817,6 +815,9 @@ function markpaid() {
 		//$admin_logger->write('In markpaid xnum is '.$xnum. ' and of type '.gettype($xnum));
 		$xpaid= $members->paidthisyear;
 		$xpay= $members->amtpaidthisyear;
+		$today = getdate();
+		$thisfy = $today['year'];
+		$members->fyear=$thisfy;
 		$fytotals = $members->gettotals();
 		$arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
 	 	 $arrencoded= json_encode($arr);
@@ -891,7 +892,7 @@ function getfeespertypes() { //return all the contents of the table feespertypes
 		$admin_logger->write('in getfeespertypes uselog= '.$uselog,true);
 		$feefields='membtype,feetopay,firstyearfee,acyear';
 		$thisacyear = $f3->get('SESSION.u3ayear');
-		$admin_logger->write('in getfeespertypes uselog= '.$uselog. ' academic year = '.$thisacyear,true);
+		$admin_logger->write('in getfeespertypes academic year = '.$thisacyear,true);
 		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes',$feefields);
 		$feespertypes->load(array('acyear =:acyear',array(':acyear'=> $thisacyear) ), array('limit'=>100) );
 		
