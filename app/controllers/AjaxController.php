@@ -615,6 +615,8 @@ case "add":
 		$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
 		
 		$this->logtrail($members,$trail,"add");
+		$mpz= new MpzController();
+		$mpz->addtolist($members);
 		
     break;
 case "edit":   //************************************ EDIT **//
