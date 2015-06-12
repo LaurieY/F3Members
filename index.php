@@ -84,4 +84,8 @@ $f3->route('GET /reverserollover','MemberController->reverserollover1');
 $f3->route('GET /reverserollover2','MemberController->reverserollover2');
 
 
+$f3->route('GET /getsubscribers','MpzController->getlist2');
+$f3->route('GET /subscribertest','MpzController->subscribertest');
+
+
 $f3->run();
