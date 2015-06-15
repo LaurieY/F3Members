@@ -44,6 +44,4 @@ public  function initlastu3ayear(){
 		}
 			return $fw->get('SESSION.lastu3ayear');
 }	
-
-		
-	}
+}

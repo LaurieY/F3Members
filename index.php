@@ -61,7 +61,7 @@ $f3->route('POST /exports','AjaxController->exports');  */
 
 $f3->route('GET /downloads/@filename',
     function($f3,$args) {
-	$mypdf= new OptionController();
+	$mypdf= new ReportController();
 	
  $dlfilename='downloads/email_list_'.$args['filename'].'.pdf';
 $mypdf->writeemailpdf($dlfilename,$args['filename']);
@@ -86,6 +86,8 @@ $f3->route('GET /reverserollover2','MemberController->reverserollover2');
 
 $f3->route('GET /getsubscribers','MpzController->getlist2');
 $f3->route('GET /subscribertest','MpzController->subscribertest');
+
+$f3->route('GET /weeklyxmail','ReportController->weeklyxmail');
 
 
 $f3->run();

@@ -24,6 +24,7 @@ class AdminController extends Controller {
        // $this->f3->set('mem_users',$user->all());
 	
 		//$admin_logger->write('mem_users are '.'');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
         $this->f3->set('page_head','Admin');
         $this->f3->set('message', $this->f3->get('PARAMS.message'));
 	//	$admin_logger->write('in admin index PARAMS.message is '.$f3->get('PARAMS.message'));
@@ -47,6 +48,7 @@ $f3=$this->f3;
 	{	$f3=$this->f3;
 		$admin_logger = new Log('admin.log');
 		$uselog=$f3->get('uselog');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
         $this->f3->set('page_head','Manage This Year\'s Fees ');
         $this->f3->set('message', $this->f3->get('PARAMS.message'));
 		$admin_logger->write('in admin fees ',$uselog);

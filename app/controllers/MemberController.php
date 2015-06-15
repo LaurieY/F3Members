@@ -182,31 +182,7 @@ $admin_logger->write('in exports dldir = '.$dldir,$uselog);
 	}
 
 	
-/*********  No longer used, its in AjaxController now
-function writeemailpdf0($data,$theset) {
-	$f3=$this->f3;
-	$u3ayear = isset($u3ayear) ? $u3ayear : $f3->get('u3ayear');
-	$paidstatus="('Y','N','W')";
-			//$pdfTable= new Pdftable;
-			$db = mysqli_connect('localhost', $f3->get('db_user'),  $f3->get('db_pass'),$f3->get('db_name')) or die("Connection Error: " . mysqli_error()); 
-			//mysql_select_db('lyatesco_f3members');
-			//$result = mysqli_query($db,"SELECT COUNT(*) AS count FROM trail"); 
-			$pdf=new Pdftable();
-			$pdf->AddPage();
-			$pdf->AddCol($field='surname',$width=-1,$caption='Surname',$align='L');
-			$pdf->AddCol($field='forename',$width=-1,$caption='Forename',$align='L');
-			$pdf->AddCol($field='membnum',$width=-1,$caption='Number',$align='L');
-			$pdf->AddCol($field='phone',$width=-1,$caption='Phone',$align='L');
-			$pdf->AddCol($field='mobile',$width=-1,$caption='Mobile',$align='L');
-			$pdf->AddCol($field='email',$width=-1,$caption='Email',$align='L');
-			$pdf->Table($db,"select forename,surname,membnum,email,phone,mobile,email from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ".$paidstatus." order by membnum ASC");
-			$pdf->AddPage();
-			
-			$dldir=$f3->get('BASE').$f3->get('downloads');
-			$pdf->Output($dldir.'/email_list_'.$theset.'.pdf',"F");
-}
 
-****/
 /********  Replaced by PDF functions in AjacController
 function writeemails($data,$theset) {
 		$f3=$this->f3;

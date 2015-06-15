@@ -11,7 +11,7 @@ class AjaxController extends Controller {
 	$auth_logger->write( 'Entering AjaxController beforeroute URI= '.$f3->get('URI'  ) );
 	$auth_logger->write( 'Entering AjaxController beforeroute user role = '.$f3->get('SESSION.user_role' ));
 	$auth_logger->write( 'Entering AjaxController beforeroute u3ayear = '.$f3->get('SESSION.u3ayear' ),true);
-	$auth_logger->write( 'Entering AjaxController beforeroute u3ayear = '.var_export($f3,true ),true);
+	//$auth_logger->write( 'Entering AjaxController beforeroute u3ayear = '.var_export($f3,true ),true);
 	if (!$f3->get('SESSION.user_id') ) {
 		$this->f3->reroute('/login');
 	}
@@ -416,7 +416,7 @@ $s .= "</row>";
 	} 
 $s .= "</rows>"; 
 
-$admin_logger->write('in getresult_where #415 result = '.$s,$uselog);
+//$admin_logger->write('in getresult_where #415 result = '.$s,$uselog);
 	return $s;
 
 	
@@ -615,8 +615,9 @@ case "add":
 		$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
 		
 		$this->logtrail($members,$trail,"add");
+		if ($f3->get('allowwelcomeemail') ){
 		$mpz= new MpzController();
-		$mpz->addtolist($members);
+		$mpz->addtolist($members); }
 		
     break;
 case "edit":   //************************************ EDIT **//
@@ -960,7 +961,7 @@ $dldir=$f3->get('BASE').$f3->get('downloads');
 	  if (!Web::instance()->send($dlfilename,NULL,512,TRUE))   {  $f3->error(404);    }     ***/
 		echo "OK";
 }
-	function writeemailpdf($thefile,$theset) { //based on http://www.fpdf.org/en/script/script21.php
+/**********	function writeemailpdf($thefile,$theset) { //based on http://www.fpdf.org/en/script/script21.php
 		$f3=$this->f3;
 		
 	$admin_logger = new MyLog('admin.log');
@@ -1021,7 +1022,8 @@ $dldir=$f3->get('BASE').$f3->get('downloads');
 
 	return true;
 		
-	}
+	} 
+	*********************/
 	
 	
 	
