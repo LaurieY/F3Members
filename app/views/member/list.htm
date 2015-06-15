@@ -49,7 +49,7 @@ function myvalue(elem, operation, value) {
 }
 var myrole= $('#myrole').text();
 if (myrole == 'user') {myeditability=false;hidemoney=true;paideditability=false;
-$("#bedit").hide();$("#badd").hide();$("#bdel").hide();
+$("#bedit").hide();$("#badd").hide();$("#bdelr").hide();$("#bdelnr").hide();
 }
 else {myeditability=true; paideditability=false;hidemoney=false;}
 
@@ -264,13 +264,31 @@ return [true];}
 else alert("Error on Add Member ");
 //return [success,message,new_id] 
  }  
- /**************  DELETE BUTTON ****/
-$("#bdel").click(function(){
-$( "#addeditdel" ).val( "d" );
+ /**************  DELETE with Refund BUTTON ****/
+$("#bdelr").click(function(){
+$( "#addeditdel" ).val( "dr" );
 var grid = $("#list");
 var gr = grid.jqGrid('getGridParam','selrow');
 if( gr != null ){
-	grid.jqGrid('delGridRow',gr,{dataheight:100,height:200,width:500,afterSubmit:afterFormDel,beforeShowForm: function ($form) {
+	grid.jqGrid('delGridRow',gr,{dataheight:100,height:200,width:500,onclickSubmit: function (options,postData) {
+						return{deltype:'withrefund'}},
+						afterSubmit:afterFormDel,beforeShowForm: function ($form) {
+ 	var delrow2=grid.jqGrid('getLocalRow',gr);
+	$("td.delmsg", $form[0]).html("Do you really want delete this row <br/>with <b>member number=" +
+         delrow2.membnum + " and surname=" +delrow2.surname  +"</b> ?");} 
+		 })}
+		
+		 else alert("Please Select Row");
+});
+$("#bdelnr").click(function(){
+$( "#addeditdel" ).val( "dnr" );
+var grid = $("#list");
+var gr = grid.jqGrid('getGridParam','selrow');
+if( gr != null ){
+	grid.jqGrid('delGridRow',gr,{dataheight:100,height:200,width:500,afterSubmit:afterFormDel,
+	onclickSubmit: function (options,postData) {
+						return{deltype:'norefund'}},
+						beforeShowForm: function ($form) {
  	var delrow2=grid.jqGrid('getLocalRow',gr);
 	$("td.delmsg", $form[0]).html("Do you really want delete this row <br/>with <b>member number=" +
          delrow2.membnum + " and surname=" +delrow2.surname  +"</b> ?");} 
@@ -307,7 +325,7 @@ return (false,'Error on Delete Entry' );
     <table id="list"><tr><td></td></tr></table> 
     <div id="pager"></div> 
 	<br>
-	<input type="BUTTON" id="bedit" value="Edit Selected" /> &nbsp; &nbsp; &nbsp;<input type="BUTTON" id="badd" value="Add a Member" />&nbsp; &nbsp; &nbsp;<input type="BUTTON" id="bdel" value="Delete an Entry" />
+	<input type="BUTTON" id="bedit" value="Edit Selected" /> &nbsp; &nbsp; &nbsp;<input type="BUTTON" id="badd" value="Add a Member" />&nbsp; &nbsp; &nbsp;<input type="BUTTON" id="bdelr" value="Remove with Refund" />&nbsp; &nbsp; &nbsp;<input type="BUTTON" id="bdelnr" value="Remove without Refund" />
 <br><br><br>
 	<a href="javascript:void(0)" id="cm1">Refresh with NO Filter</a>
 

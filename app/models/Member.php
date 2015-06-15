@@ -42,10 +42,10 @@ public function gettotals(){
 	$lastfy = $thisfy-1;
 	$fytotals=array("lastfy"=>0,"thisfy"=>0);
 	
-	$this->paidlastfy='select sum(amtpaidthisyear) from members where fyear = "'.$lastfy.'" and status="Active"';
+	$this->paidlastfy='select sum(amtpaidthisyear) from members where fyear = "'.$lastfy.'" and status in( "Active","Left")';
 	$this->load();
 	$fytotals["lastfy"]=$this->paidlastfy;
-	$this->paidthisfy='select sum(amtpaidthisyear) from members where fyear = "'.$thisfy.'" and status="Active"';
+	$this->paidthisfy='select sum(amtpaidthisyear) from members where fyear = "'.$thisfy.'" and status in( "Active","Left")';
 	$this->load();
 	$fytotals["thisfy"]=$this->paidthisfy;
 	//$fytotals["lastfy"] = 23;
