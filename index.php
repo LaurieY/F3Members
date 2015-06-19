@@ -88,6 +88,22 @@ $f3->route('GET /getsubscribers','MpzController->getlist2');
 $f3->route('GET /subscribertest','MpzController->subscribertest');
 
 $f3->route('GET /weeklyxmail','ReportController->weeklyxmail');
+$f3->route('GET /financialxmail/@fyear',
+  function($f3,$args) {
+	$myexcel= new ReportController();
+
+$dlfilename='downloads/Financial_report_'.$args['fyear'].'.xlsx';
+//echo date('H:i:s') , " downloadfile is ",$dlfilename , "\n";
+$myexcel->financialxmail($args['fyear']);
+
+        // send() method returns FALSE if file doesn't exist
+        if (!Web::instance()->send($dlfilename,NULL,512,TRUE))
+                  // Generate an HTTP 404
+        $f3->error(404);
+    }
+	);
+
+$f3->route('GET /financialxmail2','ReportController->financialxmail2');
 
 
 $f3->run();

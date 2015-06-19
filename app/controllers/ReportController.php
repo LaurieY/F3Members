@@ -31,7 +31,7 @@ class ReportController extends Controller {
 					'unpaid'=>array('title'=> "U3A Marbella and Inland - Unpaid Members ".$u3ayear,'sqlselect'=>"select surname as 'Surname',forename as 'Forename',membnum as 'Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email' from members where u3ayear='".$u3ayear."' and status='Active' and paidthisyear in ('N') order by surname ASC "),
 					'willpay'=>array('title'=> "U3A Marbella and Inland - WillPay Members ".$u3ayear,'sqlselect'=>"select surname as 'Surname',forename as 'Forename',membnum as 'Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email' from members where u3ayear='".$u3ayear."' and status='Active' and  paidthisyear in ('W') order by surname ASC "),
 					'lastyear'=>array('title'=> "U3A Marbella and Inland - Last Year Members ".$lastu3ayear,'sqlselect'=>"select surname as 'Surname',forename as 'Forename',membnum as 'Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email' from members where u3ayear='".$lastu3ayear."' and status='Active' and paidthisyear in ".$paidstatus." order by surname ASC "),
-					'weekly'=>array('title'=> "U3A Marbella and Inland - This Week's Joiners since"."\n".$since,'sqlselect'=>"select surname as 'Surname',forename as 'Forename',membnum as 'Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email', amtpaidthisyear as 'Fee', feewhere as 'Who has'  from members where u3ayear='".$u3ayear."' and status in ('Active','Left') and paidthisyear in ('Y') and datepaid > NOW() - INTERVAL '". $dayssince ."' DAY  order by surname ASC "),
+					'weekly'=>array('title'=> "U3A Marbella and Inland - This Week's Payers since"."\n".$since,'sqlselect'=>"select surname as 'Surname',forename as 'Forename',membnum as 'Number',phone as 'Phone',mobile as 'Mobile' ,email as 'Email', amtpaidthisyear as 'Fee', feewhere as 'Who has'  from members where u3ayear='".$u3ayear."' and status in ('Active','Left') and paidthisyear in ('Y') and datepaid > NOW() - INTERVAL '". $dayssince ."' DAY  order by surname ASC "),
 		
 					);
 					
@@ -143,5 +143,170 @@ public function weeklyxmail () {
 		
 		
 		}
+public function financialxmail ($whichfy) {
+		$this->financialreport( $whichfy,"('Active','Left')");
+			$f3=$this->f3;		
+		$f3->set('view','member/exports.htm'); 
+		$f3->set('page_head','Primary Member Lists');
+		$f3->set('page_role',$f3->get('SESSION.user_role'))	;	
+			 $f3->set('message','');
+
+}
+public function financialxmail2 () {
+		$this->financialreport( '2015',"('Active','Left')");
+			$f3=$this->f3;		
+		$f3->set('view','member/exports.htm'); 
+		$f3->set('page_head','Primary Member Lists');
+		$f3->set('page_role',$f3->get('SESSION.user_role'))	;	
+			 $f3->set('message','');
+
+}
+
+ function financialreport( $whichyear,$statustypes)
+		{
+		$f3=$this->f3;
+		$admin_logger = new MyLog('admin.log');
+		$uselog=$f3->get('uselog');
+		//echo date('H:i:s') , " whichyear=",$whichyear ,"\n";
+		$admin_logger->write( 'Entering ReportController financialreport which year = '.$whichyear,$uselog );
+		/** Error reporting */
+		error_reporting(E_ALL);
+		ini_set('display_errors', TRUE);
+		ini_set('display_startup_errors', TRUE);
+
+		define('EOL',(PHP_SAPI == 'cli') ? PHP_EOL : '<br />');
+
+		date_default_timezone_set('Europe/London');
+
+		/** Include PHPExcel */
+		require_once('vendor/Classes/PHPExcel.php');
+		//require_once dirname(__FILE__) . '/../Classes/PHPExcel.php';
+
+
+		// Create new PHPExcel object
+		//echo date('H:i:s') , " Create new PHPExcel object" , EOL;
+		$objPHPExcel = new PHPExcel();
+		$objPHPExcel->getProperties()->setCreator("Laurie Yates")
+							 ->setLastModifiedBy("Laurie Yates")
+							 ->setTitle("U3A Marbella and Inland Financial Statement for $whichyear")
+							 ->setSubject("Financial Statement for $whichyear")
+							 ->setDescription("U3A Marbella and Inland Financial Statement for $whichyear, generated using PHP classes.")
+							 ->setKeywords("office 2007 openxml php")
+							 ->setCategory("Financial result file");
+		 // Create a first sheet
+
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->setCellValue('A1', "Surname	")
+									  ->setCellValue('B1', "Forename")
+									  ->setCellValue('C1', "Number")
+									  ->setCellValue('D1', "Memb. Type")
+									  ->setCellValue('E1', "Date Joined")
+									  ->setCellValue('F1', "Date Paid")
+									  ->setCellValue('G1', "Amt. Paid");
+		
+		
+		
+		
+		$response = new stdClass();
+		$total_pages=
+		$page=0;
+		$start = 0; 
+		$response->page = 1;
+		$response->page = $page;
+	/*********************
+	* First Read the types of membtype from the members table in alphabetic order with count of them
+	* Then for each type 
+	* Read all records in membnum order and add to excel
+	* At the end of each type add a subtotal row and mark it as a group/outline
+	*
+	**********************/
+	
+		 $members =	new Member($this->db);
+	
+	$mtypes=$members->find(null,array('group'=>'membtype','order'=>'membtype')  );
+	$i=2;
+	$overalltotal =0;
+	foreach($mtypes as $mtype) {
+	//echo date('H:i:s') , " getting membertypes  " ,$mtype->membtype, EOL;
+	//echo date('H:i:s') , " getting membertypes  " ,"fyear='".$whichyear."' and membtype = '".$mtype->membtype."' ", EOL;
+	
+	$membercount=$members->count("fyear='".$whichyear."' and membtype = '".$mtype->membtype."' ");
+	if ($membercount !=0 ) {
+	//echo date('H:i:s') , " getting membertcount " ,var_export($membercount,true), EOL;
+		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, 'Member Type')
+									->setCellValue('D' . $i, $mtype->membtype);
+	$i++;
+	
+	
+	$members2 =$members->find("fyear='$whichyear' and membtype = '".$mtype->membtype."' and status in $statustypes",array('order' =>'membtype,membnum'));
+	//	$members2=$members->find(array('fyear=?  and membtype = ? and status in ?',$whichyear,$mtype->membtype,$statustypes),array('order' =>'membtype,membnum'));
+	
+			//echo date('H:i:s') , " getting membertypes 2nd " ,var_export($members2,true), EOL;
+		$subtot=0;
+			foreach($members2 as $memb) {
+			//echo date('H:i:s') , " getting membertypes third " ,$memb->fyear, EOL;
+			/*************  Now arr a subtitle row for member type */
+			$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $memb->surname)
+												->setCellValue('B' . $i, $memb->forename)
+												->setCellValue('C' . $i, $memb->membnum)
+												->setCellValue('D' . $i, $memb->membtype)
+												->setCellValue('E' . $i, $memb->datejoined)
+												->setCellValue('F' . $i, $memb->datepaid)
+												->setCellValue('G' . $i, $memb->amtpaidthisyear);
+			$subtot += $memb->amtpaidthisyear;
+			$objPHPExcel->getActiveSheet()->getRowDimension($i)->setOutlineLevel(1);
+			$i++;
+			} // foreach member
+			//  now add a subtotal row
+			$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, "Member Type $mtype->membtype Subtotal")
+									->setCellValue('D' . $i, $subtot);
+			$overalltotal+=$subtot;
+			$i++;
+			//echo date('H:i:s') , " getting membertypes 4th " ,$memb->membtype," I= ",$i, EOL;
+			
+			} // membercount not zero
+	}
+			//  now add a subtotal row
+			$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, "Overall Total ")
+									->setCellValue('D' . $i, $overalltotal);
+	
+	
+		// echo date('H:i:s') , " getting membertypes " ,var_export($mtypes,true), EOL;
+		 
+			// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+			$objPHPExcel->setActiveSheetIndex(0);
+			$objPHPExcel->getActiveSheet()->setTitle('Financial Report');
+
+			// Set print headers
+			$objPHPExcel->getActiveSheet()
+				->getHeaderFooter()->setOddHeader('&C&24&K0000FF&B&U&A');
+			$objPHPExcel->getActiveSheet()
+				->getHeaderFooter()->setEvenHeader('&C&24&K0000FF&B&U&A');
+
+			// Set print footers
+			$objPHPExcel->getActiveSheet()
+				->getHeaderFooter()->setOddFooter('&R&D &T&C&F&LPage &P / &N');
+			$objPHPExcel->getActiveSheet()
+				->getHeaderFooter()->setEvenFooter('&L&D &T&C&F&RPage &P / &N');
+
+
+
+			// Save Excel 2007 file
+			//echo date('H:i:s') , " Write to Excel2007 format" , EOL;
+			$callStartTime = microtime(true);
+
+			$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+			//$objWriter->save(str_replace('.php', '.xlsx', __FILE__));
+			$objWriter->save("downloads/Financial_report_$whichyear.xlsx");
+		//	$callEndTime = microtime(true);
+		//	$callTime = $callEndTime - $callStartTime;
+
+			//echo date('H:i:s') , " File written to " , str_replace('.php', '.xlsx', pathinfo(__FILE__, PATHINFO_BASENAME)) , EOL;
+			//echo 'Call time to write Workbook was ' , sprintf('%.4f',$callTime) , " seconds" , EOL;
+			// Echo memory usage
+			//echo date('H:i:s') , ' Current memory usage: ' , (memory_get_usage(true) / 1024 / 1024) , " MB" , EOL;			
+
+
+}
 		
 } // end of class
