@@ -3,7 +3,7 @@
 class MemberController extends Controller {
 	function beforeroute() {
 	$f3=$this->f3;
-	$f3=$this->f3;
+	//$f3=$this->f3;
 	 $f3->set('message','');
 	$auth_logger = new MyLog('auth.log');
 	$uselog=$f3->get('uselog');
@@ -178,6 +178,8 @@ $admin_logger->write('in exports dldir = '.$dldir,$uselog);
 		$f3->set('view','member/exports.htm'); 
 		$f3->set('page_head','Primary Member Lists');
 		$f3->set('page_role',$f3->get('SESSION.user_role'))		;
+		$f3->set('fyear', getdate()['year']);
+		
 	
 	}
 

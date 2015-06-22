@@ -131,11 +131,17 @@ public function weeklyxmail () {
 				$this->Error('Unable to open input file: '.$dlfilename);
 			$buffer=fread($f,(1024*1024));
 			fclose($f);
+			/**  Get emails for weekly report from optionsu3a table
+			***/
+			$weeklylist=$options->find("optionname='weeklyemail'");
+			foreach ($weeklylist as $weeklymail) {
 //	$this->xmail('president@u3a.es', 'laurie@u3a.es','Report for Weekly Joiners since '.$since,$buffer,'email_list_weekly.pdf',"F","0.9"	);
 //	$this->xmail('membership@u3a.es', 'laurie@u3a.es','Report for Weekly Joiners since '.$since,$buffer,'email_list_weekly.pdf',"F","0.9"	);
 //	$this->xmail('laurie.lyates@gmail.com', 'laurie@u3a.es','Report for Weekly Joiners since '.$since,$buffer,'email_list_weekly.pdf',"F","0.9"	);
-	$this->xmail('laurie2@lyates.com', 'laurie@u3a.es','Report for Weekly Joiners since '.$since,$buffer,'email_list_weekly.pdf',"F","0.9"	);
-			
+	//$this->xmail('laurie2@lyates.com', 'laurie@u3a.es','Report for Weekly Joiners since '.$since,$buffer,'email_list_weekly.pdf',"F","0.9"	);
+	//echo "sending email to ",$weeklymail->optionvalue,"\n" ;
+	$this->xmail($weeklymail->optionvalue, 'laurie@u3a.es','Report for Weekly Joiners since '.$since,$buffer,'email_list_weekly.pdf',"F","0.9"	);
+	}		
 		$f3->set('view','member/exports.htm'); 
 		$f3->set('page_head','Primary Member Lists');
 		$f3->set('page_role',$f3->get('SESSION.user_role'))	;	
@@ -185,7 +191,9 @@ public function financialxmail2 () {
 
 		// Create new PHPExcel object
 		//echo date('H:i:s') , " Create new PHPExcel object" , EOL;
+		$admin_logger->write( 'Create new PHPExcel object',$uselog );
 		$objPHPExcel = new PHPExcel();
+		
 		$objPHPExcel->getProperties()->setCreator("Laurie Yates")
 							 ->setLastModifiedBy("Laurie Yates")
 							 ->setTitle("U3A Marbella and Inland Financial Statement for $whichyear")
@@ -196,16 +204,27 @@ public function financialxmail2 () {
 		 // Create a first sheet
 
 		$objPHPExcel->setActiveSheetIndex(0);
-		$objPHPExcel->getActiveSheet()->setCellValue('A1', "Surname	")
-									  ->setCellValue('B1', "Forename")
-									  ->setCellValue('C1', "Number")
-									  ->setCellValue('D1', "Memb. Type")
-									  ->setCellValue('E1', "Date Joined")
-									  ->setCellValue('F1', "Date Paid")
-									  ->setCellValue('G1', "Amt. Paid");
+		//$objPHPExcel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+		$objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(26);
+		$objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(12);
+		$objPHPExcel->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+		$objPHPExcel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+		$objPHPExcel->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+		$objPHPExcel->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+		$objPHPExcel->getActiveSheet()->setCellValue('A2', "Late Membership Subscriptions	")
+								->setCellValue('A3', "Advance Subscriptions for Members Joining Late")		
+								->setCellValue('A4', "Membership Subscriptions");		
+		$objPHPExcel->getActiveSheet()->setCellValue('A7', "Surname	")
+									  ->setCellValue('B7', "Forename")
+									  ->setCellValue('C7', "Number")
+									  ->setCellValue('D7', "Type")
+									  ->setCellValue('E7', "Date Joined")
+									  ->setCellValue('F7', "Date Paid")
+									  ->setCellValue('G7', "Paid");
 		
-		
-		
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(7, 7);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$headlines = array('Lates'=>0,'Advance'=>0,'Members'=>0);
 		
 		$response = new stdClass();
 		$total_pages=
@@ -224,14 +243,43 @@ public function financialxmail2 () {
 		 $members =	new Member($this->db);
 	
 	$mtypes=$members->find(null,array('group'=>'membtype','order'=>'membtype')  );
-	$i=2;
+	$i=8;
 	$overalltotal =0;
+	/***********************
+	* For each member type go through the Active and Left members
+	*
+	* For the 'free' member types the fyear is always the beginning of the u3ayear so will show as such, ie normally in last year's report
+	*
+	* If the membtype is 'M' then subdivide according to when they paid
+	*
+	* Since its all in one financial year it can be 2 different U3A years
+	*
+	* 1st category is late payers, anyone paying before the rollover date given by optionsu3a.u3a_year_start_month
+	*
+	* 2nd category are people paying for the following u3ayear, ie after or in optionsu3a.u3a_year_start_month
+	*
+	* Brian's other category advance subscriptions are now called MJL1 and are show separately in their own sublist
+	*	
+	***********************/
+	$options= new Option($this->db);
+	
+	$monthoption=$options->find("optionname='u3a_year_start_month'");
+	
+	$rollovermonth = $monthoption[0]->optionvalue;
+	$rolloverdate= mktime(0,0,0,$rollovermonth,1, $whichyear);
+	$admin_logger->write( " getting rollovermonth  $rollovermonth", $uselog);
+	$admin_logger->write( " getting rolloverdate $rolloverdate", $uselog);
+	
 	foreach($mtypes as $mtype) {
 	//echo date('H:i:s') , " getting membertypes  " ,$mtype->membtype, EOL;
 	//echo date('H:i:s') , " getting membertypes  " ,"fyear='".$whichyear."' and membtype = '".$mtype->membtype."' ", EOL;
 	
 	$membercount=$members->count("fyear='".$whichyear."' and membtype = '".$mtype->membtype."' ");
 	if ($membercount !=0 ) {
+			if ($i % 40 <2) {
+		// Add a page break
+		$objPHPExcel->getActiveSheet()->setBreak( 'A' . $i, PHPExcel_Worksheet::BREAK_ROW );
+	}
 	//echo date('H:i:s') , " getting membertcount " ,var_export($membercount,true), EOL;
 		$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, 'Member Type')
 									->setCellValue('D' . $i, $mtype->membtype);
@@ -239,10 +287,15 @@ public function financialxmail2 () {
 	
 	
 	$members2 =$members->find("fyear='$whichyear' and membtype = '".$mtype->membtype."' and status in $statustypes",array('order' =>'membtype,membnum'));
-	//	$members2=$members->find(array('fyear=?  and membtype = ? and status in ?',$whichyear,$mtype->membtype,$statustypes),array('order' =>'membtype,membnum'));
 	
 			//echo date('H:i:s') , " getting membertypes 2nd " ,var_export($members2,true), EOL;
 		$subtot=0;
+		/***********************
+		* For each membertype 
+		
+		*
+		
+		************************/
 			foreach($members2 as $memb) {
 			//echo date('H:i:s') , " getting membertypes third " ,$memb->fyear, EOL;
 			/*************  Now arr a subtitle row for member type */
@@ -251,11 +304,40 @@ public function financialxmail2 () {
 												->setCellValue('C' . $i, $memb->membnum)
 												->setCellValue('D' . $i, $memb->membtype)
 												->setCellValue('E' . $i, $memb->datejoined)
-												->setCellValue('F' . $i, $memb->datepaid)
+												->setCellValue('F' . $i, date("Y-m-d",strtotime($memb->datepaid)))
 												->setCellValue('G' . $i, $memb->amtpaidthisyear);
+			/****************
+			* add into the headline subtotals
+			*
+			* based on the member type and when it was paid wrt the financial year and u3ayear
+			*
+			* Only paying types are relevant so M and MJL1
+			* M is split into late payers and correct payers
+			****************/
+			//$admin_logger->write( "getting switch  $mtype->membtype", $uselog);
+			switch ($mtype->membtype) {
+			case 'M':
+			// if datepaid is in the months before the rollover date from optionsu3a.u3a_year_start_month then late payer
+			$thedate=strtotime($memb->datepaid);
+			if($thedate <$rolloverdate) $headlines['Lates'] +=$memb->amtpaidthisyear;
+			else $headlines['Members'] +=$memb->amtpaidthisyear;
+			
+			//if 
+			break;
+			case 'MJL1':
+			//$admin_logger->write( "getting MJL1 amount $memb->amtpaidthisyear", $uselog);
+			$headlines['Advance'] +=$memb->amtpaidthisyear;
+			break;
+			}
 			$subtot += $memb->amtpaidthisyear;
 			$objPHPExcel->getActiveSheet()->getRowDimension($i)->setOutlineLevel(1);
+																//->setCollapsed(true)
+																//->setVisible(false);
 			$i++;
+				if ($i % 40 == 0) {
+		// Add a page break
+		$objPHPExcel->getActiveSheet()->setBreak( 'A' . $i, PHPExcel_Worksheet::BREAK_ROW );
+	}
 			} // foreach member
 			//  now add a subtotal row
 			$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, "Member Type $mtype->membtype Subtotal")
@@ -269,13 +351,17 @@ public function financialxmail2 () {
 			//  now add a subtotal row
 			$objPHPExcel->getActiveSheet()->setCellValue('A' . $i, "Overall Total ")
 									->setCellValue('D' . $i, $overalltotal);
+			$objPHPExcel->getActiveSheet()->setCellValue('D' . 2, $headlines['Lates']);
+			$objPHPExcel->getActiveSheet()->setCellValue('D' . 3, $headlines['Advance']);
+			$objPHPExcel->getActiveSheet()->setCellValue('D' . 4, $headlines['Members']);
+									
 	
 	
 		// echo date('H:i:s') , " getting membertypes " ,var_export($mtypes,true), EOL;
 		 
 			// Set active sheet index to the first sheet, so Excel opens this as the first sheet
 			$objPHPExcel->setActiveSheetIndex(0);
-			$objPHPExcel->getActiveSheet()->setTitle('Financial Report');
+			$objPHPExcel->getActiveSheet()->setTitle("Financial Report for $whichyear");
 
 			// Set print headers
 			$objPHPExcel->getActiveSheet()
@@ -288,6 +374,23 @@ public function financialxmail2 () {
 				->getHeaderFooter()->setOddFooter('&R&D &T&C&F&LPage &P / &N');
 			$objPHPExcel->getActiveSheet()
 				->getHeaderFooter()->setEvenFooter('&L&D &T&C&F&RPage &P / &N');
+
+				$objPHPExcel->getActiveSheet()->getStyle('A2:D4')->getFill()
+					->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+					->getStartColor()->setARGB('FF92D050'); //146 208 80
+			$styleArray = array(
+				'font' => array(
+					'bold' => true,
+				),
+				'borders' => array(
+				'top' => array(
+				'style' => PHPExcel_Style_Border::BORDER_THIN,
+				),
+				),
+	);
+		
+		$objPHPExcel->getActiveSheet()->getStyle('A2:D4')->applyFromArray($styleArray);
+	
 
 
 
