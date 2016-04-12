@@ -9,7 +9,6 @@ $f3->config('config/config.ini');
 
 
 
-
 $f3->route('GET /app/views/feespertypes [ajax]','AjaxController->getfeespertypes');
 
 
@@ -19,14 +18,17 @@ $f3->route('POST /edituser [ajax]','AjaxController->edituser');
 $f3->route('GET /members','MemberController->index');
 $f3->route('GET /membergrid [ajax]','AjaxController->members');
 $f3->route('GET /payments','MemberController->payments'); 
+$f3->route('GET /wherefees','MemberController->wherearefees'); 
+$f3->route('GET /wherefeesgrid [ajax]','AjaxController->wherefeesgrid');
 
 $f3->route('POST /editmember [ajax]','AjaxController->editmember');
 
 $f3->route('POST /app/views/amtpaid [ajax]','AjaxController->amtpaid'); 
 $f3->route('POST /app/views/feewhere [ajax]','AjaxController->feewhere');
 $f3->route('POST /app/views/markpaid [ajax]','AjaxController->markpaid'); 
-$f3->route('POST /app/views/markwillpay [ajax]','AjaxController->markwillpay'); 
+$f3->route('POST /app/views/markwaived [ajax]','AjaxController->markwaived'); 
 $f3->route('POST /app/views/markunpay [ajax]','AjaxController->markunpay'); 
+$f3->route('POST /app/views/editwherefees [ajax]','AjaxController->editwherefees'); 
 
 $f3->route('GET /email1','EmailController->email1');
 $f3->route('GET /subscribe1','EmailController->subscribe1'); 
@@ -88,6 +90,8 @@ $f3->route('GET /getsubscribers','MpzController->getlist2');
 $f3->route('GET /subscribertest','MpzController->subscribertest');
 
 $f3->route('GET /weeklyxmail','ReportController->weeklyxmail');
+$f3->route('GET /weeklyreports/@reportset','ReportController->weeklyreports');
+
 $f3->route('GET /financialxmail/@fyear',
   function($f3,$args) {
 	$myexcel= new ReportController();
@@ -104,6 +108,28 @@ $myexcel->financialxmail($args['fyear']);
 	);
 
 $f3->route('GET /financialxmail2','ReportController->financialxmail2');
+$f3->route('GET /mailto1joiner/@membnum', 'EmailController->mailto1joiner');
+$f3->route('GET /mailinglists','AdminController->mailinglists'); //
 
-
+$f3->route('GET /mailinglistgrid','AdminAjaxController->mailinglistgrid');
+$f3->route('POST /editmailinglist','AdminAjaxController->editmailinglist');
+$f3->route('GET /mail_mime_test/@membnum', 'EmailController->mailto1joiner');
+$f3->route('GET /mailmantest', 'EmailController->mailmantest');
+$f3->route('GET /mailinglistdetail/@listnum', 'EmailController->mailinglistdetail');
+$f3->route('GET /dailymailmancheck','EmailController->daily_mailman_check');
+$f3->route('GET /dailymailman','ReportController->	');
+$f3->route('GET /mailmissing/@listname', 'EmailController->mailmissing');
+$f3->route('GET /mailrewrite/@listname', 'EmailController->mailrewrite');
+$f3->route('GET /getmailchimplistsgrid','MailchimpController->getmailchimplistsgrid');
+$f3->route('GET /mailchimplists','AdminController->mailchimplists'); // mailchimp lists from the nav view
+$f3->route('GET /mailchimplistdetail/@listnum', 'MailchimpController->mailchimplistdetail');
+$f3->route('GET /dailymailchimpcheck', 'MailchimpController->dailymailchimpcheckz');
+$f3->route('GET /run_dailymailchimpcheck', 'MailchimpController->run_dailymailchimpcheck');
+$f3->route('GET /mctest', 'MailchimpController->mctest');
+$f3->route('GET /check', 'CheckController->check2');
+$f3->route('GET /check2', 'CheckController->check2');
+$f3->route('POST /app/views/check/uploads','CheckController->getupload');
+$f3->route('POST /app/views/check/uploads2','CheckController->getupload2');
+$f3->route('GET /checkedgrid [ajax]','CheckController->getupload2');
+$f3->route('GET /checkedjqgrid [ajax]','CheckAjaxController->checkedjqgrid');
 $f3->run();

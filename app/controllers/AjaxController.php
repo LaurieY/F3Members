@@ -313,6 +313,48 @@ $admin_logger->write("in fn members where result #310 , u3ayear=".$u3ayear ,$use
 echo $this->getresult_where("where u3ayear='".$u3ayear."' and status='Active'");
 }  //end of else of _search
 } // end of function  members
+public function wherefeesgrid() //for wherefeesgrid
+	 {
+	 $f3=$this->f3;
+		 $members =	new Member($this->db);
+	 $uselog=$f3->get('uselog');
+	
+	 $admin_logger = new MyLog('admin.log');
+	$admin_logger->write('in fn feeswhere #323 fyear='.$f3->get('SESSION.fyear'),$uselog);
+	 $f3->set('page_head','User List');
+	 //$admin_logger->write('in fn members '.get_class($this->db)." Parent is ".get_parent_class($this->db)."\n");
+	//$admin_logger->write( "In Ajax POST membergrid fn members Session user_id = ".$f3->get('SESSION.user_id')); 
+
+/**	$class_methods = get_class_methods('DB\SQL');
+	foreach ($class_methods as $method_name) {
+   //$admin_logger->write('in fn members class methods '.$method_name."\n");
+	}**/
+	
+	//$admin_logger->write('GET _search = '.$_GET['_search']."\n");
+if ($f3->get('GET._search')=='true'){
+// set up filters
+//$filters = $f3->get('GET.filters');
+$filters = "";
+$admin_logger->write('in fn feeswhere filters= '.$filters,$uselog);
+
+$where = "";
+$where = "feewhere <> 'Treasurer' and fyear= ".$f3->get('SESSION.fyear');
+  
+	$admin_logger->write('in fn wherefeesgrid where= '.$where,$uselog);
+	$f3->set('SESSION.lastseen',time()); 
+	/**********************  Now get the resulting xml via SWL using this where selection ******/
+	$whh =	$this->getresult_where($where);
+	
+	$admin_logger->write('in fn members where result = '.$whh."\n");
+echo $whh;
+}
+else {
+$fyear = $f3->get('SESSION.fyear');
+$admin_logger->write("in fn wherefeesgrid where result #353 , fyear=".$fyear ,$uselog);
+//echo $this->getresult_where("where feewhere <> 'Treasurer' and fyear='".$fyear."' and status='Active' and amtpaidthisyear > 0");
+echo $this->getresult_where("where feewhere <> 'Treasurer' and status='Active' and amtpaidthisyear > 0");
+}  //end of else of _search
+} // end of function  members
 
 
 private function getresult_where( $where_to_use)
@@ -371,8 +413,8 @@ header("Content-type: text/xml;charset=utf-8");
  $amt_total_thisfy = $fytotals['thisfy'];
  // the actual query for the grid data 
  // Fetch extra columns to allow for the icons columns in the payments grid
- $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,feewhere,1,2,3,datejoined FROM members  ".$where_to_use." ORDER BY $sidx $sord ". $extrasort. " LIMIT $start , $limit"; 
-//$admin_logger->write('in getresult_where SQL = '. $SQL."\n");
+ $SQL = "SELECT id,surname ,forename,membnum ,phone,mobile,email,membtype,location,paidthisyear,amtpaidthisyear,feewhere,fyear,u3ayear,3,datejoined FROM members  ".$where_to_use." ORDER BY $sidx $sord ". $extrasort. " LIMIT $start , $limit"; 
+$admin_logger->write('in getresult_where SQL = '. $SQL."\n",$uselog);
  $result = mysqli_query( $db,$SQL ) or die("Couldn't execute query.".mysql_error()); 
 $s = "<?xml version='1.0' encoding='utf-8'?>";
 $s .=  "<rows>";
@@ -504,7 +546,7 @@ public function edituser()
 	$mem_user =	new User($this->db);
  $f3->set('mem_user',$mem_user);
 	 switch ($f3->get('POST.oper')) {
-    case "add":  //**********************   ADD a member  force paid ==Y when adding a member, else why ?
+    case "add":  //**********************   ADD a use  force
 	$temptrail= array();
         // do mysql insert statement here
 		$mem_user->copyfrom('POST');
@@ -615,18 +657,25 @@ case "add":
 		$admin_logger->write('in addmember db log = '.$this->db->log()."\n");
 		
 		$this->logtrail($members,$trail,"add");
-		if ($f3->get('allowwelcomeemail') ){
-		$mpz= new MpzController();
-		$mpz->addtolist($members); }
+		
+	/*****	$mpz= new MpzController();
+		$mpz->addtolist($members);****/
+		if ($f3->get('SESSION.allowwelcomeemail')&& ($members->email!=''  )) { // can't send email if the member doesn't supply one
+		$eml = new EmailController();
+		$eml->joiner_email($members->membnum);
+	//	$subresponse =$eml->mailmansub($members);
+	//	$admin_logger->write('in addmember subscribe email for membnum '.$members->membnum. ' with result '.$subresponse,$uselog);
+		}
+		
 		
     break;
 case "edit":   //************************************ EDIT **//
-
+		$sendwelcomeforchange =false;
 	$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ) ); //this did work but its not the same as the paid code
 		$temptrail= array();
 		$members->copyto('temptrail');
 		$trail->copyfrom('temptrail');	
-
+		$oldemail = $members->email;  // to detect change of email then need to update mailing list
 		$this->logtrail($members,$trail,"editfrom");
 		$trail->reset();
 		$uselog=$f3->get('uselog');	
@@ -639,25 +688,32 @@ case "edit":   //************************************ EDIT **//
 		if ($oldmembtype!=$f3->get('POST.membtype')) { // change of membertype
 		/*********IF the field membtype has changed to a paying one then change the payment status to N and amtpaid to zero ***/
 		$admin_logger->write('in editmember with change of membtype from  '.$oldmembtype .' to  '.$members->membtype,$uselog);
-						
 			if (strpos($members->membtype,'M', 0) === 0) { //new membtype starts with M so should be some fees so zeroise and set not paid for safety 
 			$admin_logger->write('in editmember new membtype starts with M  '.$members->membtype,$uselog);
-
 			$members->amtpaidthisyear=0;
-			$members->paidthisyear='N';
-			
-				}
-				else { //if  to a non paying ie not start with M se paid ='Y' and amtpaid to zero
+			$members->paidthisyear='N';				}
+			else { //if  to a non paying ie not start with M se paid ='Y' and amtpaid to zero
 				$members->amtpaidthisyear=0;
-			$members->paidthisyear='Y';
-				
+				$members->paidthisyear='Y';
 				}
 		}	
-
 		$admin_logger->write('in editmember after get_amt_paid '.$members->surname.' membnum '.$members->membnum.' amtpaidthis year '.$members->amtpaidthisyear,$uselog);
 		$admin_logger->write('In editmember membnum is '.$members->membnum. ' and of type '.gettype($members->membnum),$uselog);
-	
-	
+
+		if ($oldemail!=$f3->get('POST.email')) { // change of email
+			$admin_logger->write('In editmember old email is '.$oldemail. ' new email is  '.$f3->get('POST.email'),$uselog);
+		 $now = new DateTime('NOW'); 
+		 $joined = new DateTime($members->datejoined);
+		// $diff = intval($joined->diff($now)->format('%d'));
+		$diff=intval($joined->diff($now)->format('%a'));
+		$admin_logger->write('In editmember join date is '.$joined->format('Y-m-d'). ' now is  '.$now->format('Y-m-d'). ' diff is '.$diff,$uselog);
+
+	if ($f3->get('SESSION.allowwelcomeemail') && ($diff <60  ) ) { // IFF recently joined is probably an email correction
+		$sendwelcomeforchange =true;
+
+
+			}  
+	}
 	//var_dump($members);  //LEY dumps in the http response
 		$temptrail= array();
 		$members->copyto('temptrail');
@@ -665,7 +721,10 @@ case "edit":   //************************************ EDIT **//
 		$this->logtrail($members,$trail,"editto");
 		
 		$members->update();
-		
+		if($sendwelcomeforchange){ // send welcome email even though its a change because they are new and its assumed there was an error initially
+			$eml = new EmailController();
+			$eml->joiner_email($members->membnum); 
+			}
 
 		$arr=$members->cast();
 		$arrencoded= json_encode($arr);
@@ -685,11 +744,14 @@ case "edit":   //************************************ EDIT **//
 		$admin_logger->write('in delmember trail Surname '.$trail->surname);
 		$admin_logger->write('in delmember trail editor/user_id will be'.$f3->get('SESSION.user_id'  ));
 		$this->logtrail($members,$trail,"del_".$typeofdelete);
+		$oldemail = $members->email;
 		//$trail->editor=$f3->get('SESSION.user_id'  );
-		/*  now get alll the details of the members entry into the trail entry  */
+		/*  now get all the details of the members entry into the trail entry  */
 		if($typeofdelete=='withrefund')	$members->status='Deleted';
 		else $members->status='Left';
 		$members->update();
+		$eml = new EmailController();
+	//	$eml->removeemail($members);
     break;
 }
 	// echo $f3->get('POST.oper');
@@ -713,7 +775,10 @@ case "edit":   //************************************ EDIT **//
 	// ********* calculate amount paid
 	//$feespertpes =	new Feespertypes($this->db);
 		$feespertypes = new \DB\SQL\Mapper($this->db, 'feespertypes');
-		$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
+		//  add in the year to get the correct payment value
+	//	$feespertypes->load(array('membtype =:membtype',array(':membtype'=> $f3->get('POST.membtype')) ) );
+		$feespertypes->load(array('membtype =:membtype and acyear=:acyear',array(':membtype'=> $f3->get('POST.membtype'),':acyear'=>$f3->get('SESSION.u3ayear')) ) );
+
 	$admin_logger->write('in get_amt_paid /feespertype ='.$feespertypes->membtype.'  and feetopay '.$feespertypes->feetopay,$uselog);
 	$admin_logger->write('In get_amt_paid2 membnum is '.$members->membnum ,$uselog);
 		//$feetopay = $feespertypes->feetopay;
@@ -744,8 +809,11 @@ case "edit":   //************************************ EDIT **//
 function amtpaid() {
  $f3=$this->f3; 
  	$members =	new Member($this->db);
+	$u3ayear = $f3->get('SESSION.u3ayear');
 	$trail = new Trail($this->db);  // audit trail
-		$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+//		$members->load(array('membnum =:id and u3ayear = :u3ayear'	,array(':id'=> $f3->get('POST.membnum'),':u3ayear'=>$u3ayear)) );
+
+		$members->load(array('membnum =:id and u3ayear=:u3ayear',array(':id'=> $f3->get('POST.membnum'),':u3ayear'=>$u3ayear)) );
 		$temptrail= array();
 		$members->copyto('temptrail');
 		$trail->copyfrom('temptrail');	
@@ -771,8 +839,13 @@ function amtpaid() {
 /*****  when an edit specifically changes the location of the fee in Member Payments page   *********/
 function feewhere() {
  $f3=$this->f3; 
- 	$members =	new Member($this->db);
+ 		$uselog=$f3->get('uselog'); 
+	 	$admin_logger = new MyLog('admin.log');
+		//$admin_logger->write('In markpaid uselog ='.$uselog.' variable uselog= '.$f3->get('uselog'),$uselog);
+		$members =	new Member($this->db);
 		$members->load(array('membnum =:id',array(':id'=> $f3->get('POST.membnum')) ));
+		$admin_logger->write('In feewhere #828'.var_export($members,true),$uselog);
+
 		$members->amtpaidthisyear=$f3->get('POST.amtpaidthisyear');
 		$members->paidthisyear=$f3->get('POST.paidthisyear');
 		$members->feewhere=$f3->get('POST.feewhere');
@@ -788,7 +861,7 @@ function feewhere() {
 	 //$admin_logger->write('in editmember after jsonencode '.$arrencoded);
    echo $arrencoded;
 }	
-function markpaid() { 
+function markpaid() {  
 	 $f3=$this->f3; 
 	$uselog=$f3->get('uselog');
 	
@@ -814,6 +887,12 @@ function markpaid() {
 		$thisfy = $today['year'];
 		$members->fyear=$thisfy;
 		$members->update();
+		 // now send renewal email if member type  in (M or MJL2) i.e. ignore GL and AT types in fact only M as MJL2 is marked as paid at rollover
+		 if(($members->membtype =='M') && ($members->email!=''  ) && $f3->get('SESSION.allowwelcomeemail')){ 		// send renewal email upon paying and only if they are an M type member
+		$eml = new EmailController();
+//		$eml->renewer_email($members->forename,$members->surname,$members->membnum,$members->email); 
+		$eml->renewer_email($members->membnum);
+		 }
 		$this->logtrail($members,new Trail($this->db),"paid");
 
 		$xnum= $members->membnum;
@@ -826,15 +905,16 @@ function markpaid() {
 		$fytotals = $members->gettotals();
 		$arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
 	 	 $arrencoded= json_encode($arr);
-	 $admin_logger->write('in editmember after jsonencode '.$arrencoded,$uselog);
+	 $admin_logger->write('in markpaid after jsonencode '.$arrencoded,$uselog);
 		echo $arrencoded;
    //echo json_encode($arr);
 	}
-	
-function markwillpay() { 
+	/********************  willpay no longer used replaced by markwaived
+
+	function markwillpay() { 
 	 $f3=$this->f3;
 	 $members =	new Member($this->db);
-	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $f3->get('SESSION.u3ayear')) ); 
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),':u3ayear'=> $f3->get('SESSION.u3ayear')) ); 
 	$members->amtpaidthisyear=0;
 	$members->paidthisyear='W';	
 	$members->feewhere = $f3->get('POST.feewhere');
@@ -852,10 +932,34 @@ function markwillpay() {
 	
    echo $arrencoded;
 	 }
+	 ************/
+	 /****************markwaived remove any payment value, set paidthis year to W
+	 ************/
+function markwaived() { 
+	 $f3=$this->f3;
+	 $members =	new Member($this->db);
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),':u3ayear'=> $f3->get('SESSION.u3ayear')) ); 
+	$members->amtpaidthisyear=0;
+	$members->paidthisyear='W';	
+	$members->feewhere = ''; //$f3->get('POST.feewhere');
+	$members->update();
+	$this->logtrail($members,new Trail($this->db),"waived");
+	$xnum= $members->membnum;
+   
+   $xpaid= $members->paidthisyear;
+   $xpay= $members->amtpaidthisyear;
+ // add new total to the return
+ $fytotals = $members->gettotals(); // this will return an assoc array
+ 
+	 $arr = array('membnum' => $xnum, 'paidthisyear' => $xpaid, 'amtpaidthisyear' => $xpay,'lastfytotal'=>$fytotals['lastfy'],'thisfytotal'=>$fytotals['thisfy']);
+	$arrencoded= json_encode($arr);
+	
+   echo $arrencoded;
+	 }
 function markunpay() { 
 	 $f3=$this->f3;
 	 $members =	new Member($this->db);
-	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),'u3ayear'=> $f3->get('SESSION.u3ayear') )); 
+	$members->load(array('membnum =:id and u3ayear = :u3ayear',  ':id'=> $f3->get('POST.membnum'),':u3ayear'=> $f3->get('SESSION.u3ayear') )); 
 	$members->amtpaidthisyear=0;
 	$members->paidthisyear='N';	
 	$members->feewhere = $f3->get('POST.feewhere');
@@ -872,6 +976,18 @@ function markunpay() {
 	$arrencoded= json_encode($arr);
 	
    echo $arrencoded;
+	 }
+function editwherefees() {
+		$f3=$this->f3;
+		$members =	new Member($this->db);
+		$members->load(array('id =:id',array(':id'=> $f3->get('POST.id')) ));
+ 		$members->feewhere=$f3->get('POST.feewhere');
+		$members->update();		
+		$this->logtrail($members,new Trail($this->db),"where fees");	
+		$arr = array('membnum' => $members->membnum, $members->feewhere);
+	 	$arrencoded= json_encode($arr);
+	
+		echo $arrencoded;		
 	 }
 function logtrail($members,$trail,$action) {
 		$f3=$this->f3;
@@ -963,9 +1079,6 @@ $dldir=$f3->get('BASE').$f3->get('downloads');
 	  if (!Web::instance()->send($dlfilename,NULL,512,TRUE))   {  $f3->error(404);    }     ***/
 		echo "OK";
 }
-
-	
-	
 	
 	public function optiongrid() {
 	$f3=$this->f3;
@@ -981,10 +1094,15 @@ $dldir=$f3->get('BASE').$f3->get('downloads');
 	$sord = $_GET['sord']; 
 	// get count of records
 	echo "<?xml version='1.0' encoding='utf-8'?><rows><page>1</page><total>1</total><records>1</records><row id='1154'><cell>f</cell><cell>c</cell></row></rows>";
-	
-	
-
-	
 	}
-
+public function datetest() {
+			 $members =	new Member($this->db);	 	
+			 $members->load(array('id =:id',array(':id'=> 6346) ) );
+//var_export($members);
+			 $now = new DateTime('NOW'); 
+		 $joined = new DateTime($members->datejoined);
+		 var_export(intval($joined->diff($now)->format('%a')));
+		 $diff = intval($joined->diff($now)->format('%d'));
+	
+}
 } // end of class

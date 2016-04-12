@@ -2,6 +2,6 @@
     "require": {
         "mailchimp/mailchimp": "dev-master",
 		
-        "drewm/mailchimp-api": "dev-master"
+        "drewm/mailchimp-api": "dev-api-v3"
     }
 }

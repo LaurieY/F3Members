@@ -1,0 +1,1 @@
+select email, forename,surname, location, membtype , membnum from members where u3ayear = '2015-2016' and status ='Active' and email <> '' and paidthisyear ='N'  group by email order by email

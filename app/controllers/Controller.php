@@ -7,7 +7,7 @@ class Controller {
 
 	function beforeroute() {
 	$db=$this->db;
-	$this->mc = new Mailchimp('1e88266ff71a6f5eaef954a244cf5426-us2',array('debug'=> true));
+	//$this->mc = new Mailchimp('1e88266ff71a6f5eaef954a244cf5426-us2',array('debug'=> true));
 	//	$this->f3->set('message','');
 	//	echo ($this->f3->get('message' ));
 	}
@@ -17,7 +17,10 @@ class Controller {
 	$f3=$this->f3;
 	//$f3->set('page_head','Login');
 	//$auth_logger->write( 'Entering Controller afterroute URI= '.$f3->get('URI'  ) );
-		echo Template::instance()->render('layout.htm');	
+				//var_export(get_class($this));
+				if (get_class($this) =='CheckControllerz') {echo Template::instance()->render('check/layout.htm');	
+	}
+	else echo Template::instance()->render('layout.htm');	
 	}
 
 	function __construct() {

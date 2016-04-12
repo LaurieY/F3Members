@@ -28,15 +28,23 @@
     </head>
 
     <body>
-<!-- contents of header.htm -->
+
+<!-- contents of views/header.htm -->
         <div class="container">
 		
-           <check if ="{{ @page_head == 'Admin' }}">
+           <check if ="{{ substr(@page_head,0,6) == 'Manage' }}">
 		   <true>
 		   <include href="admin/nav.htm" />
 		   </true>
 		   <false>
-		   <include href="member/nav.htm" />
+				<check if ="{{@page_role == 'nonuser' }}">
+			   <true>
+				<include href="check/nav.htm" />			   
+			   </true>
+			   <false>
+			  <include href="member/nav.htm" />
+			  
+		   </false>
 		   </false>
 		   </check>
             <div class="jumbotron">

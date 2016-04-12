@@ -41,6 +41,7 @@ $f3=$this->f3;
         $f3->set('message', 'Session Cookies MUST be allowed in your Browser for this program to function');
 		
 		$f3->set('view','admin/nocookie.htm');
+		$f3->reroute('/login');
 		//$f3->set('SESSION.lastseen',time()); 
 
 }
@@ -54,6 +55,25 @@ $f3=$this->f3;
 		$admin_logger->write('in admin fees ',$uselog);
         $this->f3->set('view','admin/fees.htm');	
 	}
-
+	public function mailinglists()
+	{	$f3=$this->f3;
+		$admin_logger = new Log('admin.log');
+		$uselog=$f3->get('uselog');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+        $this->f3->set('page_head','Manage Mailing Lists');
+        $this->f3->set('message', $this->f3->get('PARAMS.message'));
+		$admin_logger->write('in admin mailinglists ',$uselog); 
+        $this->f3->set('view','admin/mailinglists.htm');	
+	}
+	public function mailchimplists()
+	{	$f3=$this->f3;
+		$admin_logger = new Log('admin.log');
+		$uselog=$f3->get('uselog');
+		$f3->set('page_role',$f3->get('SESSION.user_role'));
+        $this->f3->set('page_head','Manage MailChimp Lists');
+        $this->f3->set('message', $this->f3->get('PARAMS.message'));
+		$admin_logger->write('in admin mailchimplists ',$uselog); 
+        $this->f3->set('view','admin/mailchimplists.htm');	
+	}
 	
 	}

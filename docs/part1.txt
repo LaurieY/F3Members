@@ -1,0 +1,4 @@
+</div>
+
+<table style="width:100%"><tr><td style = "width:25%;text-align:right"><a href="mailto:president@u3a.es">president@u3a.es </td><td  style="text-align:center;width:50%">Allan Edwards</td><td style = "width:25%" style="text-align:right">650 179 142</td></tr>
+<tr><td style = "width:25%;text-align:right"><a href="http://www.u3a.es/20xx_course_with_form">PROGRAMME </td><td  style="text-align:center;width:50%"><a href="http://www.u3a.es/lectures">LECTURES</td><td style = "width:25%" style="text-align:right"><a href="http://www.u3a.es/social_headings">EVENTS</td></tr></table>

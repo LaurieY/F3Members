@@ -6,7 +6,7 @@ class UserController extends Controller {
     {$f3=$this->f3;
         $user = new User($this->db);
         $f3->set('users',$user->all());
-        $f3->set('page_head','User List');
+        $f3->set('page_head','Manage Users');
         $f3->set('message', $f3->get('PARAMS.message'));
         $f3->set('view','admin/list.htm');
 		

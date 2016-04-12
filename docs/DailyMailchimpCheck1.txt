@@ -1,0 +1,93 @@
+Start Daily MailChimp Check at 2015-10-13 10:31:33
+Values Before Changes 
+------------------------------------------
+
+------------------------------------------
+List U3A Marbella and Inland List
+------------------------------------------
+member_count				530
+cleaned_count				10
+Cleaned 				brdnagashel@gmail.com Eleanor Keating 247
+Cleaned 				ghewgill@terra.es Val Hewgill 197
+Cleaned 				irena@macielinski.com Irena Macielinski 206
+Cleaned 				jinsevillanodlc@gmail.com Miguel Sevillano 589
+Cleaned 				keatingeamon@anit.es Eamon Keating 614
+Cleaned 				lyal3@live.co.uk Lya Leppik 234
+Cleaned 				valbailey@braughting.org.uk Valerie Bailey 394
+Cleaned 				cdnoiij@gmail.com Constance De Nooij 669
+Cleaned 				cdnoij@gmail.com Constance De Nooij 669
+Cleaned 				lloydinspain@yahoo.co.uk Peter Lloyd 687
+unsubscribe_count				0
+------------------------------------------
+List U3A Marbella and Inland not yet paid
+------------------------------------------
+member_count				146
+cleaned_count				0
+unsubscribe_count				1
+Unsubscribed 				laurie2@lyates.com Laurie2 YATES 998
+------------------------------------------
+List Group Leaders
+------------------------------------------
+member_count				45
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Administration Team
+------------------------------------------
+member_count				17
+cleaned_count				0
+unsubscribe_count				0
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland List
+Email david@acsnz.biz added  to Mailchimp for list = U3A Marbella and Inland List
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland not yet paid
+
+------------------------------------------
+Emails to add to Mailchimp list Group Leaders
+
+------------------------------------------
+Emails to add to Mailchimp list Administration Team
+
+
+========================================
+Values After Changes 
+------------------------------------------
+
+------------------------------------------
+List U3A Marbella and Inland List
+------------------------------------------
+member_count				530
+cleaned_count				10
+Cleaned 				brdnagashel@gmail.com Eleanor Keating 247
+Cleaned 				ghewgill@terra.es Val Hewgill 197
+Cleaned 				irena@macielinski.com Irena Macielinski 206
+Cleaned 				jinsevillanodlc@gmail.com Miguel Sevillano 589
+Cleaned 				keatingeamon@anit.es Eamon Keating 614
+Cleaned 				lyal3@live.co.uk Lya Leppik 234
+Cleaned 				valbailey@braughting.org.uk Valerie Bailey 394
+Cleaned 				cdnoiij@gmail.com Constance De Nooij 669
+Cleaned 				cdnoij@gmail.com Constance De Nooij 669
+Cleaned 				lloydinspain@yahoo.co.uk Peter Lloyd 687
+unsubscribe_count				0
+------------------------------------------
+List U3A Marbella and Inland not yet paid
+------------------------------------------
+member_count				146
+cleaned_count				0
+unsubscribe_count				1
+Unsubscribed 				laurie2@lyates.com Laurie2 YATES 998
+------------------------------------------
+List Group Leaders
+------------------------------------------
+member_count				45
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Administration Team
+------------------------------------------
+member_count				17
+cleaned_count				0
+unsubscribe_count				0

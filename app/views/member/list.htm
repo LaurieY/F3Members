@@ -13,6 +13,26 @@ function myelem (value, options) {
 var treaschecked =" ";
 var preschecked= " ";
 var otherchecked =" ";
+var bankchecked = " ";
+switch(value) {
+	case 'Treasurer':
+	case '':
+	treaschecked ='checked';
+	otherchecked =" ";
+	break;
+	case 'President':
+	preschecked	='checked';
+	break;
+	case 'Bank':
+	bankchecked	='checked';
+	break;
+	default:
+	otherchecked ="checked";
+	break;
+	
+
+}
+/************
 if (value=='Treasurer'||value=='' ) {
 treaschecked ='checked';
 otherchecked =" ";
@@ -21,7 +41,7 @@ else if(value=='President'){
 	preschecked	='checked';}
 		else {
 otherchecked ='checked';}
-
+********/
 
 
 //********  get current value of feewhere , if not selected set to Treasurer, otherwise set to existng value
@@ -29,6 +49,7 @@ otherchecked ='checked';}
 //var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
 var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
 						'<input id="'+options.id +'_pres" type="radio" size="10" name="fee" value="President" '+preschecked+'  >President<br>'+
+						'<input id="'+options.id +'_bank" type="radio" size="10" name="fee" value="Bank" '+bankchecked+'  >Bank<br>'+
 						'<input id="'+options.id + '_other' +
                         '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
 						'<input id="'+options.id +'_text" type="text" size="20" name="feewhere" onfocus="focusOther()" value=	"'+value+'" ></div>';
@@ -44,6 +65,51 @@ function myvalue(elem, operation, value) {
 	 if( $('input:radio[name="fee"]:checked').val() =='other') return  fred;
 		  else return $('input:radio[name="fee"]:checked').val();
     } else if(operation === 'set') {
+       $('input',elem).val(value);
+    }
+}
+function phoneelem (value, options) { 
+//********  get current value of phone 
+return $("<input type='text' size='10' value='"+value+"'/>");
+}
+function phonevalue(elem, operation, value) {
+   if(operation === 'get') {
+      // return $(elem).val();
+	  var fred=$('input[id*="phone"][class="customelement"]').val();
+	  if ( ~fred.indexOf("skype_c2c")  ) {   // its a skype click2call entry so strip out the actual phone number
+	  // find the text '<span class="skype_c2c_text_span">'  the number follows  up to '</span>'  
+	  var fred2 = fred.match(/<span class="skype_c2c_text_span">([\d\s]*)/)[1];
+
+	  return fred2;
+	  }
+
+	 return fred;
+	// return value.val();
+/***	 if( $('input:radio[name="fee"]:checked').val() =='other') return  fred;
+		  else return $('input:radio[name="fee"]:checked').val();
+  **/   } else if(operation === 'set') {
+       $('input',elem).val(value);
+    }
+}function mobileelem (value, options) { 
+//********  get current value of phone 
+return $("<input type='text' size='10' value='"+value+"'/>");
+}
+function mobilevalue(elem, operation, value) {
+   if(operation === 'get') {
+      // return $(elem).val();
+	  var fred=$('input[id*="mobile"][class="customelement"]').val();
+	  if ( ~fred.indexOf("skype_c2c")  ) {   // its a skype click2call entry so strip out the actual phone number
+	  // find the text '<span class="skype_c2c_text_span">'  the number follows  up to '</span>'  
+	  var fred2 = fred.match(/<span class="skype_c2c_text_span">([\d\s]*)/)[1];
+
+	  return fred2;
+	  }
+
+	 return fred;
+	// return value.val();
+/***	 if( $('input:radio[name="fee"]:checked').val() =='other') return  fred;
+		  else return $('input:radio[name="fee"]:checked').val();
+  **/   } else if(operation === 'set') {
        $('input',elem).val(value);
     }
 }
@@ -69,17 +135,18 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
 							},editrules: { number: false, required: true}},
              {name: "forename", width: 120,editable: myeditability, edittype:"text", editrules: { number: false, required: true}},
 			 { name: "membnum", width: 80,searchoptions : {sopt: ["eq"] }, searchrules:{integer:true},sorttype:'number'}, //  eq = equal to  	
-			{ name: "phone", width: 85, align: "right",editable: myeditability, edittype:"text" },
-            { name: "mobile", width: 85, align: "right",editable: myeditability, edittype:"text" }, 
+//			{ name: "phone", width: 85, align: "right",editable: myeditability, edittype:"text" ,editrules:{number:true,required:false}},
+			{ name: "phone", width: 85, align: "right",editable: myeditability, edittype:'custom',editoptions:{custom_element: phoneelem, custom_value:phonevalue} ,editrules:{custom:true, custom_func:phonecheck,required:false}},
+            { name: "mobile", width: 85, align: "right",editable: myeditability, edittype:'custom',editoptions:{custom_element: mobileelem, custom_value:mobilevalue} ,editrules:{custom:true, custom_func:phonecheck,required:false}},  
             { name: "email", width: 210, align: "right",editable: myeditability, edittype:"text" ,searchoptions : {sopt: ["cn"] },editrules: { email: true, required: false},}, 
 			{ name: "membtype", width: 90, align: "right",editable: myeditability,
-			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"},},
+			edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;AT:Admin Team;ATS:Admin Team Spouse;ATGL:Admin Team & Group Leader"},},
              { name: "location", width: 65, align: "right" ,editable: myeditability,edittype:'select',editoptions:{value:"C:Coast;I:Inland"},},
 			 { name: "paidthisyear", width: 80, align: "right" ,editable: paideditability, edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: paideditability,searchoptions : {sopt: ["ge","le"] },sorttype:'number',viewable: false,hidden: hidemoney },
 			  			 // { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'select',editoptions:{value:"Treasurer:Treasurer;Inland:Inland"} ,searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false}   },
 			 { name: "feewhere", width: 80, align: "left",search:true,hidden: hidemoney , edittype:'custom',editoptions:{custom_element: myelem, custom_value:myvalue} ,
-			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false,required:true}   },
+			 searchoptions : {sopt: ["bw","eq"] },editable: myeditability, editrules: {edithidden:false,required:false}   },
 			{ name:"",hidden:true},
 			{ name:"",hidden:true},
 			{ name:"",hidden:true},
@@ -132,6 +199,13 @@ else {myeditability=true; paideditability=false;hidemoney=false;}
 	 
     }); 
             var lastSelection;
+function phonecheck(value, colname) {  
+   return [true,""];
+if (value < 0 || value >20) 
+   return [false,"Please enter value between 0 and 20"];
+else 
+   return [true,""];
+}			
 function editRow(id) { var grid = $("#list");
                 if (id && id !== lastSelection) {
                    
@@ -228,8 +302,18 @@ function afterFormEdit(response, postdata)  // Form edit doesn't allow amtpaid o
  /**************  ADD BUTTON ****/
 $("#badd").click(function(){
 var grid = $("#list");
+$mjl1startmonth="{{@SESSION.mjl1startmonth}}";
+$mjl1endmonth="{{@SESSION.u3astartmonth}}";
+var editoptionsbeforetext="M:Standard Member;MJL1:Member Joined Late (1st year);GL:Group Leader;GLS:Group Leader Spouse;AT:Admin Team;ATS:Admin Team Spouse;ATGL:Admin Team & Group Leader";
+var editoptionsaftertext="M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;AT:Admin Team;ATS:Admin Team Spouse;ATGL:Admin Team & Group Leader";
+todayDate=new Date();
+realmonth = todayDate.getMonth()+1;
+//realmonth=7; // for boundary testing
+if ((realmonth >=$mjl1startmonth)&&(realmonth <$mjl1endmonth)) { 
+editoptionsbeforetext="MJL1:Member Joined Late (1st year);M:Standard Member;GL:Group Leader;GLS:Group Leader Spouse;AT:Admin Team;ATS:Admin Team Spouse;ATGL:Admin Team & Group Leader";
+}
 grid.jqGrid('setColProp','membtype', // remove MJL2 from otions available
-	{editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}});
+	{editoptions:{value:editoptionsbeforetext}});
 
 $( "#addeditdel" ).val( "" );
 	jQuery("#list").jqGrid('editGridRow','new',{dataheight:360,height:460,width:500,closeAfterAdd:true,afterSubmit:afterFormAdd,
@@ -244,7 +328,7 @@ function beforeShowAdd(form) {
 $('#tr_amtpaidthisyear', form).hide();$('#tr_paidthisyear', form).show();
 var grid = $("#list");
 grid.jqGrid('setColProp','membtype',  //Reinstate MJL2 once form has been contructed, in case form cancelled
-	{editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}});
+	{editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;AT:Admin Team;ATS:Admin Team Spouse;ATGL:Admin Team & Group Leader"}});
 }
 function beforeSubmitAdd(postdata,formid) {
 var success=true;message='';
@@ -331,7 +415,7 @@ return (false,'Error on Delete Entry' );
 
 	<br>
 <!-- 	U3AYear = {{@SESSION.u3ayear}}
- U3Astart month = {{@SESSION.u3astartmonth}} -->
-
+ U3Astart month = {{@SESSION.u3astartmonth}} 
+MJL1 start month = {{@SESSION.mjl1startmonth}}-->
 	<input type="hidden" id="addeditdel" value="a" />
 

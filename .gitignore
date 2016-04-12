@@ -168,4 +168,3 @@ pip-log.txt
 lib/api/*
 *.diff
 error_log
-downloads/*

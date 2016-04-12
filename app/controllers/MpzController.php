@@ -90,7 +90,7 @@ public function subscribertest() {
 			<email>laurie_autompz@lyates.com</email>
 			<dateAdded>2015-6-10 13:50</dateAdded>
 			<customField1>M</customField1>
-			<customField2>CM</customField2>
+			<customField2>AT</customField2>
 			<customField3>180</customField3>
 			**/
 /***

@@ -1,0 +1,238 @@
+Start Daily MailChimp Check at 2015-10-13 10:24:07
+Values Before Changes 
+------------------------------------------
+
+------------------------------------------
+List U3A Marbella and Inland List
+------------------------------------------
+member_count				530
+cleaned_count				10
+Cleaned 				brdnagashel@gmail.com Eleanor Keating 247
+Cleaned 				ghewgill@terra.es Val Hewgill 197
+Cleaned 				irena@macielinski.com Irena Macielinski 206
+Cleaned 				jinsevillanodlc@gmail.com Miguel Sevillano 589
+Cleaned 				keatingeamon@anit.es Eamon Keating 614
+Cleaned 				lyal3@live.co.uk Lya Leppik 234
+Cleaned 				valbailey@braughting.org.uk Valerie Bailey 394
+Cleaned 				cdnoiij@gmail.com Constance De Nooij 669
+Cleaned 				cdnoij@gmail.com Constance De Nooij 669
+Cleaned 				lloydinspain@yahoo.co.uk Peter Lloyd 687
+unsubscribe_count				0
+------------------------------------------
+List U3A Marbella and Inland not yet paid
+------------------------------------------
+member_count				1
+cleaned_count				0
+unsubscribe_count				1
+Unsubscribed 				laurie2@lyates.com Laurie2 YATES 998
+------------------------------------------
+List Group Leaders
+------------------------------------------
+member_count				44
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Administration Team
+------------------------------------------
+member_count				17
+cleaned_count				0
+unsubscribe_count				0
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland List
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland not yet paid
+Email adelemutwalli@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email alanindyfed@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email alnmarge2000@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email aneurincoombes@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email ann.bradford00@googlemail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email anna_janson@yahoo.de added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email anne.kent17@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email anneke.m@virgin.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email apwscott@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email archie.f@tiscali.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email armstronggretta@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email aseret1956@yahoo.de added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email barrydavey@aol.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email bdfzorro@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email bergetp@msn.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email billgreenesp@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email billseemari@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email bryan.alba@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email c.jacobsson@post.harvard.edu added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email carmel-w@live.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email carmello309@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email carolannkaiser9@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email casapk@eircom.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email catherinegraham48@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email catherinepaul100@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email chown@hotmail.fr added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email chrishorton60@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email christinebarrows123@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email christinechignell@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email clairemac6@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email clarebaily@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email claudiozorrilla684@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email crisackerberg@telefonica.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email cvdsdb@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email davedirtywicker@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email debsteve999@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email djbellemare@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email djvambeck@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email doreen18@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email durilu@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email ehoeberechts@aol.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email eileen.tauscher@icloud.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email elc4cook@btinternet.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email elizbethryan@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email ellis@losdragos.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email evansde@rocketmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email frankiebrannigan9@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email fransvervloet313@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email gazspan@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email geaney@iol.ie added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email gerlowry@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email glorialucas1947@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email grace150713@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email grossje1975@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email harrietbeck@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email hghoyler@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email hmreynolds26@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email huddleston185@btinternet.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email ianfuller51@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email ingrid@outlook-marbella.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email ioana.curtis@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email irena@macielinski.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email irmela1943@ymail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email j.mariesq@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email janetmacnutt@icloud.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email janh0406@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email janstable@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jarvis.judith@googlemail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jean.queenbee@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jennyrogers63@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jfhm@btinternet.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jinsevillanodlc@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jjyegaus12@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jmkirchem@tinyworld.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email joanhoeberechts@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email john.gates68@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email johnpretty97@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jonty240651@aol.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jorn.berget@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email jshinerock@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email juliegreenbank@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email julietteleerussell@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email karenfineart@telitec.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email karenjgoulding@hotmail.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email kdmarshall1@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email keatingeamon@anit.es added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email keithlucastravelling@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email keithwhitbread@aol.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email kevrac@eircom.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email kjwilliams234@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email kmew1320@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email lauriejtaylor@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email lindacarson666@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email linguas1@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email maggieking007@hotmail.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email majagugerli@bluewin.ch added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email margaretatkinellan@talktalk.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email mariecmartin@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email maryanb@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email maryanneshinerock@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email maryreilly@eircom.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email maureenshbero@hotmail.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email mckoss@sbcglobal.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email megan66@hotmail.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email michaelxmartin@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email mooreflett@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email nessacoley@live.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email pamelafuller51@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email paulwendyhoward@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email petereclappison@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email pgugerli@bluewin.ch added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email phil.cony@btinternet.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email philkent46@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email poorter55@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email randelbarrows@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email richard.bearpark@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email richardsonfrances039@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email rod@losdragos.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email rosalba.williams@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email rosyth@btopenworld.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email roy.martinez@scarlet.be added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email sallybegley@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email samrobertwith@yahoo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email schultejanson@yahoo.de added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email simonshinerock@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email simplymarkwilliams@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email smoulderbrown@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email soledaddelasheras@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email suerhodes2002@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email susan.cross706@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email teresaelvin@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email terry-c007@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email terryreilly@eircom.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email thea_van_kints@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email thelaubschers@tiscali.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email thewheeldons@telefonica.net added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email tom@graty.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email tonygoodfellow@adsl4less.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email viso.first.english@hotmail.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email walleyernie@yahoo.co.uk added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email waterhousep@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email wgandress@gmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email ynotfishing@hotmail.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email yoleo@aol.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+Email zerdan@vuelasinmiedo.com added  to Mailchimp for list = U3A Marbella and Inland not yet paid
+
+------------------------------------------
+Emails to add to Mailchimp list Group Leaders
+Email roger@hamble.org added  to Mailchimp for list = Group Leaders
+
+------------------------------------------
+Emails to add to Mailchimp list Administration Team
+
+
+========================================
+Values After Changes 
+------------------------------------------
+
+------------------------------------------
+List U3A Marbella and Inland List
+------------------------------------------
+member_count				530
+cleaned_count				10
+Cleaned 				brdnagashel@gmail.com Eleanor Keating 247
+Cleaned 				ghewgill@terra.es Val Hewgill 197
+Cleaned 				irena@macielinski.com Irena Macielinski 206
+Cleaned 				jinsevillanodlc@gmail.com Miguel Sevillano 589
+Cleaned 				keatingeamon@anit.es Eamon Keating 614
+Cleaned 				lyal3@live.co.uk Lya Leppik 234
+Cleaned 				valbailey@braughting.org.uk Valerie Bailey 394
+Cleaned 				cdnoiij@gmail.com Constance De Nooij 669
+Cleaned 				cdnoij@gmail.com Constance De Nooij 669
+Cleaned 				lloydinspain@yahoo.co.uk Peter Lloyd 687
+unsubscribe_count				0
+------------------------------------------
+List U3A Marbella and Inland not yet paid
+------------------------------------------
+member_count				1
+cleaned_count				0
+unsubscribe_count				1
+Unsubscribed 				laurie2@lyates.com Laurie2 YATES 998
+------------------------------------------
+List Group Leaders
+------------------------------------------
+member_count				44
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Administration Team
+------------------------------------------
+member_count				17
+cleaned_count				0
+unsubscribe_count				0

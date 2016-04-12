@@ -16,8 +16,16 @@ class Member extends DB\SQL\Mapper {
 		
         return $this->query;
     }
-   
-
+    public function allfy() {
+       // $this->load();
+	   
+	   $fw=Base::instance();
+		//var_dump($fw);// need to filter by current u3ayear
+		$this->load(array('fyear =:fyear',array(':fyesr'=> $fw->get('SESSION.fyear')) ) );
+		//$this->first();
+		
+        return $this->query;
+    }
     public function add() {
       //  $this->copyFrom('POST');
 	    $fw=Base::instance();

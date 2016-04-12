@@ -1,0 +1,25 @@
+<p>Dear *|forename|*</p>
+
+<p>Welcome to U3A Marbella and Inland. Your membership number is *|membnum|* please make a note of your number since it will increasingly be needed to register for activities and events..</p>
+
+*|joiner_renewal|*
+ 
+<p>You are by now probably aware of the nature of our association but if you require further information it can be found on our website <a href="http://www.u3a.es/">www.u3a.es</a> .</p>
+
+<p>Our principle is that we are a non-profit making organisation for mature people to promote learning and activity for enjoyment and personal fulfilment. Though Marbella and Inland is affiliated to U3A we are, in fact, completely autonomous.</p>
+
+<p>Apart from our groups, activities and lectures we do also hold regular social activities including lunches, dinners and trips. Additionally amongst our membership of nearly 600 you will almost certainly make new friends and acquaintances which will lead to opportunity for further social interaction.</p>
+
+<p>If you have not already done so please visit our website and carefully view our current programme to see the sorts of activity which are available. As a new member you are entitled to apply to join in any activity subject to the availability of a place. The first port of call should always be to contact the leader of anything in which you may be interested to find out more details. If a place is available the leader will normally invite you to attend without any obligation on your part. The only limit on your participation in activities is that imposed by your time.</p>
+
+<p>We are supported by a number of businesses that kindly make premises available to us and in return we are morally obligated to support them with due consideration and by the purchase of coffee or other beverages. Moreover since our association is completely voluntary we do, in fact, entirely rely on the goodwill of administrators and group leaders. It is important then that members also give particular regard to these organisers to help make participation for everyone as enjoyable as possible. We all belong to little teams within a big team.</p>
+
+<p>As a new part of the team you may have a strong interest in something that is not currently represented. If you feel there is a contribution you can make in terms of organising a group or indeed helping with administration of one this would be most appreciated. Often groups are just co-operatives of like minded people. Every assistance will be given.</p>
+
+<p>In the meantime please join in con mucho gusto.</p>
+
+<p>You may feel free to contact me on any matter.</p>
+
+<p>Kind regards</p>
+
+<p>Allan</p>

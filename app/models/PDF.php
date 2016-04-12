@@ -207,9 +207,10 @@ function query($query){
 }
 
 function mysql_report($query, $dump=false, $attr=array()){
-
-//    $dump = true;
-
+	$f3=Base::instance();
+	$uselog=$f3->get('uselog');
+	$admin_logger = new MyLog('admin.log');
+	$admin_logger->write('in mysql_report',$uselog);
     unset($this->tablewidths);
     unset($this->sColWidth);
     unset($this->colTitles);
@@ -219,7 +220,8 @@ function mysql_report($query, $dump=false, $attr=array()){
 	}
 
 	$this->query($query);
-
+	$admin_logger->write('in mysql_report query= '.$query,$uselog);
+	//$admin_logger->write('in mysql_report query result = '.$this->results,$uselog);
 	// if column widths not set
 	if(!isset($this->tablewidths)){
 			Header('Content-type: text/plain');

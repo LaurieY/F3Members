@@ -6,8 +6,16 @@ class Option extends DB\SQL\Mapper {
         parent::__construct($db,'optionsu3a');
 			
     }
+	public function initmjl1start () { //sets the start month for when we offer MJL1 for new joiners, saved in SESSION.mjl1startmonth
+	//and also the end from SESSION.u3astartmonth (saved in initlastu3ayear() called from member controller index
+	$fw=Base::instance();
+	if(!$fw->exists('SESSION.mjl1startmonth')) {
+		$this->load('optionname="mjl1_start_month"');
+		$fw->set('SESSION.mjl1startmonth', $this->optionvalue);		}
+	}
 	public   function initu3ayear(){
 	$fw=Base::instance();
+
 	//var_export($fw->get('SESSION',false)); //LEY
 	if(!$fw->exists('SESSION.u3ayear')) {
   $today = getdate();
@@ -18,6 +26,7 @@ class Option extends DB\SQL\Mapper {
 	  $this->load('optionname="u3a_year_start_month"');
 	$whichmonth = $this->optionvalue;
 	$whichmonth = $this->optionvalue;
+	$fw->set('SESSION.fyear', $thisyear);
 	$fw->set('SESSION.u3astartmonth', $whichmonth);
 	  //'select optionvalue from options where optionname ="u3a_year_start_month" ';
 	  if ($thismon <$whichmonth)
@@ -44,4 +53,25 @@ public  function initlastu3ayear(){
 		}
 			return $fw->get('SESSION.lastu3ayear');
 }	
+public function initemailsettings ()
+
+{	$fw=Base::instance();
+	if(!$fw->exists('SESSION.allowwelcomeemail')) {
+		
+		$this->load('optionname="allowwelcomeemail"');
+		$allowwelcomeemail = FALSE;
+		
+		if($this->optionvalue =='TRUE') $allowwelcomeemail = TRUE; ;
+		$fw->set('SESSION.allowwelcomeemail',  $allowwelcomeemail);
+		
+		$this->load('optionname="welcomemail_fromaddress"');
+		$welcomemail_fromaddress = $this->optionvalue;
+		$fw->set('SESSION.welcomemail_fromaddress',  $welcomemail_fromaddress);
+		
+		
+	}
+	
+	
+}
+
 }

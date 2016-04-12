@@ -1,0 +1,6 @@
+array(
+		'U3A Marbella and Inland List'=>array('sqlselect'=>"select email, forename,surname, location, membtype , membnum from members where u3ayear = '".$this->u3ayear."' and status ='Active' and email <> '' and paidthisyear in ".$this->paidstatus."  group by email order by email"),
+		'U3A Marbella and Inland not yet paid'=>array('sqlselect'=>"select email, forename,surname, location, membtype , membnum from members where u3ayear = '".$this->u3ayear."' and status ='Active' and email <> '' and paidthisyear ='N'  group by email order by email"),
+		'Group Leaders'=>array('sqlselect'=>"select email, forename,surname, location, membtype , membnum from members where u3ayear = '".$this->u3ayear."' and status ='Active' and email <> '' and paidthisyear in ".$this->paidstatus." and membtype in ('GL','ATGL') group by email order by email"),
+		'Administration Team'=>array('sqlselect'=>"select email, forename,surname, location, membtype , membnum from members where u3ayear = '".$this->u3ayear."' and status ='Active' and email <> '' and paidthisyear in ".$this->paidstatus." and membtype in ('AT','ATGL') group by email order by email"),
+	);

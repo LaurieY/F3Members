@@ -1,0 +1,16 @@
+email	FNAME	LNAME	LOC	MTYPE	MNUM
+2307pas@gmail.com	Peter	Saunders	C	ATGL	482
+aine_niorain@hotmail.com	Aine	Ni Orain	C	ATGL	407
+aledmarbella@gmail.com	Allan	Edwards	C	AT	1
+barkworth@hotmail.com	Brian	Barkworth	I	AT	534
+barthorpe@hotmail.co.uk	Keith	Barthorpe	C	AT	343
+cbkemzura@msn.com	Christine	Kemzura	I	ATGL	283
+cliveper@btinternet.com	Clive	Perriman	C	AT	458
+francis@mantarota.com	Francis	Jacobson	C	AT	467
+jo.nelsoncairns@gmail.com	Josephine	Nelson-Cairns	C	AT	450
+laurie@lyates.com	Laurie	Yates	I	AT	180
+lesleyspain@yahoo.co.uk	Lesley	Thompson	I	AT	162
+margaret.rowat@gmail.com	Margaret	Rowat	C	AT	4
+monda@mercuryin.es	Brian	Thomas	I	AT	2
+president@u3a.es	Allan	Edwards	C	AT	625
+ruth@evokia.co.uk	Ruth	Baldwin	C	AT	252

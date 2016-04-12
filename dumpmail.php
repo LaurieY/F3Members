@@ -4,7 +4,7 @@
 # Modify the variables below to your need
 
 # Mysql Credentials
-MyUSER="lyatesco_memb"
+MyUSER="u3aes_memb"
 MyPASS="laurie12"
 MyHOST="localhost"
 MYSQL="$(which mysql)"
@@ -17,13 +17,13 @@ GROUP="root"
 # Backup all existing databases
 #DBS="$($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse 'show databases')"
 # Or specify which databases to backup
-DBS="lyatesco_f3members"
+DBS="u3aes_f3members"
 
 # DO NOT BACKUP these databases
 IGGY="test"
 
 # Backup Dest directory, change this if you have someother location
-DEST="/vagrant/db_backupdir"
+DEST="/home/u3aes/mcrud/db_backups"
 
 # mysqldump parameters
 DUMP_OPTS="-Q --skip-lock-tables --single-transaction"

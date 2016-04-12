@@ -1,2 +1,2 @@
- mysql -ulyatesco_memb  -plaurie12  lyatesco_f3members < add_feewhere.sql 
+ mysql -uu3aes_memb  -plaurie12  u3aes_f3members < add_feewhere.sql 
  

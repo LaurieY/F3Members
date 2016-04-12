@@ -33,7 +33,7 @@ public function index(){
 		$uselog=$f3->get('uselog');
 		$admin_logger = new MyLog('auth.log');
 		$admin_logger->write( 'Entering OptionsControllerindex' , $uselog );
-		$f3->set('page_head','Amend Options');
+		$f3->set('page_head','Manage Options');
 		$f3->set('page_role',$f3->get('SESSION.user_role'));
         $f3->set('message', $f3->get('PARAMS.message'));
 		

@@ -1,32 +1,37 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2af4ab713fa2d57ae0de8ea543aafa8a",
+    "hash": "5f4ef26d58074214ecfbaf4e24d92fac",
+    "content-hash": "6a426c833c3f1ee23f7aba62520845fa",
     "packages": [
         {
             "name": "drewm/mailchimp-api",
-            "version": "dev-master",
+            "version": "dev-api-v3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drewm/mailchimp-api.git",
-                "reference": "b17c0fa6188f4b993ee8bd18460c0872a4944677"
+                "reference": "8f593a05f5a4b095414e0c6fc7a5b67f1ba7d5f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drewm/mailchimp-api/zipball/b17c0fa6188f4b993ee8bd18460c0872a4944677",
-                "reference": "b17c0fa6188f4b993ee8bd18460c0872a4944677",
+                "url": "https://api.github.com/repos/drewm/mailchimp-api/zipball/8f593a05f5a4b095414e0c6fc7a5b67f1ba7d5f6",
+                "reference": "8f593a05f5a4b095414e0c6fc7a5b67f1ba7d5f6",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3"
             },
+            "require-dev": {
+                "phpunit/phpunit": "4.0.*",
+                "vlucas/phpdotenv": "^2.0"
+            },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Drewm": "src/"
+                "psr-4": {
+                    "DrewM\\MailChimp\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -36,12 +41,13 @@
             "authors": [
                 {
                     "name": "Drew McLellan",
+                    "email": "drew.mclellan@gmail.com",
                     "homepage": "http://allinthehead.com/"
                 }
             ],
-            "description": "Super-simple, minimum abstraction MailChimp API v2 wrapper",
+            "description": "Super-simple, minimum abstraction MailChimp API v3 wrapper",
             "homepage": "https://github.com/drewm/mailchimp-api",
-            "time": "2015-01-05 17:18:13"
+            "time": "2015-09-15 09:11:10"
         },
         {
             "name": "mailchimp/mailchimp",

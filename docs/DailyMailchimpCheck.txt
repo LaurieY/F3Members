@@ -1,0 +1,162 @@
+Start Daily MailChimp Check at 2016-04-01 18:01:02
+Values Before Changes 
+------------------------------------------
+
+------------------------------------------
+List U3A Marbella and Inland List
+------------------------------------------
+member_count				571
+cleaned_count				6
+Cleaned 				valbailey@braughting.org.uk Valerie Bailey 394
+Cleaned 				marge2212@hotmail.com Margaret Johnson 697
+Cleaned 				amdll@hotmail.com Anna Menendez de Llaro 709
+Cleaned 				cdnooij@gmail.com Constance De Nooij 669
+Cleaned 				edurling2009@comhem.se Eva Durling 735
+Cleaned 				nonodjog@gmail.com Noella De Jonghe 745
+unsubscribe_count				7
+Unsubscribed 				archie.f@tiscali.co.uk Archie Ferrier 39
+Unsubscribed 				cortijoadelfa@hotmail.com Tara Kent 245
+Unsubscribed 				kay_petegodwin@yahoo.co.uk Kay Godwin 196
+Unsubscribed 				LaSiesta66@hotmail.com Sue Summers 238
+Unsubscribed 				lin.sewell@btinternet.com Lin Sewell 260
+Unsubscribed 				lpb44@aol.com Larry Barnett 100
+Unsubscribed 				ajo5ysa@hotmail.co.uk Michael Broom 665
+------------------------------------------
+List U3A Marbella and Inland not yet paid
+------------------------------------------
+member_count				5
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Group Leaders
+------------------------------------------
+member_count				43
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Administration Team
+------------------------------------------
+member_count				18
+cleaned_count				0
+unsubscribe_count				0
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland List
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland not yet paid
+
+------------------------------------------
+Emails to add to Mailchimp list Group Leaders
+
+------------------------------------------
+Emails to add to Mailchimp list Administration Team
+No emails to remove from list U3A Marbella and Inland List
+No emails to remove from list U3A Marbella and Inland not yet paid
+No emails to remove from list Group Leaders
+No emails to remove from list Administration Team
+
+
+========================================
+Values After Changes 
+------------------------------------------
+
+------------------------------------------
+List U3A Marbella and Inland List
+------------------------------------------
+member_count				571
+cleaned_count				6
+Cleaned 				valbailey@braughting.org.uk Valerie Bailey 394
+Cleaned 				marge2212@hotmail.com Margaret Johnson 697
+Cleaned 				amdll@hotmail.com Anna Menendez de Llaro 709
+Cleaned 				cdnooij@gmail.com Constance De Nooij 669
+Cleaned 				edurling2009@comhem.se Eva Durling 735
+Cleaned 				nonodjog@gmail.com Noella De Jonghe 745
+unsubscribe_count				7
+Unsubscribed 				archie.f@tiscali.co.uk Archie Ferrier 39
+Unsubscribed 				cortijoadelfa@hotmail.com Tara Kent 245
+Unsubscribed 				kay_petegodwin@yahoo.co.uk Kay Godwin 196
+Unsubscribed 				LaSiesta66@hotmail.com Sue Summers 238
+Unsubscribed 				lin.sewell@btinternet.com Lin Sewell 260
+Unsubscribed 				lpb44@aol.com Larry Barnett 100
+Unsubscribed 				ajo5ysa@hotmail.co.uk Michael Broom 665
+------------------------------------------
+List U3A Marbella and Inland not yet paid
+------------------------------------------
+member_count				5
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Group Leaders
+------------------------------------------
+member_count				43
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Administration Team
+------------------------------------------
+member_count				18
+cleaned_count				0
+unsubscribe_count				0
+Running a second time 
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland List
+
+------------------------------------------
+Emails to add to Mailchimp list U3A Marbella and Inland not yet paid
+
+------------------------------------------
+Emails to add to Mailchimp list Group Leaders
+
+------------------------------------------
+Emails to add to Mailchimp list Administration Team
+No emails to remove from list U3A Marbella and Inland List
+No emails to remove from list U3A Marbella and Inland not yet paid
+No emails to remove from list Group Leaders
+No emails to remove from list Administration Team
+
+
+========================================
+Values After Changes 
+------------------------------------------
+
+------------------------------------------
+List U3A Marbella and Inland List
+------------------------------------------
+member_count				571
+cleaned_count				6
+Cleaned 				valbailey@braughting.org.uk Valerie Bailey 394
+Cleaned 				marge2212@hotmail.com Margaret Johnson 697
+Cleaned 				amdll@hotmail.com Anna Menendez de Llaro 709
+Cleaned 				cdnooij@gmail.com Constance De Nooij 669
+Cleaned 				edurling2009@comhem.se Eva Durling 735
+Cleaned 				nonodjog@gmail.com Noella De Jonghe 745
+unsubscribe_count				7
+Unsubscribed 				archie.f@tiscali.co.uk Archie Ferrier 39
+Unsubscribed 				cortijoadelfa@hotmail.com Tara Kent 245
+Unsubscribed 				kay_petegodwin@yahoo.co.uk Kay Godwin 196
+Unsubscribed 				LaSiesta66@hotmail.com Sue Summers 238
+Unsubscribed 				lin.sewell@btinternet.com Lin Sewell 260
+Unsubscribed 				lpb44@aol.com Larry Barnett 100
+Unsubscribed 				ajo5ysa@hotmail.co.uk Michael Broom 665
+------------------------------------------
+List U3A Marbella and Inland not yet paid
+------------------------------------------
+member_count				5
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Group Leaders
+------------------------------------------
+member_count				43
+cleaned_count				0
+unsubscribe_count				0
+------------------------------------------
+List Administration Team
+------------------------------------------
+member_count				18
+cleaned_count				0
+unsubscribe_count				0
+------------------- 
+------------------- 

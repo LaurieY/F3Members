@@ -44,6 +44,7 @@ function myamtvalue(elem, operation, value) {
 	return parseInt(elem[0].value);
 return parseInt($('#TblGrid_list #amtpaidthisyear').val());	
 	} else if(operation === 'set') {
+	$('input',elem).val(200);
        //$('input',elem).val(value);
     }
 
@@ -59,6 +60,25 @@ return parseInt($('#TblGrid_list #amtpaidthisyear').val());
 var treaschecked =" ";
 var preschecked= " ";
 var otherchecked =" ";
+var bankchecked = " ";
+switch(value) {
+	case 'Treasurer':
+	case '':
+	treaschecked ='checked';
+	otherchecked =" ";
+	break;
+	case 'President':
+	preschecked	='checked';
+	break;
+	case 'Bank':
+	bankchecked	='checked';
+	break;
+	default:
+	otherchecked ="checked";
+	break;	
+
+}
+/************
 if (value=='Treasurer'||!value.trim() ) {
 treaschecked ='checked';
 otherchecked =" ";
@@ -67,7 +87,7 @@ else if(value=='President'){
 	preschecked	='checked';}
 		else {
 otherchecked ='checked';}
-
+******/
 
 var rowid= options.rowId;
 xnum =$("#list").jqGrid('getCell',rowid,'membnum');
@@ -76,6 +96,7 @@ xnum =$("#list").jqGrid('getCell',rowid,'membnum');
 //var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" checked>Treasurer<br>'+
 var elemStr = '<div><input id="'+options.id +'_treas" type="radio" size="10" name="fee" value="Treasurer" '+treaschecked+'  >Treasurer<br>'+  // no default
 						'<input id="'+options.id +'_pres" type="radio" size="10" name="fee" value="President" '+preschecked+'  >President<br>'+
+						'<input id="'+options.id +'_bank" type="radio" size="10" name="fee" value="Bank" '+bankchecked+'  >Bank<br>'+
 						'<input id="'+options.id + '_other' +
                         '" type="radio" size="20" name="fee" value="other" '+otherchecked +'> Other  '+
 						'<input id="'+options.id +'_text" type="text" size="20" onfocus="focusOther()" name="feewhere" value=	"'+value+'" ></div>';
@@ -156,7 +177,9 @@ function myvalue(elem, operation, value) {
         mtype: "GET",
         colNames: ["Surname", "Forename", "Num.", "Phone","Mobile","Email","Type","Location","Paid","Amt Paid", 
 				" FeeWhere?",
-		"Pay","WillPay","NotPaid","Joined"],//],
+		"Pay","NotPaid",
+		"Waived",
+		"Joined"],//],
         colModel: [
             
 			{ name: "surname", width: 120,editable: false, edittype:"text",sortable:true,sorttype:'string',firstsortorder:'asc',searchoptions : {
@@ -169,10 +192,9 @@ function myvalue(elem, operation, value) {
             { name: "mobile", width: 85, align: "right",editable: false, edittype:"text" }, 
             { name: "email", width: 210, align: "right",editable: false, edittype:"text" ,searchoptions : {sopt: ["cn"] }}, 
 			 { name: "membtype", width: 90, align: "right",editable: false, 
-			// edittype:'select',editoptions:{value:"M:Standard Member;MJL1:Member Joined Late (1st year);MJL2:Member Joined Late (2nd year);GL:Group Leader;GLS:Group Leader Spouse;CM:Committee Member;CMS:Committee Member Spouse;CMGL:Committee Member & Group Leader"}
-			},
+				},
              { name: "location", width: 65, align: "right" },
-			 { name: "paidthisyear", width: 80, align: "right" ,editable: false,		  edittype:'select',editoptions:{value:"Y:Paid;W:Will Pay;N:Not Paid"} }, 
+			 { name: "paidthisyear", width: 80, align: "right" ,editable: false,		  edittype:'select',editoptions:{value:"Y:Paid;N:Not Paid;W:Waived;"} }, 
 			  { name: "amtpaidthisyear", width: 80, align: "right",editable: true,edittype:'custom',editoptions:{custom_element: myamtelem, custom_value:myamtvalue},
 						searchoptions : {sopt: ["ge","le"] },searchrules:{integer:true},sorttype:'number'},
 			 
@@ -185,16 +207,17 @@ function myvalue(elem, operation, value) {
                          // return "<span class='ui-icon ui-icon-pencil'></span>"
 						 return  "<span class='member-icons  money_euro'></span>"
                       }},
-				{ name: 'willpay', width: 65, sortable: false, search: false,
-                      formatter:function(){
-                         // return "<span class='ui-icon ui-icon-pencil'></span>"
-						  return  "<span class='member-icons  money_promise'></span>"
-                      }},	
 				{ name: 'unpay', width: 65, sortable: false, search: false,
                       formatter:function(){
                          // return "<span class='ui-icon ui-icon-pencil'></span>"
 						  return  "<span class='member-icons  money_unpay'></span>"
                       }},
+					  { name: 'waived', width: 65, sortable: false, search: false, hidden:false,
+                      formatter:function(){
+                         // return "<span class='ui-icon ui-icon-pencil'></span>"
+						  return  "<span class='member-icons  money_promise'></span>"
+                      }},	 
+
 { name: "datejoined", width: 100, align: "right",search:false , hidden:true}, 					  
 			
         ],
@@ -227,8 +250,8 @@ function myvalue(elem, operation, value) {
                         .addClass("member-icons  money_euro"); 
 		},*/
 		
-		/***********  Mark Clicked Euro icon  as Paid  , W Icon as will pay
-		if Will pay empty feewhere, if marking as paid prompt for where the fees are**********/
+		/***********  Mark Clicked Euro icon  as Paid  , W Icon as Waived payment
+		if Waived empty feewhere, if marking as paid prompt for where the fees are**********/
 onclickSubmit: function (params,postdata) {
 var a=postdata;
 } ,
@@ -237,7 +260,7 @@ onCellSelect: function (rowid,iCol,cellcontent,e) {
  var grid = $("#list");
  
 				payColumnIndex = getColumnIndexByName( $("#list"),'pay');
-                willpayColumnIndex = getColumnIndexByName( $("#list"),'willpay');    
+                waivedColumnIndex = getColumnIndexByName( $("#list"),'waived');    
                 unpayColumnIndex = getColumnIndexByName( $("#list"),'unpay');    
 				//phoneColumnIndex = getColumnIndexByName( $("#list"),'phone');
 				//locationColumnIndex = getColumnIndexByName( $("#list"),'location');
@@ -359,8 +382,10 @@ $("#amtpaidthisyear").prop("readonly", false);
 
 	//$("#list").trigger("reloadGrid", [{ page: 1}]);
 						}
-				if (iCol == willpayColumnIndex) { // might be will-pay
-						$.post("\markwillpay",{membnum:xnum,membtype:xtype,feewhere:' '},function(data) {
+				if (iCol == waivedColumnIndex) { // might be waived payment this year
+						var retval = confirm("Do you really want to mark this Member as WAIVED ? \n ");
+						if( retval == true ){
+						$.post("\markwaived",{membnum:xnum,membtype:xtype,feewhere:' '},function(data) {
 						$showit=$.parseJSON(data);
 						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
 						grid.jqGrid('setCell', rowid, 'amtpaidthisyear', $showit.amtpaidthisyear);
@@ -374,7 +399,10 @@ $("#amtpaidthisyear").prop("readonly", false);
 						$("#list").jqGrid('footerData',	'set',{location:$showit.thisfytotal})
 						});  
 						}
+						}
 				if (iCol == unpayColumnIndex) { // clear payments and feewhere
+				      var retval = confirm("Do you really want to mark this Member as NOT PAID ? \n ");
+						if( retval == true ){
 						$.post("\markunpay",{membnum:xnum,membtype:xtype,feewhere:' '},function(data) {
 						$showit=$.parseJSON(data);
 						grid.jqGrid('setCell', rowid, 'paidthisyear', $showit.paidthisyear);
@@ -388,6 +416,7 @@ $("#amtpaidthisyear").prop("readonly", false);
 						$("#list").jqGrid('footerData',	'set',{phone:$showit.lastfytotal})
 						$("#list").jqGrid('footerData',	'set',{location:$showit.thisfytotal})
 						});  
+						}
 						}
 					},
 	/*			onSelectRow: function(id) {

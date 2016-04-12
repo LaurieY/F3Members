@@ -1,0 +1,1 @@
+select email, forename as FNAME,surname as LNAME, location as LOC, membtype as MTYPE, membnum as MNUM from members where u3ayear = '2015-2016' and status ='Active' and email <> '' and membtype in ('GL','ATGL') group by email order by email

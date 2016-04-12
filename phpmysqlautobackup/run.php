@@ -22,11 +22,11 @@ $phpMySQLAutoBackup_version="1.6.3";
 // ---------------------------------------------------------
 // you must add your details below:
 $db_server = "localhost"; // your MySQL server - localhost will normally suffice
-$db = "lyatesco_f3members"; // your MySQL database name
-$mysql_username = "lyatesco_memb";  // your MySQL username
+$db = "u3aes_f3members"; // your MySQL database name
+$mysql_username = "u3aes_memb";  // your MySQL username
 $mysql_password = "laurie12";  // your MySQL password
 
-$from_emailaddress = "laurie2@lyates.com";// your email address to show who the email is from (should be different $to_emailaddress)
+$from_emailaddress = "laurie2@u3a.es";// your email address to show who the email is from (should be different $to_emailaddress)
 $report_emailaddress = "laurie@lyates.com";//address to send reports, not the backup just details on last backups (can be same as above)
 $to_emailaddress = "laurie@lyates.com"; // your email address to send backup files to
                        //best to specify an email address on a different server than the MySQL db  ;-)
@@ -37,10 +37,10 @@ $send_email_report=1;//set to 1 and will send an email report to the email addre
 define('LOG_REPORTS_MAX', 6);//the total number of reports to retain - set this to any number you wish (better to keep below 50 as all reports are included in the email)
 
 //interval between backups - stops malicious attempts at bringing down your server by making multiple requests to run the backup
-$time_interval=60;// 3600 = one hour - only allow the backup to run once each hour
+$time_interval=3600;// 3600 = one hour - only allow the backup to run once each hour
 
 //DEBUGGING
-define('DEBUG', 1);//set to 0 when done testing
+define('DEBUG', 0);//set to 0 when done testing
 
 //FTP settings - uses CURL so your webhost where you run this must support PHP CURL
 //when the 4 lines below are uncommented will attempt to push the compressed backup file to the remote site ($ftp_server)
